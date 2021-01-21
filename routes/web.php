@@ -1,5 +1,7 @@
 <?php
 
+use Illuminate\Support\Facades\Route;
+
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -30,3 +32,4 @@ Route::get('/not-enrolled', function () {
 Route::get('/enrolled', function () {
     return view('dashboard.index');
 });
+
