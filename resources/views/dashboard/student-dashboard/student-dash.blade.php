@@ -1,9 +1,9 @@
-@extends('head.index')
+@extends('head.head')
 
 @section('dashboard')
 
 <header class="dashboard-header">
-    <div class="logo">
+    <div class="header">
         <img src="images/logo.jpg" alt="">
         <h1>Welcome to Mantalongon, Dalaguete NHS</h1>
     </div>

@@ -1,73 +1,4 @@
 <template>
-  <!-- <v-app>
-    <v-navigation-drawer
-      v-model="drawer"
-      :mini-variant.sync="mini"
-      color="primary lighten-5"
-      permanent
-    >
-      <v-list-item class="px-2">
-        <v-list-item-avatar>
-          <v-img src="https://randomuser.me/api/portraits/men/85.jpg"></v-img>
-        </v-list-item-avatar>
-
-        <v-list-item-title>John Leider</v-list-item-title>
-
-        <v-btn icon @click.stop="mini = !mini">
-          <v-icon>mdi-chevron-left</v-icon>
-        </v-btn>
-      </v-list-item>
-
-      <v-divider></v-divider>
-      <v-list>
-        <v-list-item class="nav-link" link>
-          <img src="/images/icons/dashboard.png" alt="John" class="icon" />
-
-          <v-list-item-content class="nav-def">
-            <v-list-item-title>Dashboard</v-list-item-title>
-          </v-list-item-content>
-        </v-list-item>
-
-        <v-list-item class="nav-link" link>
-          <img src="/images/icons/enrollment.png" alt="John" class="icon" />
-
-          <v-list-item-content class="nav-def">
-            <v-list-item-title>Enrollment</v-list-item-title>
-          </v-list-item-content>
-        </v-list-item>
-
-        <v-list-item class="nav-link" link>
-          <img src="/images/icons/all_students.png" alt="John" class="icon" />
-
-          <v-list-item-content class="nav-def">
-            <v-list-item-title>All Students</v-list-item-title>
-          </v-list-item-content>
-        </v-list-item>
-
-        <v-list-item class="nav-link" link>
-          <img src="/images/icons/all_teachers.png" alt="John" class="icon" />
-
-          <v-list-item-content class="nav-def">
-            <v-list-item-title>All Teachers</v-list-item-title>
-          </v-list-item-content>
-        </v-list-item>
-
-        <v-list-item class="nav-link" link>
-          <img src="/images/icons/all_sections.png" alt="John" class="icon" />
-
-          <v-list-item-content class="nav-def">
-            <v-list-item-title>All Sections</v-list-item-title>
-          </v-list-item-content>
-        </v-list-item>
-      </v-list>
-    </v-navigation-drawer>
-    <v-app-bar app></v-app-bar>
-    <v-main class="content">
-      <v-container>This is a content</v-container>
-    </v-main>
-  </v-app> -->
-  <!-- App.vue -->
-
   <v-app>
     <v-navigation-drawer
       v-model="drawer"
@@ -90,7 +21,7 @@
 
       <v-divider></v-divider>
       <v-list>
-        <v-list-item class="nav-link" link to="/dashboard">
+        <v-list-item class="nav-link" link to="/admin">
           <img src="/images/icons/dashboard.png" alt="John" class="icon" />
 
           <v-list-item-content class="nav-def">
@@ -98,7 +29,7 @@
           </v-list-item-content>
         </v-list-item>
 
-        <v-list-item class="nav-link" link to="/enrollment">
+        <v-list-item class="nav-link" link to="/admin/enrollment">
           <img src="/images/icons/enrollment.png" alt="John" class="icon" />
 
           <v-list-item-content class="nav-def">
@@ -106,7 +37,7 @@
           </v-list-item-content>
         </v-list-item>
 
-        <v-list-item class="nav-link" link to="/all_students">
+        <v-list-item class="nav-link" link to="/admin/all_students">
           <img src="/images/icons/all_students.png" alt="John" class="icon" />
 
           <v-list-item-content class="nav-def">
@@ -114,7 +45,7 @@
           </v-list-item-content>
         </v-list-item>
 
-        <v-list-item class="nav-link" link to="/all_teachers">
+        <v-list-item class="nav-link" link to="/admin/all_teachers">
           <img src="/images/icons/all_teachers.png" alt="John" class="icon" />
 
           <v-list-item-content class="nav-def">
@@ -122,7 +53,7 @@
           </v-list-item-content>
         </v-list-item>
 
-        <v-list-item class="nav-link" link to="/all_sections">
+        <v-list-item class="nav-link" link to="/admin/all_sections">
           <img src="/images/icons/all_sections.png" alt="John" class="icon" />
 
           <v-list-item-content class="nav-def">
