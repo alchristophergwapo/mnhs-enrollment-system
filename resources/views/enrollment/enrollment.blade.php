@@ -1,4 +1,4 @@
-@extends('head.index')
+@extends('head.head')
 
 @section('enroll')
 <div class="enrollment">

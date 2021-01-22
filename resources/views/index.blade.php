@@ -1,4 +1,4 @@
-@extends('head.index')
+@extends('head.head')
 
 @section('landing')
 <div>
@@ -16,5 +16,4 @@
         </div>
     </div>
 </div>
-<example-component></example-component>
 @endsection

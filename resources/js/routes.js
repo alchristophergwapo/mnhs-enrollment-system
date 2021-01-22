@@ -11,15 +11,35 @@ import AllSections from "./components/AllSections.vue";
 import Enrollment from "./components/Enrollment.vue";
 
 const routes = [
-  { path: '/dashboard', component: DashboardPage },
-  { path: '/enrollment', component: Enrollment },
-  { path: '/all_students', component: AllStudents },
-  { path: '/all_teachers', component: AllTeachers },
+  {
+    path: '/admin',
+    component: DashboardPage
+  },
+  {
+    path: '/admin/enrollment',
+    name: 'Enrollment',
+    component: Enrollment,
+    meta: {
+      title: 'Login'
+    }
+  },
+  {
+    path: '/admin/all_students', 
+    component: AllStudents
+  },
+  {
+    path: '/admin/all_teachers', 
+    component: AllTeachers
+  },
+  {
+    path: '/admin/all_sections',
+    component: AllSections
+  }
 ]
 
 const router = new VueRouter({
-    mode: 'history',
-    routes: routes,
+  mode: 'history',
+  routes: routes,
 })
 
 router.beforeEach((to, from, next) => {

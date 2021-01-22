@@ -18,18 +18,23 @@ Route::get('/', function () {
 });
 
 Route::get('/enroll', function () {
-    return view('enrollment.index');
+    return view('enrollment.enrollment');
 });
 
-Route::get('/sign-in', function() {
-    return view('sign-in.index');
-});
+Route::get('/sign-in', 'App\Http\Controllers\Authentication@login');
 
 Route::get('/not-enrolled', function () {
     return view('dashboard.not-enrolled.index');
 });
 
 Route::get('/enrolled', function () {
-    return view('dashboard.index');
+    return view('dashboard.student-dashboard.student-dash');
 });
 
+Route::get('/admin/{page}/{params?}/{x?}', function() {
+    return redirect('/admin');
+})->where('any', '*');
+
+Route::get('/admin', function () {
+    return view('dashboard.admin-dashboard.admin-dash');
+});

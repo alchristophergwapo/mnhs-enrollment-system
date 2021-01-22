@@ -1,10 +1,10 @@
-@extends('head.index')
+@extends('head.head')
 
 @section('sign-in')
 
 <div class="sign-in col-md-6">
     <div class="container">
-        <div class="header">
+        <div class="sign-in-header">
             <h1 class="heading">Sign in</h1>
             <h3 class="sub-heading">Welcome!</h3>
         </div>

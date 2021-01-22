@@ -18,14 +18,9 @@
 
     </head>
     <body>
-        @yield('landing')
-
-        @yield('enroll')
-
-        @yield('sign-in')
-
-        @yield('dashboard')
-
-        @yield('not-enrolled') 
+        <div id="app">
+            <admin-dashboard></admin-dashboard>
+        </div>
+        <script src="{{ mix('js/app.js') }}"></script>
     </body>
 </html>
