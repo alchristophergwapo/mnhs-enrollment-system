@@ -12,6 +12,16 @@
     <br /><br />
     <div>
       <v-card-title>
+        Sort By&nbsp;&nbsp;
+        <v-select
+          :items="grade_level"
+          menu-props="auto"
+          label="All"
+          hide-details
+          dense
+          outlined
+        ></v-select>
+        <v-spacer></v-spacer>
         <v-text-field
           v-model="search"
           append-icon="mdi-magnify"
@@ -55,7 +65,7 @@ export default {
       {
         text: "Enrollment",
         disabled: true,
-        href: "breadcrumbs_link_2",
+        href: "admin/enrollment",
       },
     ],
 
@@ -88,6 +98,7 @@ export default {
         student: "Christopher Alonzo",
       },
     ],
+    grade_level: [7, 8, 9, 10, 11, 12]
   }),
 };
 </script>
