@@ -13,27 +13,39 @@ import Enrollment from "./components/Enrollment.vue";
 const routes = [
   {
     path: '/admin',
-    component: DashboardPage
+    component: DashboardPage,
+    meta: {
+      title: 'Dashboard'
+    }
   },
   {
     path: '/admin/enrollment',
     name: 'Enrollment',
     component: Enrollment,
     meta: {
-      title: 'Login'
+      title: 'Enrollment'
     }
   },
   {
     path: '/admin/all_students', 
-    component: AllStudents
+    component: AllStudents,
+    meta: {
+      title: 'Students'
+    }
   },
   {
     path: '/admin/all_teachers', 
-    component: AllTeachers
+    component: AllTeachers,
+    meta: {
+      title: 'Teachers'
+    }
   },
   {
     path: '/admin/all_sections',
-    component: AllSections
+    component: AllSections,
+    meta: {
+      title: 'Sections'
+    }
   }
 ]
 
