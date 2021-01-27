@@ -9,31 +9,51 @@ import AllStudents from "./components/AllStudents.vue";
 import AllTeachers from "./components/AllTeachers.vue";
 import AllSections from "./components/AllSections.vue";
 import Enrollment from "./components/Enrollment.vue";
+import EnrollmentForm from './components/EnrollmentForm.vue';
 
 const routes = [
   {
     path: '/admin',
-    component: DashboardPage
+    component: DashboardPage,
+    meta: {
+      title: 'Dashboard'
+    }
   },
   {
     path: '/admin/enrollment',
     name: 'Enrollment',
     component: Enrollment,
     meta: {
-      title: 'Login'
+      title: 'Enrollment'
     }
   },
   {
     path: '/admin/all_students', 
-    component: AllStudents
+    component: AllStudents,
+    meta: {
+      title: 'Students'
+    }
   },
   {
     path: '/admin/all_teachers', 
-    component: AllTeachers
+    component: AllTeachers,
+    meta: {
+      title: 'Teachers'
+    }
   },
   {
     path: '/admin/all_sections',
-    component: AllSections
+    component: AllSections,
+    meta: {
+      title: 'Sections'
+    }
+  },
+  {
+    path: '/enroll',
+    component: EnrollmentForm,
+    meta: {
+      title: 'Enrollment Form'
+    }
   }
 ]
 
