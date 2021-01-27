@@ -23,7 +23,7 @@ const routes = [
     name: 'Enrollment',
     component: Enrollment,
     meta: {
-      title: 'Login'
+      title: 'Enrollment'
     }
   },
   {
