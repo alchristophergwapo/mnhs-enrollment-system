@@ -2,9 +2,9 @@
   <v-app>
     <v-navigation-drawer
       v-model="drawer"
-      :mini-variant.sync="mini"
       color="#F0F9FC"
       permanent
+      expand-on-hover
       app
     >
       <v-list-item class="px-2">
@@ -13,15 +13,11 @@
         </v-list-item-avatar>
 
         <v-list-item-title>Admin</v-list-item-title>
-
-        <v-btn icon @click.stop="mini = !mini">
-          <v-icon>mdi-chevron-left</v-icon>
-        </v-btn>
       </v-list-item>
 
       <v-divider></v-divider>
       <v-list>
-        <v-list-item class="nav-link" link to="/admin">
+        <v-list-item class="nav-link" link to="/admin/">
           <img src="/images/icons/dashboard.png" alt="John" class="icon" />
 
           <v-list-item-content class="nav-def">
@@ -100,7 +96,6 @@ export default {
   data() {
     return {
       drawer: true,
-      mini: true,
     };
   },
 };

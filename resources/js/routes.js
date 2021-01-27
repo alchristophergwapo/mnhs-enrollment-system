@@ -9,6 +9,7 @@ import AllStudents from "./components/AllStudents.vue";
 import AllTeachers from "./components/AllTeachers.vue";
 import AllSections from "./components/AllSections.vue";
 import Enrollment from "./components/Enrollment.vue";
+import EnrollmentForm from './components/EnrollmentForm.vue';
 
 const routes = [
   {
@@ -45,6 +46,13 @@ const routes = [
     component: AllSections,
     meta: {
       title: 'Sections'
+    }
+  },
+  {
+    path: '/enroll',
+    component: EnrollmentForm,
+    meta: {
+      title: 'Enrollment Form'
     }
   }
 ]
