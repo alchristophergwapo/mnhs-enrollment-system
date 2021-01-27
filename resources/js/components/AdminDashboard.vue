@@ -1,7 +1,9 @@
 <template>
   <div id="app">
-    <side-nav-bar class="sidebar"></side-nav-bar>
+    <!-- <side-nav-bar class="sidebar"></side-nav-bar> -->
+    <SideNavBar></SideNavBar> 
   </div>
+  
 </template>
 
 <script>

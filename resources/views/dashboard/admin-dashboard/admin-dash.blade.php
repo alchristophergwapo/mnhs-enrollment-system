@@ -18,9 +18,7 @@
 
     </head>
     <body>
-        <div id="app">
-            <admin-dashboard></admin-dashboard>
-        </div>
+        <div id="app"><admin-dashboard></admin-dashboard></div>
         <script src="{{ mix('js/app.js') }}"></script>
     </body>
 </html>

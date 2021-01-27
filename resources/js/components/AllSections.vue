@@ -93,6 +93,7 @@ export default {
         phone: "639123456789",
       },
     ],
+    
   }),
 };
 </script>

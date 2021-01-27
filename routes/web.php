@@ -35,6 +35,10 @@ Route::get('/admin/{page}/{params?}/{x?}', function() {
     return redirect('/admin');
 })->where('any', '*');
 
-Route::get('/admin', function () {
+
+
+Route::get('/admin',function() {
     return view('dashboard.admin-dashboard.admin-dash');
 });
+
+

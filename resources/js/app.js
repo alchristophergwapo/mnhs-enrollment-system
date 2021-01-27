@@ -27,6 +27,7 @@ window.Vue = Vue;
 
 Vue.component('admin-dashboard', require('./components/AdminDashboard.vue').default);
 
+//Vue.component('sign-component', require('./components/SignIn.vue').default);
 /**
  * Next, we will create a fresh Vue application instance and attach it to
  * the page. Then, you may begin adding components to this application
@@ -38,4 +39,11 @@ const app = new Vue({
     vuetify,
     el: '#app',
 });
+
+
+// const apps = new Vue({
+//     router: routes,
+//     vuetify,
+//     el: '#sign',
+// });
 

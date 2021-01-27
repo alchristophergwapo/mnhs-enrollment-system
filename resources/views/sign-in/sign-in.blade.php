@@ -1,8 +1,7 @@
 @extends('head.head')
 
 @section('sign-in')
-
-<div class="sign-in col-md-6">
+<!-- <div class="sign-in col-md-6">
     <div class="container">
         <div class="sign-in-header">
             <h1 class="heading">Sign in</h1>
@@ -36,6 +35,9 @@
     <div class="image">
         <img src="{{ asset('images/student-login.png') }}" alt="">
     </div>
+</div> -->
+<div id="sign">
+     <sign-component></sign-component>
 </div>
 
 @endsection

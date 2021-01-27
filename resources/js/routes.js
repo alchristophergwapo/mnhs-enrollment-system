@@ -9,12 +9,15 @@ import AllStudents from "./components/AllStudents.vue";
 import AllTeachers from "./components/AllTeachers.vue";
 import AllSections from "./components/AllSections.vue";
 import Enrollment from "./components/Enrollment.vue";
+import SignIn from "./components/SignIn.vue";
 
 const routes = [
   {
     path: '/admin',
     component: DashboardPage
   },
+
+
   {
     path: '/admin/enrollment',
     name: 'Enrollment',
@@ -34,7 +37,13 @@ const routes = [
   {
     path: '/admin/all_sections',
     component: AllSections
+  },
+  {
+    path: '/admin/sign-up',
+    component: SignIn
   }
+  
+
 ]
 
 const router = new VueRouter({
