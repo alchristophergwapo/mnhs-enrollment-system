@@ -26,6 +26,7 @@ window.Vue = Vue;
 // files.keys().map(key => Vue.component(key.split('/').pop().split('.')[0], files(key).default))
 
 Vue.component('admin-dashboard', require('./components/AdminDashboard.vue').default);
+Vue.component('enrollment-form', require('./components/EnrollmentForm.vue').default);
 
 //Vue.component('sign-component', require('./components/SignIn.vue').default);
 /**

@@ -41,7 +41,76 @@
           <tr>
             <td>{{ row.item.grade_level }}</td>
             <td>{{ row.item.student }}</td>
-            <td><span class="btn view_dtls_btn" link>View Details</span></td>
+            <td>
+              <v-dialog transition="dialog-top-transition" max-width="600">
+                <template v-slot:activator="{ on, attrs }">
+                  <span class="btn" v-bind="attrs" v-on="on">View Details</span>
+                </template>
+                <template v-slot:default="dialog">
+                  <v-card>
+                    <v-card-title>
+                      <v-spacer></v-spacer>
+                      <v-btn icon @click="dialog.value = false">
+                        <v-icon>mdi-close</v-icon>
+                      </v-btn>
+                    </v-card-title>
+                    <v-card-text>
+                      <v-row>
+                        <v-col cols="12" md="6" sm="6">
+                          PSA No.:&nbsp;&nbsp;<strong>123-45-678910</strong>
+                        </v-col>
+                        <v-col cols="12" md="6" sm="6">
+                          LRN:&nbsp;&nbsp;<strong>30300123456</strong>
+                        </v-col>
+                        <v-col cols="12" md="6" sm="6">
+                          Average:&nbsp;&nbsp;<strong>95</strong>
+                        </v-col>
+                        <v-col cols="12" md="6" sm="6">
+                          Full Name:&nbsp;&nbsp;<strong>{{ row.item.student }}</strong>
+                        </v-col>
+                        <v-col cols="12" sm="6" md="6">
+                          Birth Date:&nbsp;&nbsp;<strong>January 1, 1999</strong>
+                        </v-col>
+                        <v-col cols="12" sm="6" md="2">
+                          Age:&nbsp;&nbsp;<strong>21</strong>
+                        </v-col>
+                        <v-col cols="12" sm="6" md="4">
+                          Gender:&nbsp;&nbsp;<strong>NA</strong>
+                        </v-col>
+                        <v-col cols="12">
+                          Belonging to  any Indigenous Peoples  (IP)<br>Community /Indigenous Cultural Community ?
+                          <strong>&nbsp;&nbsp;No</strong>
+                        </v-col>
+                        <v-col cols="12" sm="6" md="6">
+                          Mother Tongue:&nbsp;&nbsp;<strong>Bisaya</strong>
+                        </v-col>
+                        <v-col cols="12" sm="6" md="6">
+                          Contact Number:&nbsp;&nbsp;<strong>639123456789</strong>
+                        </v-col>
+                        <v-col cols="12" sm="6" md="6">
+                          Adress:&nbsp;&nbsp;<strong>Cebu</strong>
+                        </v-col>
+                        <v-col cols="12" sm="6" md="6">
+                          Zip Code:&nbsp;&nbsp;<strong>6000</strong>
+                        </v-col>
+                        <v-col cols="12" sm="6" md="6">
+                          Father's Name:&nbsp;&nbsp;<strong></strong>
+                        </v-col>
+                        <v-col cols="12" sm="6" md="6">
+                          Mother's Name:&nbsp;&nbsp;<strong></strong>
+                        </v-col>
+                        <v-col cols="12" sm="6" md="6">
+                          Guardian's Name:&nbsp;&nbsp;<strong></strong>
+                        </v-col>
+                        <v-col cols="12" sm="6" md="6">
+                          Contact Number:&nbsp;&nbsp;<strong>639123456789</strong>
+                        </v-col>
+                      </v-row>
+                    </v-card-text>
+                  </v-card>
+                </template>
+              </v-dialog>
+            </td>
             <td>
               <v-btn x-small color="success" dark>Approve</v-btn>
               <v-btn x-small color="error" dark>Decline</v-btn>
@@ -55,7 +124,7 @@
 <script>
 export default {
   data: () => ({
-    search: '',
+    search: "",
     items: [
       {
         text: "Home",
@@ -98,7 +167,7 @@ export default {
         student: "Christopher Alonzo",
       },
     ],
-    grade_level: [7, 8, 9, 10, 11, 12]
+    grade_level: [7, 8, 9, 10, 11, 12],
   }),
 };
 </script>
