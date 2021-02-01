@@ -13,32 +13,6 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/', function () {
-    return view('index');
+Route::get( '/', function(){
+    return view('welcome');
 });
-
-Route::get('/enroll', function () {
-    return view('enrollment.enrollment');
-});
-
-Route::get('/sign-in', 'App\Http\Controllers\Authentication@login');
-
-Route::get('/not-enrolled', function () {
-    return view('dashboard.not-enrolled.index');
-});
-
-Route::get('/enrolled', function () {
-    return view('dashboard.student-dashboard.student-dash');
-});
-
-Route::get('/admin/{page}/{params?}/{x?}', function() {
-    return redirect('/admin');
-})->where('any', '*');
-
-
-
-Route::get('/admin',function() {
-    return view('dashboard.admin-dashboard.admin-dash');
-});
-
-

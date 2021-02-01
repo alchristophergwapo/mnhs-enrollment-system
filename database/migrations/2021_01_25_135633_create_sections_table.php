@@ -15,6 +15,11 @@ class CreateSectionsTable extends Migration
     {
         Schema::create('sections', function (Blueprint $table) {
             $table->id();
+            $table->string('name');
+            $table->integer('capacity');
+            $table->integer('total_students');
+            $table->integer('teacher_id');
+            $table->integer('student_id');
             $table->timestamps();
         });
     }
