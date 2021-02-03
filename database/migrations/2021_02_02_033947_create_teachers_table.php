@@ -14,12 +14,15 @@ class CreateTeachersTable extends Migration
     public function up()
     {
         Schema::create('teachers', function (Blueprint $table) {
-            $table->id();
+           // $table->id();
+            $table->increments('id');
             $table->string('name');
             $table->string('email');
             $table->string('contact');
-            $table->string('student_id');
-            $table->string('section_id');
+            $table->integer('student_id')->unsigned();
+            $table->foreign('student_id')->references('id')->on('students');
+            $table->integer('section_id')->unsigned();
+            $table->foreign('section_id')->references('id')->on('sections');
             $table->timestamps();
         });
     }
@@ -33,4 +36,5 @@ class CreateTeachersTable extends Migration
     {
         Schema::dropIfExists('teachers');
     }
+
 }

@@ -14,6 +14,8 @@ class Teacher extends Model
      *
      * @var array
      */
+   // protected $table="teachers";
+
     protected $fillable = [
         'name',
         'email',
@@ -21,4 +23,12 @@ class Teacher extends Model
         'student_id',
         'section_id',
     ];
+
+    // public function teacher()
+    // {
+    //     return $this->hasOne(Student::class);
+    // }
+    // public function student(){
+    //     return $this->hasOne('App\Models\Student');
+    // }
 }

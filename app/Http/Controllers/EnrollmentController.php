@@ -10,7 +10,7 @@ class EnrollmentController extends Controller
     *
     */
     public function enroll(Request $request) {
-
+            
     }
 
     public function approveEnrollment($id) {
