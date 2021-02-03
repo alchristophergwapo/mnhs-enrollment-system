@@ -15,7 +15,7 @@ class Enrollment extends Model
      * @var array
      */
     protected $fillable = [
-        'status',
+        'enrollment_status',
         'student_id'
     ];
 }
