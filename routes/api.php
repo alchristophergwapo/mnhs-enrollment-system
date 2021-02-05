@@ -2,7 +2,8 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-//use App\Http\Controllers\TeacherController;
+use App\Http\Controllers\TeacherController;
+use App\Http\Controllers\Authentication;
 
 /*
 |--------------------------------------------------------------------------
@@ -20,17 +21,25 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 });
 
 //Adding A New Teacher
-Route::post('addNewTeacher','App\Http\Controllers\TeacherController@addTeacher');
+Route::post('addNewTeacher',[TeacherController::class, 'addTeacher']);
 
 //Getting All Teachers
-Route::get('allTeacher','App\Http\Controllers\TeacherController@allTeachers');
+Route::get('allTeacher',[TeacherController::class, 'allTeachers']);
 
 //Deleting All Teachers
-Route::get('delTeacher/{id}','App\Http\Controllers\TeacherController@removeTeacher');
+Route::get('delTeacher/{id}',[TeacherController::class, 'removeTeacher']);
 
 //Updating A teacher
-Route::post('updateTeacher/{id}','App\Http\Controllers\TeacherController@updateTeacher');
+Route::post('updateTeacher/{id}',[TeacherController::class, 'updateTeacher']);
 
 //Showing a teacher by id
-Route::get('showByIdTeacher/{id}','App\Http\Controllers\TeacherController@showByIdTeacher');
+Route::get('showByIdTeacher/{id}',[TeacherController::class, 'showByIdTeacher']);
 
+//Login for Admin 
+Route::post('/login',[Authentication::class, 'login']);
+
+//Getting the Admin profile
+Route::get('/getAdminProfile',[Authentication::class, 'getAdminProfile']);
+
+//Changing the data in admin Profile(ex. password)
+Route::post('/change',[Authentication::class, 'changePassword']);
