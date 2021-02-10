@@ -19,8 +19,8 @@ class CreateSectionsTable extends Migration
             $table->string('name');
             $table->integer('capacity');
             $table->integer('total_students');
-            $table->integer('teacher_id');
-            $table->integer('student_id');
+            $table->integer('teacher_id')->nullable();
+            $table->integer('student_id')->nullable();
             $table->timestamps();
         });
     }

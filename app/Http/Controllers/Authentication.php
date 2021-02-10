@@ -6,7 +6,6 @@ use Illuminate\Http\Request;
 
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
-use Validator;
 use App\User;
 
                                                                                         
@@ -59,20 +58,14 @@ class Authentication extends Controller
    //Changing a password in Admin User
    public function changePassword(Request $request){
 
-        Validator::extend('without_spaces', function($attr, $value){
-            return preg_match('/^\S*$/u',$value);
-        });
-    
         $request->validate([
             'username'=>'required',
             'currentpassword' =>'required',
-            'new_password' =>'required|different:currentpassword|min:8|without_spaces|regex:/^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{6,}$/',
-            'confirm_password'=>'required|without_spaces|same:new_password',
+            'new_password' =>'required|different:currentpassword|min:8|regex:/^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{6,}$/',
+            'confirm_password'=>'required|same:new_password',
         ],
         [
-         'new_password.without_spaces' =>'Whitespace is not allowed.',
          'new_password.regex' => 'Your password should  be atleast 8 characters long ,contains-atleast 1 Uppercase,1 Lowercase,1 Numeric and 1 special character',
-         'confirm_password.without_spaces' =>'Whitespace is not allowed.'
         ]);
 
     try{

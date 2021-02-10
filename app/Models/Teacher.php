@@ -14,7 +14,8 @@ class Teacher extends Model
      *
      * @var array
      */
-   // protected $table="teachers";
+
+    //protected $table="teachers";
 
     protected $fillable = [
         'name',
@@ -23,6 +24,8 @@ class Teacher extends Model
         'student_id',
         'section_id',
     ];
+
+    protected $guarded=[];
 
     // public function teacher()
     // {
