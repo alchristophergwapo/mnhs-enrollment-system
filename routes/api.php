@@ -16,9 +16,13 @@ use App\Http\Controllers\Authentication;
 |
 */
 
-Route::middleware('auth:api')->get('/user', function (Request $request) {
-    return $request->user();
+Route::group([
+    'middleware' => ['api', 'cors'],
+    'namespace' => $this->namespace,
+    'prefix' => 'api',
+], function ($router) {
+     //Add you routes here, for example:
+    Route::post('/login',[Authentication::class, 'login']);
 });
 
-Route::post('/login',[Authentication::class, 'login']);
 

@@ -18,6 +18,6 @@ class SeniorHigh extends Model
         'student_id',
         'semester',
         'track',
-        'strand'
+        'strand',
     ];
 }
