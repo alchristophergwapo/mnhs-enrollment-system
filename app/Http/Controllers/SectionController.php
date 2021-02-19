@@ -117,10 +117,7 @@ public function delAnySection($id){
    //delete automatically if teacher_id is not null
    if($section->get(0)->teacher_id==null){
     $gradelevel_section=Gradelevel::findOrFail($section->get(0)->gradelevel_id);
-    $gradelevel_section->update([
-        'sections' =>$newSection
-     ]); 
-
+    $gradelevel_section->update([ 'sections'=>$newSection ]); 
     $del=Section::findOrFail($id)->delete();
     \DB::commit();
      return ['message'=>'Successfully Added!','section'=>'Grade '.$section->get(0)->gradelevel->grade_level]; 
@@ -132,6 +129,7 @@ public function delAnySection($id){
      ]); 
       $teacher=Teacher::where('id','=',$section->get(0)->teacher_id)->first();
       $teacher->section_id=null;
+      $teacher->save();
       $del=Section::findOrFail($id)->delete();
       \DB::commit();
     return ['message'=>'Successfully Added!','section'=>'Grade '.$section->get(0)->gradelevel->grade_level]; 

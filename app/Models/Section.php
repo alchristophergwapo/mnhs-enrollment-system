@@ -14,12 +14,16 @@ class Section extends Model
      *
      * @var array
      */
+    protected $casts = [
+        'students_id'=> 'array',
+    ];
+
     protected $fillable = [
         'name',
         'capacity',
         'total_students',
         'teacher_id',
-        'student_id',
+        'students_id',
         'gradelevel_id'
     ];
 

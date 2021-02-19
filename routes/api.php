@@ -2,9 +2,11 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+
 use App\Http\Controllers\TeacherController;
 use App\Http\Controllers\SectionController;
 use App\Http\Controllers\Authentication;
+use App\Http\Controllers\EnrollmentController;
 
 /*
 |--------------------------------------------------------------------------
@@ -75,3 +77,7 @@ Route::get('editSection/{id}',[SectionController::class,'editSection']);
 //Deleting Any Kind Of Sections
 Route::post('updateSection/{id}',[SectionController::class,'updateSection']);
 
+Route::post('/addStudent', [EnrollmentController::class, 'addStudent']);
+Route::get('/pendingEnrollment', [EnrollmentController::class, 'allPendingStudents']);
+Route::post('/addEnrollment',[EnrollmentController::class, 'addEnrollment']);
+Route::get('/approveEnrollment/{id}', [EnrollmentController::class, 'approveEnrollment']);

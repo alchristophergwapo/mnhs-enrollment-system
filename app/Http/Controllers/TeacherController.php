@@ -60,7 +60,7 @@ if($valids){
           }
           else{
             $sectionTable=Section::where('id','=',$teacher->section_id)->with("gradelevel")->get();
-            $teacher->section_id="Gr. ".$sectionTable->get(0)->gradelevel->grade_level." - ".$sectionTable->get(0)->name;
+            $teacher->section_id="Gr. ".$sectionTable->get(0)->gradelevel->grade_level." -> ".$sectionTable->get(0)->name;
             array_push($array,$teacher); 
           }     
         }
@@ -124,7 +124,7 @@ if($valids){
                    'contact'=> $request['contact'],
                    'section_id'=>$section->id
                   ]);  
-                 $section->teacher_id=$id;   
+                 $section->update(['teacher_id' =>$id]);   
                  \DB::commit();
                  return ['message'=>'Successfully Added!'];           
             }
@@ -149,7 +149,7 @@ if($valids){
         }
         else{
          $sectionTable=Section::where('id','=',$teacher->section_id)->with("gradelevel")->get();
-         $teacher->section_id="Gr. ".$sectionTable->get(0)->gradelevel->grade_level." - ".$sectionTable->get(0)->name;
+         $teacher->section_id="Gr. ".$sectionTable->get(0)->gradelevel->grade_level." -> ".$sectionTable->get(0)->name;
           return response()->json($teacher); 
         }
       
@@ -167,7 +167,7 @@ public function availableSection(){
     $sectionTable=Section::where('teacher_id','=',null)->with("gradelevel")->get();
     $arraySection=[];
     for($i=0; $i <sizeof($sectionTable);$i++){
-        array_push($arraySection,"Gr. ".$sectionTable->get($i)->gradelevel->grade_level." - ".$sectionTable->get($i)->name);
+        array_push($arraySection,"Gr. ".$sectionTable->get($i)->gradelevel->grade_level." -> ".$sectionTable->get($i)->name);
    }
     return response()->json($arraySection); 
    } 

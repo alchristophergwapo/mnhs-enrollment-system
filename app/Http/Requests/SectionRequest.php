@@ -31,11 +31,18 @@ class SectionRequest extends FormRequest
             'teacher_id'=>['nullable'],
             'gradelevel_id'=>['nullable'],
         ];
+        this.message();
     }
     
-    public function message(){
-        return [
-            'name.required' =>'The section must be unique.',    
-        ];
-    }
+    /**
+ * Get the error messages for the defined validation rules.
+ *
+ * @return array
+ */
+public function messages()
+{
+    return [
+        'name.required' => 'The section name is already used.',
+    ];
+}
 }

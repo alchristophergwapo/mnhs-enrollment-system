@@ -19,8 +19,9 @@ class CreateTeachersTable extends Migration
             $table->string('name');
             $table->string('email');
             $table->string('contact');
-            $table->integer('student_id')->unsigned()->nullable();
-            $table->foreign('student_id')->references('id')->on('students');
+            $table->json('students_id')->nullable();
+           // $table->integer('student_id')->unsigned()->nullable();
+           // $table->foreign('student_id')->references('id')->on('students');
             $table->integer('section_id')->unsigned()->nullable();
             $table->foreign('section_id')->references('id')->on('sections');
             $table->timestamps();

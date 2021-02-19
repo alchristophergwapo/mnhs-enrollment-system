@@ -16,6 +16,12 @@ class Enrollment extends Model
      */
     protected $fillable = [
         'enrollment_status',
-        'student_id'
+        'student_id',
+        'card_image'
     ];
+
+    public function student() {
+        return $this->hasOne('App\Models\Student','id','student_id');
+    }
+
 }

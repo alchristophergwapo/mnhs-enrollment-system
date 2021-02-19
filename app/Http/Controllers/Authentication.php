@@ -34,14 +34,15 @@ class Authentication extends Controller
         try {
             if(Auth::attempt($credentials)){
                 $user = Auth::user();
-                return response()->json(["user" =>$user],200);
+                return response()->json(["user" =>$user,"message" =>'Successfully Login'],200);
             } else {
-                return response()->json(['error' => 'invalid credentials'], 401);
+                return response()->json(['error' => 'invalid credentials'],500);
             }
         } catch (\Exception $e) {
-            return response()->json(['error' => $e->getMessage()], 401);
+            return response()->json(['error' => $e->getMessage()],500);
         }
     }
+
 
     public function getAdminProfile(Request $request){
 
@@ -50,7 +51,7 @@ class Authentication extends Controller
             return response()->json($List);         
         }
         catch(\Exception $e){
-            return response()->json(['error' => $e->getMessage()], 401);
+            return response()->json(['error' => $e->getMessage()],500);
         }
    }
 

@@ -17,11 +17,15 @@ class Teacher extends Model
 
     protected $table="teachers";
 
+    protected $casts = [
+        'students_id'=> 'array',
+    ]; 
+
     protected $fillable = [
         'name',
         'email',
         'contact',
-        'student_id',
+        'students_id',
         'section_id',
     ];
 
