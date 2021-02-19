@@ -15,7 +15,7 @@ class Teacher extends Model
      * @var array
      */
 
-    //protected $table="teachers";
+    protected $table="teachers";
 
     protected $fillable = [
         'name',
@@ -27,11 +27,8 @@ class Teacher extends Model
 
     protected $guarded=[];
 
-    // public function teacher()
-    // {
-    //     return $this->hasOne(Student::class);
-    // }
-    // public function student(){
-    //     return $this->hasOne('App\Models\Student');
-    // }
+   
+    public function section(){
+        return $this->hasOne('App\Models\Section','id','section_id');
+    }
 }

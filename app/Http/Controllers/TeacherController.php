@@ -5,75 +5,53 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Teacher;
 use App\Models\Section;
+use App\Models\GradeLevel;
+use Illuminate\Support\Str;
+use App\Http\Requests\TeacherRequest;
 class TeacherController extends Controller
 {
-  
-   //Adding a new Teachers
-   public function addTeacher(Request $request){
-
- $valid=$request->validate([
-        'name' => ['required','string','max:50',function($attribute,$value,$fail){
-          if($value!='jj'){
-               $fail('The '.$attribute.' must be'." ".'jj');
-            }
-        }],
-        'email' => ['required','string','email','max:50'],
-        'contact' => ['required','string','max:11','digits:11'],  
-        'student_id'=>[],
-        'section_id'=>[] 
-  ]); 
-
-if($request['section_id']!=null){  
-    $sectionTable=Section::where('name','=',$request->section_id)->first(); 
-  if($sectionTable->teacher_id==null){
-        $request['section_id']=$sectionTable->id; 
-        $addTeacher=$request->validate([
-            'name' => ['required','string','max:50'],
-            'email' => ['required','string','email','max:50'],
-            'contact' => ['required','string','max:11','digits:11'],  
-            'student_id'=>[],
-            'section_id'=>[] 
-            ]); 
-      try{   
-        //Adding a teacher
-        $teacher=Teacher::create($addTeacher);
-        //Updating the teacher_id in the section table
-        $teacherIdTable=Teacher::where('section_id','=',$sectionTable->id)->first();
-        $sectionTable->teacher_id=$teacherIdTable->id;
-        $sectionTable->save();
-        //Getting all of the teacher
-        $arrayteacher=Teacher::all();
-         return ['message'=>'Successfully Added!','arrayTeacher'=>$arrayteacher];
-         }
-         catch(\Exception $e){
-            return response()->json(['error' => $e->getMessage()],401);  
-         }  
-    }
-
-}
-else{
-    try{   
-        //Adding a teacher
-       $teacher=Teacher::create($valid);
-        //Getting all of the teacher
-       $arrayteacher=Teacher::all();
-         return ['message'=>'Successfully Added!','arrayTeacher'=>$arrayteacher];
-     }
-     catch(\Exception $e){
-         return response()->json(['error' => $e->getMessage()],401);  
-     }  
-}
-
-
+ 
     
+//Function For Adding A New Teacher
+public function addTeacher(TeacherRequest $request){
+ $valids=$request->validated();
+if($valids){
+    try{
+        \DB::beginTransaction();
+        if($request['section_id']!=null){  
+            $result=Str::of($request['section_id'])->split('/[\s,]+/')[3];
+            $sectionTable=Section::where('name','=',$result)->first(); 
+             $valid=Teacher::create([
+                    'name' =>$request['name'],
+                    'email' =>$request['email'],
+                    'contact' =>$request['contact'],  
+                    'section_id'=>$sectionTable->id
+                  ]);                                       
+             //Updating the "teacher_id" in the section table
+             $sectionTable->update(['teacher_id' =>$valid->id]); 
+             \DB::commit();
+             return ['message'=>'Successfully Added!'];      
+          }   
+       else{
+          $teacher=Teacher::create($valids);
+          \DB::commit();
+          return ['message'=>'Successfully Added!'];              
+        }    
+    }
+    catch(\Exception $e){
+        \DB::rollback();
+        return response()->json(['error'=> $e->getMessage()],500);
+    } 
+}
 
-   }
+
+}
 
 
-   //Getting All Teachers
+//Function For Getting All Teachers
    public function allTeachers()
    {
-       try{
+    try{
        $array=[];
        $List=Teacher::all();
       foreach($List as $teacher){
@@ -81,69 +59,122 @@ else{
              array_push($array,$teacher);
           }
           else{
-            $sectionTable=Section::where('id','=',$teacher->section_id)->first();
-            $teacher->section_id=$sectionTable->name;
+            $sectionTable=Section::where('id','=',$teacher->section_id)->with("gradelevel")->get();
+            $teacher->section_id="Gr. ".$sectionTable->get(0)->gradelevel->grade_level." - ".$sectionTable->get(0)->name;
             array_push($array,$teacher); 
-          }
-         
+          }     
         }
-
-         return response()->json($array); 
+          return response()->json($array); 
        }
        catch(\Exception $e){
-        return response()->json(['error'=> $e->getMessage()],401);
-       }  
+        return response()->json(['error'=> $e->getMessage()],500);
+       } 
    }
 
-   //Deleting or Removing A Teachr
-   public function removeTeacher($id) {
-       try{
-         $del=Teacher::findOrFail($id)->delete();
-         $teacher=Teacher::all();
-         return ['message'=>'Teacher is successfully deleted!','arrayTeacher'=>$teacher];
+
+ //Function For Deleting Or Removing A Teacher
+ public function removeTeacher($id){
+     try{
+        \DB::beginTransaction();
+         $teacher=Teacher::findOrFail($id);
+         if($teacher->section_id==null){
+            $del=Teacher::findOrFail($id)->delete();
+            \DB::commit();
+            return ['message'=>'Teacher is successfully deleted!'];
+         }
+         else{
+            $updateSection=Section::findOrFail($teacher->section_id);
+            $updateSection->update(['teacher_id' =>null]); 
+            $del=Teacher::findOrFail($id)->delete();
+            \DB::commit();
+            return ['message'=>'Teacher is successfully deleted!'];
+          }       
        }
         catch(\Exception $e){
-        return response()->json(['error' => $e->getMessage()],401);
+        \DB::rollback();
+        return response()->json(['error' => $e->getMessage()],500);
        }
       
    }
 
-//Updating the data of Teachers
-   public function updateTeacher(Request $request,$id){
-
-           $valid=$request->validate([
-               'name' => ['required', 'string','max:50'],
-               'email' => ['required', 'string','email','max:50'],
-               'contact' => ['required', 'string','max:11','digits:11'],    
-           ]);
-
-     try{
-           $valid=Teacher::findOrFail($id);
-           $valid->update([
-               'name' => $request['name'],
-               'email' =>$request['email'],
-               'contact'=> $request['contact']
-            ]);  
-           $valid->save();  
-           $teacher=Teacher::all();       
-           return ['message'=>'Successfully Added!','arrayTeacher'=>$teacher];
+//Function For Updating The Data Of Teachers
+   public function updateTeacher(TeacherRequest $request,$id){
+    $update=$request->validated();
+    if($update){
+        try{
+        \DB::beginTransaction();
+         if($request['section_id']==null){
+               $valid=Teacher::findOrFail($id);
+               $valid->update([
+                   'name' => $request['name'],
+                   'email' =>$request['email'],
+                   'contact'=> $request['contact']
+                ]);  
+              \DB::commit();
+               return ['message'=>'Successfully Added!'];
+            }
+   
+         else{
+             $result=Str::of($request['section_id'])->split('/[\s,]+/')[3];
+             $section=Section::where('name','=',$result)->first();
+                 $updated=Teacher::findOrFail($id);
+                 $updated->update([
+                   'name' => $request['name'],
+                   'email' =>$request['email'],
+                   'contact'=> $request['contact'],
+                   'section_id'=>$section->id
+                  ]);  
+                 $section->teacher_id=$id;   
+                 \DB::commit();
+                 return ['message'=>'Successfully Added!'];           
+            }
+           
+          }
+          catch(\Exception $e){
+          \DB::rollback();
+           return response()->json(['error' => $e->getMessage()],500);
        }
-       catch(\Exception $e){
-        return response()->json(['error' => $e->getMessage()], 401);
     }
+    
 
    }
 
-   //Showing by id of a teacher
+
+//Function For Showing By Id Of A Teacher
    public function showByIdTeacher($id){
-       try{
-        $teacher=Teacher::findOrFail($id);
-        return response()->json($teacher); 
+    try{
+        $teacher=Teacher::where('id','=',$id)->first();
+        if($teacher->section_id==null){
+           return response()->json($teacher); 
+        }
+        else{
+         $sectionTable=Section::where('id','=',$teacher->section_id)->with("gradelevel")->get();
+         $teacher->section_id="Gr. ".$sectionTable->get(0)->gradelevel->grade_level." - ".$sectionTable->get(0)->name;
+          return response()->json($teacher); 
+        }
+      
        }
        catch(\Exception $e){
-        return response()->json(['error' => $e->getMessage()], 401);
+        return response()->json(['error' => $e->getMessage()],500);
       }
    }  
+
+
+
+//Function For Getting All OF All Avalable Section
+public function availableSection(){
+    try{
+    $sectionTable=Section::where('teacher_id','=',null)->with("gradelevel")->get();
+    $arraySection=[];
+    for($i=0; $i <sizeof($sectionTable);$i++){
+        array_push($arraySection,"Gr. ".$sectionTable->get($i)->gradelevel->grade_level." - ".$sectionTable->get($i)->name);
+   }
+    return response()->json($arraySection); 
+   } 
+    catch(\Exception $e){
+         return response()->json(['error'=> $e->getMessage()],500);
+   } 
+}
 
 
 }

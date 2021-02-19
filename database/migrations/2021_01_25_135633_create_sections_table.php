@@ -18,9 +18,11 @@ class CreateSectionsTable extends Migration
             $table->increments('id');
             $table->string('name');
             $table->integer('capacity');
-            $table->integer('total_students');
+            $table->integer('total_students')->default(0);
             $table->integer('teacher_id')->nullable();
             $table->integer('student_id')->nullable();
+            $table->integer('gradelevel_id')->nullable();
+            $table->foreign('gradelevel_id')->references('id')->on('grade_levels');
             $table->timestamps();
         });
     }

@@ -20,5 +20,11 @@ class Section extends Model
         'total_students',
         'teacher_id',
         'student_id',
+        'gradelevel_id'
     ];
+
+    public function gradelevel(){
+        return $this->hasOne('App\Models\GradeLevel','id','gradelevel_id');
+    }
+    
 }
