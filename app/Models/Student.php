@@ -16,6 +16,7 @@ class Student extends Model
      */
      protected $fillable = [
         'LRN',
+        'average',
         'firstname',
         'middlename',
         'lastname',
@@ -31,6 +32,6 @@ class Student extends Model
         'father',
         'mother',
         'guardian',
-        'parent_number'
+        'parent_number',
     ];
 }

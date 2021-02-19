@@ -2,8 +2,10 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+
 use App\Http\Controllers\TeacherController;
 use App\Http\Controllers\Authentication;
+use App\Http\Controllers\EnrollmentController;
 
 /*
 |--------------------------------------------------------------------------
@@ -16,13 +18,12 @@ use App\Http\Controllers\Authentication;
 |
 */
 
-Route::group([
-    'middleware' => ['api', 'cors'],
-    'namespace' => $this->namespace,
-    'prefix' => 'api',
-], function ($router) {
-     //Add you routes here, for example:
-    Route::post('/login',[Authentication::class, 'login']);
+Route::middleware('auth:api')->get('/user', function (Request $request) {
+    return $request->user();
 });
 
-
+Route::post('/login',[Authentication::class, 'login']);
+Route::post('/addStudent', [EnrollmentController::class, 'addStudent']);
+Route::get('/pendingEnrollment', [EnrollmentController::class, 'allPendingStudents']);
+Route::post('/addEnrollment',[EnrollmentController::class, 'addEnrollment']);
+Route::get('/approveEnrollment/{id}', [EnrollmentController::class, 'approveEnrollment']);
