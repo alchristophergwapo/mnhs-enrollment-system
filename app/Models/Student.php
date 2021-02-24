@@ -15,7 +15,9 @@ class Student extends Model
      * @var array
      */
      protected $fillable = [
+        'grade_level',
         'LRN',
+        'average',
         'firstname',
         'middlename',
         'lastname',
@@ -31,6 +33,6 @@ class Student extends Model
         'father',
         'mother',
         'guardian',
-        'parent_number'
+        'parent_number',
     ];
 }

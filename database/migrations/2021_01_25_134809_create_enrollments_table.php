@@ -17,6 +17,8 @@ class CreateEnrollmentsTable extends Migration
             $table->id();
             $table->string('enrollment_status');
             $table->string('student_id');
+            $table->string('card_image');
+            $table->string('student_section')->nullable();
             $table->timestamps();
         });
     }

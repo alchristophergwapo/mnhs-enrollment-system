@@ -18,6 +18,8 @@ class SeniorHigh extends Model
         'student_id',
         'semester',
         'track',
-        'strand'
+        'strand',
     ];
+
+    protected $table = 'senior_high';
 }

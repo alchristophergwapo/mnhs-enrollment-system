@@ -13,11 +13,11 @@ class CreateTransfereeTable extends Migration
      */
     public function up()
     {
-        Schema::create('transferee', function (Blueprint $table) {
+        Schema::create('transferees', function (Blueprint $table) {
             $table->id();
             $table->integer('student_id');
             $table->string('last_grade_completed');
-            $table->date('last_year_completed');
+            $table->string('last_year_completed');
             $table->string('last_school_attended');
             $table->string('last_school_ID');
             $table->string('last_school_address');
