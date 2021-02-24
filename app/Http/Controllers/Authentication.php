@@ -11,10 +11,9 @@ use App\Models\Student;
                                                                                         
 class Authentication extends Controller
 {
-
     public function login(Request $request) {
+        
         $credentials = $request->only('username','password','user_type');
-
         try {
             if(Auth::attempt($credentials)) {
                 if ($request->user_type == 'admin') {
@@ -32,4 +31,46 @@ class Authentication extends Controller
             return response()->json(['error' => $e->getMessage()], 500);
         }
     }
+
+
+    public function getAdminProfile(Request $request){
+
+        try{
+            $List=User::all();
+            return response()->json($List);         
+        }
+        catch(\Exception $e){
+            return response()->json(['error' => $e->getMessage()],500);
+        }
+   }
+
+
+   //Changing a password in Admin User
+   public function changePassword(Request $request){
+
+        $request->validate([
+            'username'=>'required',
+            'currentpassword' =>'required',
+            'new_password' =>'required|different:currentpassword|min:8|regex:/^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{6,}$/',
+            'confirm_password'=>'required|same:new_password',
+        ],
+        [
+         'new_password.regex' => 'Your password should  be atleast 8 characters long ,contains-atleast 1 Uppercase,1 Lowercase,1 Numeric and 1 special character',
+        ]);
+
+    try{
+        $user=User::where('username','=',$request->username)->first();
+           if(Hash::check($request->currentpassword,$user->password)){
+              $user->password=Hash::make($request->new_password);
+              $user->save();
+              return ['message'=>'Password is successfully changed!'];           
+           }
+       }
+    catch(\Exception $e){
+        return response()->json(['error' => $e->getMessage()], 401);
+     }
+   
+
+   }
+
 }

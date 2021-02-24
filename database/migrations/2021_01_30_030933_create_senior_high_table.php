@@ -13,7 +13,7 @@ class CreateSeniorHighTable extends Migration
      */
     public function up()
     {
-        Schema::create('senior_high', function (Blueprint $table) {
+        Schema::create('senior_high',function (Blueprint $table) {
             $table->id();
             $table->integer('student_id');
             $table->string('semester');

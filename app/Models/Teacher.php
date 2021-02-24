@@ -14,11 +14,25 @@ class Teacher extends Model
      *
      * @var array
      */
+
+    protected $table="teachers";
+
+    protected $casts = [
+        'students_id'=> 'array',
+    ]; 
+
     protected $fillable = [
         'name',
         'email',
         'contact',
-        'student_id',
+        'students_id',
         'section_id',
     ];
+
+    protected $guarded=[];
+
+   
+    public function section(){
+        return $this->hasOne('App\Models\Section','id','section_id');
+    }
 }
