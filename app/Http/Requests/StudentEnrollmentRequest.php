@@ -24,6 +24,12 @@ class StudentEnrollmentRequest extends FormRequest
     public function rules()
     {
         return [
+            'grade_level' => [
+                'required',
+                'integer',
+                'min:7',
+                'max:12'
+            ],
             'LRN' => ['required'],
             'firstname' => [
                 'min:3',
@@ -90,7 +96,7 @@ class StudentEnrollmentRequest extends FormRequest
                 'required',
                 'min:11',
                 'max:11'
-            ]
+            ],
         ];
     }
 }

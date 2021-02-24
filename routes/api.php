@@ -26,4 +26,5 @@ Route::post('/login',[Authentication::class, 'login']);
 Route::post('/addStudent', [EnrollmentController::class, 'addStudent']);
 Route::get('/pendingEnrollment', [EnrollmentController::class, 'allPendingStudents']);
 Route::post('/addEnrollment',[EnrollmentController::class, 'addEnrollment']);
-Route::get('/approveEnrollment/{id}', [EnrollmentController::class, 'approveEnrollment']);
+Route::post('/approveEnrollment/{id}', [EnrollmentController::class, 'approveEnrollment']);
+Route::post('/declineEnrollment/{id}', [EnrollmentController::class, 'declineEnrollment']);
