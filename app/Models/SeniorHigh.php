@@ -20,4 +20,6 @@ class SeniorHigh extends Model
         'track',
         'strand',
     ];
+
+    protected $table = 'senior_high';
 }

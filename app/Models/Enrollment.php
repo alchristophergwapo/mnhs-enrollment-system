@@ -17,7 +17,8 @@ class Enrollment extends Model
     protected $fillable = [
         'enrollment_status',
         'student_id',
-        'card_image'
+        'card_image',
+        'student_section'
     ];
 
     public function student() {
