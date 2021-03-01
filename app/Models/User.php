@@ -42,5 +42,7 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
     ];
 
-    protected $guarded=[];
+    public function studentInfo() {
+        return $this->hasOne('App\Models\Student','lrn','username');
+    }
 }
