@@ -102,9 +102,11 @@ class EnrollmentController extends Controller
                 $imageName = $request->card_image->getClientOriginalName();
     
                 Enrollment::create([
+                    'start_school_year' => $request->start_school_year,
+                    'end_school_year' => $request->end_school_year,
                     'enrollment_status' => $request->enrollment_status,
                     'student_id' => $student->id,
-                    'card_image' => $imageName
+                    'card_image' => $imageName,
                 ]);
 
                 $request->card_image->move(public_path('images'), $imageName);
@@ -126,7 +128,7 @@ class EnrollmentController extends Controller
         return response()->json(['pendingEnrollment'=>$pendingEnrollment]);
     }
 
-    public function allEnrollendStudents() {
+    public function allEnrolledStudents() {
         $approvedEnrollment = Enrollment::where('enrollment_status','Approved')->with('student')->get();
 
         return response()->json(['approvedEnrollment'=>$approvedEnrollment]);

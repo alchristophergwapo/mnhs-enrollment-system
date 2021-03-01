@@ -19,7 +19,7 @@ class CreateStudentsTable extends Migration
             $table->string('LRN');
             $table->string('average');
             $table->string('firstname');
-            $table->string('middlename');
+            $table->string('middlename')->nullable();
             $table->string('lastname');
             $table->date('birthdate');
             $table->integer('age');

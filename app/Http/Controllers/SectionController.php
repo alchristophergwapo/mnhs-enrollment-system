@@ -10,6 +10,12 @@ use Illuminate\Support\Str;
 use App\Http\Requests\SectionRequest;
 class SectionController extends Controller
 {
+
+  public function allSections(){
+    $sections = Section::all();
+
+    return response()->json(['sections' => $sections],200);
+  }
    //Function For Adding Section In Junior High School
   public function addAnySection(SectionRequest $request){
     $addSection=$request->validated();
