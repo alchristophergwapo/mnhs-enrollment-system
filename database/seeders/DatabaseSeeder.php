@@ -13,15 +13,16 @@ class DatabaseSeeder extends Seeder
      */
     public function run()
     {
-        \DB::table('grade_levels')->insert([
-            'grade_level' =>12,
+        // \DB::table('grade_levels')->insert([
+        //     'grade_level' =>12,
            
-        ]);
-        // \DB::table('users')->insert([
-        //     'username' => 'admin',
-        //     'password' => \Hash::make('Administrator'),
-        //     'user_type' => 'admin',
-        //     'remember_token' => \Str::random(10),
         // ]);
+        
+        \DB::table('users')->insert([
+            'username' => 'admin',
+            'password' => \Hash::make('Administrator'),
+            'user_type' => 'admin',
+            'remember_token' => \Str::random(10),
+        ]);
     }
 }

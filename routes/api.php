@@ -74,6 +74,12 @@ Route::get('delAnySection/{id}',[SectionController::class, 'delAnySection']);
 //Retrieving The Specificy Sections For Updating Purposes In The FrontEnd With Any Kind Of Sections
 Route::get('editSection/{id}',[SectionController::class,'editSection']);
 
+//Display All kinds of Sections In Grade_Level
+//Route::get('allSection',[SectionController::class,'allSection']);
+
+//Getting The Selected GradeLever In GradeLevel Model
+Route::get('selectedGradeLevel/{id}',[SectionController::class,'selectedGradeLevel']);
+
 //Deleting Any Kind Of Sections
 Route::post('updateSection/{id}',[SectionController::class,'updateSection']);
 
