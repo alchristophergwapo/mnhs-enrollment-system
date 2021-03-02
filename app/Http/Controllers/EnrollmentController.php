@@ -26,6 +26,7 @@ class EnrollmentController extends Controller
 
                 $student = Student::create([
                     'grade_level' => $request->grade_level,
+                    'PSA' => $request->PSA,
                     'LRN' => $request->LRN,
                     'average' =>  $request->average,
                     'firstname' => $request->firstname,

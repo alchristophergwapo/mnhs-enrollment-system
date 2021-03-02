@@ -16,6 +16,7 @@ class Student extends Model
      */
      protected $fillable = [
         'grade_level',
+        'PSA',
         'LRN',
         'average',
         'firstname',

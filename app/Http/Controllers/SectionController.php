@@ -6,13 +6,14 @@ use Illuminate\Http\Request;
 use App\Models\GradeLevel;
 use App\Models\Section;
 use App\Models\Teacher;
+
 use Illuminate\Support\Str;
 use App\Http\Requests\SectionRequest;
 class SectionController extends Controller
 {
 
   public function allSections(){
-    $sections = Section::all();
+    $sections = Section::with('gradelevel')->get();
 
     return response()->json(['sections' => $sections],200);
   }

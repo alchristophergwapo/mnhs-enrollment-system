@@ -21,7 +21,7 @@ class StudentFactory extends Factory
      */
     public function definition()
     {
-        $gender = $this->faker->randomElement(['male', 'female']);
+        $gender = $this->faker->randomElement(['Male', 'Female']);
 
         return [
             'grade_level' => $this->faker->numberBetween(7,10),
