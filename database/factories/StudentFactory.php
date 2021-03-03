@@ -21,8 +21,28 @@ class StudentFactory extends Factory
      */
     public function definition()
     {
+        $gender = $this->faker->randomElement(['male', 'female']);
+
         return [
-            //
+            'grade_level' => $this->faker->numberBetween(7,10),
+            'LRN' => '303000'.$this->faker->numberBetween(100000,999999),
+            'average' => $this->faker->numberBetween(75,100),
+            'firstname' => $this->faker->firstName($gender),
+            'middlename' =>$this->faker->lastName,
+            'lastname' => $this->faker->lastName,
+            'birthdate' => $this->faker->date,
+            'age' => $this->faker->numberBetween(11,30),
+            'gender' => $gender,
+            'IP' => 'No',
+            'IP_community' => '',
+            'mother_tongue' => 'Bisaya',
+            'contact' => '09'.$this->faker->numberBetween(100000000,999999999),
+            'address' => $this->faker->address,
+            'zipcode' => 6000,
+            'father' => $this->faker->name,
+            'mother' => $this->faker->name,
+            'guardian' => $this->faker->name,
+            'parent_number' => '09'.$this->faker->numberBetween(100000000,999999999),
         ];
     }
 }

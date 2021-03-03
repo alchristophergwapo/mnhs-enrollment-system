@@ -16,6 +16,8 @@ class Enrollment extends Model
      */
     protected $fillable = [
         'enrollment_status',
+        'start_school_year',
+        'end_school_year',
         'student_id',
         'card_image',
         'student_section'

@@ -18,8 +18,13 @@ public function addTeacher(TeacherRequest $request){
 if($valids){
     try{
         \DB::beginTransaction();
-        if($request['section_id']!=null){  
-            $result=Str::of($request['section_id'])->split('/[\s,]+/')[3];
+        if($request['section_id']!=null){
+            $secName=null;
+            foreach($request['section_id'] as $name){
+                error_log("sec:".$name);
+                $secName=$name; 
+            }
+            $result=Str::of($secName)->split('/[\s,]+/')[3];
             $sectionTable=Section::where('name','=',$result)->first(); 
              $valid=Teacher::create([
                     'name' =>$request['name'],
@@ -33,6 +38,7 @@ if($valids){
              return ['message'=>'Successfully Added!'];      
           }   
        else{
+          error_log($request['section_id']);
           $teacher=Teacher::create($valids);
           \DB::commit();
           return ['message'=>'Successfully Added!'];              
@@ -115,7 +121,11 @@ if($valids){
             }
    
          else{
-             $result=Str::of($request['section_id'])->split('/[\s,]+/')[3];
+            $secName=null;
+            foreach($request['section_id'] as $name){
+                $secName=$name; 
+            }
+             $result=Str::of($secName)->split('/[\s,]+/')[3];
              $section=Section::where('name','=',$result)->first();
                  $updated=Teacher::findOrFail($id);
                  $updated->update([
@@ -167,7 +177,6 @@ public function availableSection(){
     $sectionTable=Section::where('teacher_id','=',null)->cursor();
     $arraySection=[];
     foreach($sectionTable as $sec){
-      error_log($sec->gradelevel->grade_level);
       $sec->name="Gr. ".$sec->gradelevel->grade_level." --- ".$sec->name;   
       array_push($arraySection,$sec->makeHidden(['id','teacher_id','gradelevel','total_students','capacity','gradelevel_id','students_id','created_at','updated_at']));
     }
