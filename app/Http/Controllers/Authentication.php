@@ -8,6 +8,8 @@ use Illuminate\Support\Facades\Auth;
 
 use App\Models\User;
 use App\Models\Student;
+use App\Models\Enrollment;
+use App\Models\Section;
                                                                                         
 class Authentication extends Controller
 {
@@ -21,11 +23,14 @@ class Authentication extends Controller
                     return response()->json(["user" => $user], 200);
                 } else {
                     $user = Auth::user();
-                    $userInfo = Student::where('lrn', $user->username)->get();
-                    return response()->json(['user' => $user, 'userInfo' => $userInfo[0]], 200);
+                    $userInfo = Student::with('enrollment')->where('lrn', $user->username)->get();
+                    $classmates = Enrollment::with('student')->where('student_section',$userInfo[0]->enrollment->student_section)->get();
+                    $section = Section::with('adviser')->where('name',$userInfo[0]->enrollment->student_section)->get();
+                    $userInfo[0]['section'] = $section[0];
+                    return response()->json(['user' => $user, 'userInfo' => $userInfo[0], 'classmates' => $classmates], 200);
                 }
             } else {
-                return response()->json(['error' => 'invalid credentials'], 406);
+                return response()->json(['error' => 'The credentials provided are invalid!'], 406);
             }
         } catch (\Exception $e) {
             return response()->json(['error' => $e->getMessage()], 500);

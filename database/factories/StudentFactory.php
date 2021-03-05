@@ -39,8 +39,8 @@ class StudentFactory extends Factory
             'contact' => '09'.$this->faker->numberBetween(100000000,999999999),
             'address' => $this->faker->address,
             'zipcode' => 6000,
-            'father' => $this->faker->name,
-            'mother' => $this->faker->name,
+            'father' => $this->faker->name('Male'),
+            'mother' => $this->faker->name('Female'),
             'guardian' => $this->faker->name,
             'parent_number' => '09'.$this->faker->numberBetween(100000000,999999999),
         ];

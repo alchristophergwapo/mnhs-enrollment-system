@@ -9,6 +9,7 @@ use App\Models\Student;
 use App\Models\SeniorHigh;
 use App\Models\Transferee;
 use App\Models\User;
+use App\Models\Section;
 
 use App\Http\Requests\StudentEnrollmentRequest;
 use App\Http\Requests\TransfereeEnrollmentRequest;
@@ -135,28 +136,44 @@ class EnrollmentController extends Controller
         return response()->json(['approvedEnrollment'=>$approvedEnrollment]);
     }
 
+    public function allDeclinedStudents() {
+        $declinedEnrollments = Enrollment::where('enrollment_status','Declined')->with('student')->get();
+
+        return response()->json(['declinedEnrollment' => $declinedEnrollments],200);
+    }
+
     public function approveEnrollment(Request $request, $id) {
         try {
             \DB::beginTransaction();
 
-            $enrollment = Enrollment::find($id)->get();
+            $enrollment = Enrollment::where('id', $id)->get();
 
-            $student = Student::where('id',$enrollment[0]->student_id)->get();
+            $student = Student::where('id', $enrollment[0]->student_id)->get();
 
-            User::updateOrCreate([
-                'user_type' => 'student',
-                'username' => $student[0]->LRN,
-                'password' => \Hash::make($student[0]->lastname.$student[0]->LRN),
-            ]);
+            $section = Section::where('name',$request->section)->get();
 
-            Enrollment::find($id)->update([
-                'enrollment_status' => 'Approved',
-                'student_section' => $request->section
-            ]);
+            if (count($section) > 0 && $section[0]->total_students < $section[0]->capacity) {
+                $section[0]->total_students += 1;
+                $section[0]->save();
+                User::updateOrCreate([
+                    'user_type' => 'student',
+                    'username' => $student[0]->LRN,
+                    'password' => \Hash::make($student[0]->lastname.$student[0]->LRN),
+                ]);
+    
+                Enrollment::find($id)->update([
+                    'enrollment_status' => 'Approved',
+                    'student_section' => $request->section
+                ]);
+            } if(count($section) > 0 && $section[0]->total_students >= $section[0]->capacity) {
+                return response()->json(['message' => $request->section.' capacity is full. Please select another section or update max capacity'],400);
+            } if(count($section) == 0) {
+                return response()->json(['message' => $request->section.' cannot be found on the database. It may be deleted or have been modified.'],404);
+            }
 
             \DB::commit();
 
-            return response()->json(['success' => 'Enrollment approved']);
+            return response()->json(['success' => 'Enrollment approved'],200);
         } catch (\Exception $e) {
             \DB::rollback();
 

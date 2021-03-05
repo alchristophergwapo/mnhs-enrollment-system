@@ -26,17 +26,17 @@ class DatabaseSeeder extends Seeder
         $students = Student::factory()->count(50)->create();
         foreach($students as $student) {
             Enrollment::create([
-                'start_school_year' => 2021,
-                'end_school_year' => 2022,
-                'enrollment_status' => 'Pending',
+                'start_school_year' => 2020,
+                'end_school_year' => 2021,
+                'enrollment_status' => 'Approved',
                 'student_id' => $student->id,
                 'card_image' => '1613828301313_(SD) But-anon,Judilyn.png',
             ]);
-            // User::create([
-            //     'user_type' => 'student',
-            //     'username' => $student->LRN,
-            //     'password' => \Hash::make($student->lastname.$student->LRN)
-            // ]);
+            User::create([
+                'user_type' => 'student',
+                'username' => $student->LRN,
+                'password' => \Hash::make($student->lastname.$student->LRN)
+            ]);
 
         };
         // User::create([

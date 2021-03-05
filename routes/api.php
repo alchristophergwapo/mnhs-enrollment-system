@@ -74,12 +74,12 @@ Route::get('delAnySection/{id}',[SectionController::class, 'delAnySection']);
 //Retrieving The Specificy Sections For Updating Purposes In The FrontEnd With Any Kind Of Sections
 Route::get('editSection/{id}',[SectionController::class,'editSection']);
 
-//Deleting Any Kind Of Sections
 Route::post('updateSection/{id}',[SectionController::class,'updateSection']);
 Route::get('/allSections',[SectionController::class, 'allSections']);
 Route::post('/addStudent', [EnrollmentController::class, 'addStudent']);
-Route::get('/pendingEnrollment', [EnrollmentController::class, 'allPendingStudents']);
-Route::get('/approvedEnrollment',[EnrollmentController::class , 'allEnrolledStudents']);
+Route::get('/pendingEnrollments', [EnrollmentController::class, 'allPendingStudents']);
+Route::get('/approvedEnrollments',[EnrollmentController::class , 'allEnrolledStudents']);
+Route::get('/declinedEnrollments', [EnrollmentController::class, 'allDeclinedStudents']);
 Route::post('/addEnrollment',[EnrollmentController::class, 'addEnrollment']);
 Route::post('/approveEnrollment/{id}', [EnrollmentController::class, 'approveEnrollment']);
 Route::post('/declineEnrollment/{id}', [EnrollmentController::class, 'declineEnrollment']);
