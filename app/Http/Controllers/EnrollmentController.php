@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 use App\Models\Enrollment;
 use App\Models\Student;
@@ -11,6 +12,7 @@ use App\Models\Transferee;
 use App\Models\User;
 use App\Models\Section;
 use App\Models\GradeLevel;
+
 
 use App\Http\Requests\StudentEnrollmentRequest;
 use App\Http\Requests\TransfereeEnrollmentRequest;
@@ -132,31 +134,7 @@ class EnrollmentController extends Controller
         return response()->json(['pendingEnrollment'=>$pendingEnrollment]);
     }
 
-//Filter By GradeLevel In Enrollment.vue
-public function filterByGradeLevel($id){
-    try{
-        if($id=='All'){
-            $pendingEnrollment = Enrollment::where('enrollment_status','Pending')->with('student')->get();
-            return response()->json(['pendingEnrollment'=>$pendingEnrollment]);
-        }
-        else{
-            $Pendings=[];
-            $pendingEnrollment = Enrollment::where('enrollment_status','Pending')->cursor();
-            foreach($pendingEnrollment as $pending){
-                if($pending->student->grade_level==$id){
-                    array_push( $Pendings,$pending);
-                }
-            }
-            return response()->json(['pendingEnrollment'=>$Pendings]);
-        }
-    }
-    catch (\Exception $e) {
-    return response()->json(['error'=>$e->getMessage()],500);
-     }
-     
-    }
-
-    public function allEnrolledStudents() {
+ public function allEnrolledStudents() {
         $approvedEnrollment = Enrollment::where('enrollment_status','Approved')->with('student')->get();
         return response()->json(['approvedEnrollment'=>$approvedEnrollment]);
     }
@@ -212,6 +190,9 @@ public function filterByGradeLevel($id){
         }
     }
 
+
+
+//Selected Section For A Gradelevel In EnrollmenData.Vue
   public function selectedGradeForSection($id){
     try{
         $array=[];
@@ -231,4 +212,5 @@ public function filterByGradeLevel($id){
         } 
   }
 
+  
 }

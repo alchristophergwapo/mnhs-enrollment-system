@@ -90,10 +90,9 @@ Route::get('/approvedEnrollment',[EnrollmentController::class , 'allEnrolledStud
 Route::post('/addEnrollment',[EnrollmentController::class, 'addEnrollment']);
 Route::post('/approveEnrollment/{id}', [EnrollmentController::class, 'approveEnrollment']);
 
+
 //Getting The Selected Section In When Approving Button In Enrollment.vue
 Route::get('selectedGradeForSection/{id}', [EnrollmentController::class, 'selectedGradeForSection']);
 
-//Filter By GradeLevel In Enrollment.vue
-Route::get('filterByGradeLevel/{id}', [EnrollmentController::class, 'filterByGradeLevel']);
 
 Route::post('/declineEnrollment/{id}', [EnrollmentController::class, 'declineEnrollment']);
