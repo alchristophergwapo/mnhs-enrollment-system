@@ -111,12 +111,12 @@ if($valids){
                    'contact'=> $request['contact']
                 ]);  
               \DB::commit();
-               return ['message'=>'Successfully Added!'];
+               return response()->json(['message'=>'Successfully updated!'],200);
             }
    
          else{
-             $result=Str::of($request['section_id'])->split('/[\s,]+/')[3];
-             $section=Section::where('name','=',$result)->first();
+            //  $result=Str::of($request['section_id'])->split('/[\s,]+/')[3];
+             $section=Section::where('name','=',$request->section_id)->first();
                  $updated=Teacher::findOrFail($id);
                  $updated->update([
                    'name' => $request['name'],
@@ -126,7 +126,7 @@ if($valids){
                   ]);  
                  $section->update(['teacher_id' =>$id]);   
                  \DB::commit();
-                 return ['message'=>'Successfully Added!'];           
+                 return response()->json(['message'=>'Successfully updated!'],200);           
             }
            
           }
