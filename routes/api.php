@@ -51,7 +51,6 @@ Route::get('/getAdminProfile',[Authentication::class, 'getAdminProfile']);
 Route::post('/change',[Authentication::class, 'changePassword']);
 
 
-
 //--------------------------Section Controller---------------------//
 //Api For Adding Junior High School For A Section
 Route::post('addSection',[SectionController::class, 'addAnySection']);
@@ -74,12 +73,27 @@ Route::get('delAnySection/{id}',[SectionController::class, 'delAnySection']);
 //Retrieving The Specificy Sections For Updating Purposes In The FrontEnd With Any Kind Of Sections
 Route::get('editSection/{id}',[SectionController::class,'editSection']);
 
+//Display All kinds of Sections In Grade_Level
+//Route::get('allSection',[SectionController::class,'allSection']);
+
+//Getting The Selected GradeLever In GradeLevel Model
+Route::get('selectedGradeLevel/{id}',[SectionController::class,'selectedGradeLevel']);
+
+//Deleting Any Kind Of Sections
 Route::post('updateSection/{id}',[SectionController::class,'updateSection']);
 Route::get('/allSections',[SectionController::class, 'allSections']);
+
+//--------------------------------------------------This Is For Enrollment Process API----------------------------------------//
 Route::post('/addStudent', [EnrollmentController::class, 'addStudent']);
 Route::get('/pendingEnrollments', [EnrollmentController::class, 'allPendingStudents']);
 Route::get('/approvedEnrollments',[EnrollmentController::class , 'allEnrolledStudents']);
 Route::get('/declinedEnrollments', [EnrollmentController::class, 'allDeclinedStudents']);
 Route::post('/addEnrollment',[EnrollmentController::class, 'addEnrollment']);
 Route::post('/approveEnrollment/{id}', [EnrollmentController::class, 'approveEnrollment']);
+
+
+//Getting The Selected Section In When Approving Button In Enrollment.vue
+Route::get('selectedGradeForSection/{id}', [EnrollmentController::class, 'selectedGradeForSection']);
+
+
 Route::post('/declineEnrollment/{id}', [EnrollmentController::class, 'declineEnrollment']);

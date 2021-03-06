@@ -1,7 +1,7 @@
 <?php
 
 namespace App\Http\Controllers;
-
+use Illuminate\Support\LazyCollection;
 use Illuminate\Http\Request;
 use App\Models\Teacher;
 use App\Models\Section;
@@ -18,8 +18,13 @@ public function addTeacher(TeacherRequest $request){
 if($valids){
     try{
         \DB::beginTransaction();
-        if($request['section_id']!=null){  
-            $result=Str::of($request['section_id'])->split('/[\s,]+/')[3];
+        if($request['section_id']!=null){
+            $secName=null;
+            foreach($request['section_id'] as $name){
+                error_log("sec:".$name);
+                $secName=$name; 
+            }
+            $result=Str::of($secName)->split('/[\s,]+/')[3];
             $sectionTable=Section::where('name','=',$result)->first(); 
              $valid=Teacher::create([
                     'name' =>$request['name'],
@@ -33,6 +38,7 @@ if($valids){
              return ['message'=>'Successfully Added!'];      
           }   
        else{
+          error_log($request['section_id']);
           $teacher=Teacher::create($valids);
           \DB::commit();
           return ['message'=>'Successfully Added!'];              
@@ -53,14 +59,14 @@ if($valids){
    {
     try{
        $array=[];
-       $List=Teacher::all();
+       $List=Teacher::cursor();
       foreach($List as $teacher){
           if($teacher->section_id==null){
              array_push($array,$teacher);
           }
           else{
             $sectionTable=Section::where('id','=',$teacher->section_id)->with("gradelevel")->get();
-            $teacher->section_id="Gr. ".$sectionTable->get(0)->gradelevel->grade_level." -> ".$sectionTable->get(0)->name;
+            $teacher->section_id="Gr. ".$sectionTable->get(0)->gradelevel->grade_level." --- ".$sectionTable->get(0)->name;
             array_push($array,$teacher); 
           }     
         }
@@ -149,7 +155,7 @@ if($valids){
         }
         else{
          $sectionTable=Section::where('id','=',$teacher->section_id)->with("gradelevel")->get();
-         $teacher->section_id="Gr. ".$sectionTable->get(0)->gradelevel->grade_level." -> ".$sectionTable->get(0)->name;
+         $teacher->section_id="Gr. ".$sectionTable->get(0)->gradelevel->grade_level." --- ".$sectionTable->get(0)->name;
           return response()->json($teacher); 
         }
       
@@ -164,11 +170,12 @@ if($valids){
 //Function For Getting All OF All Avalable Section
 public function availableSection(){
     try{
-    $sectionTable=Section::where('teacher_id','=',null)->with("gradelevel")->get();
+    $sectionTable=Section::where('teacher_id','=',null)->cursor();
     $arraySection=[];
-    for($i=0; $i <sizeof($sectionTable);$i++){
-        array_push($arraySection,"Gr. ".$sectionTable->get($i)->gradelevel->grade_level." -> ".$sectionTable->get($i)->name);
-   }
+    foreach($sectionTable as $sec){
+      $sec->name="Gr. ".$sec->gradelevel->grade_level." --- ".$sec->name;   
+      array_push($arraySection,$sec->makeHidden(['id','teacher_id','gradelevel','total_students','capacity','gradelevel_id','students_id','created_at','updated_at']));
+    }
     return response()->json($arraySection); 
    } 
     catch(\Exception $e){

@@ -26,7 +26,7 @@ class SectionFactory extends Factory
             'capacity' => 50,
             'total_students' => 0,
             'teacher_id' => 1,
-            'student_id' => NULL,
+            'students_id' => NULL,
             'gradelevel_id' => 1
         ];
     }

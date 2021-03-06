@@ -23,12 +23,12 @@ class TeacherRequest extends FormRequest
      */
     public function rules()
     {
-        return [ 
+     return [ 
          'name' => ['required','string','max:50'],
-         'email' => ['required','string','email','max:50'],
+         'email' => ['required','email:rfc,dns,filter','max:50'],
          'contact' => ['required','string','max:11','digits:11'],  
          'student_id'=>['nullable'],
          'section_id'=>['nullable'] 
-        ];
+      ];
     }
 }

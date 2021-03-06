@@ -9,6 +9,7 @@ use App\Models\Teacher;
 
 use Illuminate\Support\Str;
 use App\Http\Requests\SectionRequest;
+use App\Http\Requests\UpdateSectionRequest;
 class SectionController extends Controller
 {
 
@@ -28,12 +29,12 @@ class SectionController extends Controller
         $updated=Section::findOrFail($section->id);
         $updated->update(['gradelevel_id'=>$grade->id]); 
       if($grade->sections==null){
-         $grade->update(['sections'=>$section->name]); 
+         $grade->update(['sections'=>$section->id]); 
          \DB::commit();
          return ['message'=>'Successfully Added!'];
         }
      else{  
-         $grade->update(['sections'=>$grade->sections.",".$section->name]); 
+         $grade->update(['sections'=>$grade->sections.",".$section->id]); 
          \DB::commit();
          return ['message'=>'Successfully Added!'];    
        }
@@ -54,7 +55,7 @@ public function specificSection($grade){
   try{
     $arraySection=[];
     $grade=GradeLevel::where('grade_level','=',$grade)->first();
-    $data=Section::all();
+    $data=Section::cursor();
     foreach($data as $val){
         if($val->gradelevel_id==$grade->id){
           if($val->teacher_id==null){
@@ -82,16 +83,16 @@ public function specificSection($grade){
    try{
   $arraySection=[];
   $grade=GradeLevel::where('grade_level','=',$grade)->first();
-  $data=Section::all();
+  $data=Section::cursor();
   foreach($data as $val){
       if($val->gradelevel_id==$grade->id){
         if($val->teacher_id==null){
-         array_push($arraySection,$val->makeHidden(['gradelevel_id','student_id','created_at','updated_at']));
+         array_push($arraySection,$val->makeHidden(['gradelevel_id','students_id','created_at','updated_at']));
         }
         else{
         $teacher=Teacher::where('id','=',$val->teacher_id)->first();
         $val->teacher_id=$teacher->name;
-        array_push($arraySection,$val->makeHidden(['gradelevel_id','student_id','created_at','updated_at']));
+        array_push($arraySection,$val->makeHidden(['gradelevel_id','students_id','created_at','updated_at']));
         }
       }
   }
@@ -105,13 +106,25 @@ public function specificSection($grade){
  }
 
 
+//Getting All Sections From Grade 7 to Grade 12
+// public function allSection(){
+//   try{
+//     $allSections=Section::all();
+//     return ['message'=>'Successfully Added!','allsection'=>$allSections]; 
+//   }
+//   catch(\Exception $e){
+//     return response()->json(['error' => $e->getMessage()],500);
+//   }
+// }
+
+
 //Function For Deleting Any Sections
 public function delAnySection($id){
  try{
    \DB::beginTransaction();
     $section=Section::where('id','=',$id)->with('gradelevel')->get();
     $objectGrade=Str::of($section->get(0)->gradelevel->sections)->split('/[\s,]+/');
-    $remove=$objectGrade->diff([$section->get(0)->name]);
+    $remove=$objectGrade->diff([$section->get(0)->id]);
     $newSection=null;
     foreach($remove as $val){
        if($newSection==null){
@@ -142,8 +155,7 @@ public function delAnySection($id){
     return ['message'=>'Successfully Added!','section'=>'Grade '.$section->get(0)->gradelevel->grade_level]; 
    }
  
-  //return response()->json($section);
-
+  
    }
   catch(\Exception $e){
     \DB::rollback();
@@ -155,7 +167,7 @@ public function delAnySection($id){
 
 
 //Function For Editing A Specific Section
-public function editSection($id){
+public function editSection(Request $request,$id){
    try{
     $section=Section::findOrFail($id);
     return ['message'=>'Successfully Added!','section'=>$section];  
@@ -167,7 +179,7 @@ public function editSection($id){
 
 
 //Function For Updateing A Specific Section
-public function updateSection(SectionRequest $request,$id){
+public function updateSection(UpdateSectionRequest $request,$id){
   $updateSection=$request->validated();
   if($updateSection){
     try{
@@ -188,4 +200,22 @@ public function updateSection(SectionRequest $request,$id){
  
 }
 
+//Function Filter For Getting The Selected GradLevel 
+public function selectedGradeLevel($id){
+   $grade=GradeLevel::where('grade_level','=',$id)->first();
+   if($grade->sections!=null){
+     $allSections=[];
+    $result=Str::of($grade->sections)->split('/[\s,]+/');
+    foreach($result as $val){
+      $section=Section::where('id','=',$val)->first();
+      array_push($allSections,$section->name);
+    }
+    return response()->json($allSections);
+   }
+   else{
+    return response()->json();
+   }
 }
+
+}
+
