@@ -85,8 +85,9 @@ Route::get('/allSections',[SectionController::class, 'allSections']);
 
 //--------------------------------------------------This Is For Enrollment Process API----------------------------------------//
 Route::post('/addStudent', [EnrollmentController::class, 'addStudent']);
-Route::get('/pendingEnrollment',[EnrollmentController::class, 'allPendingStudents']);
-Route::get('/approvedEnrollment',[EnrollmentController::class , 'allEnrolledStudents']);
+Route::get('/pendingEnrollments', [EnrollmentController::class, 'allPendingStudents']);
+Route::get('/approvedEnrollments',[EnrollmentController::class , 'allEnrolledStudents']);
+Route::get('/declinedEnrollments', [EnrollmentController::class, 'allDeclinedStudents']);
 Route::post('/addEnrollment',[EnrollmentController::class, 'addEnrollment']);
 Route::post('/approveEnrollment/{id}', [EnrollmentController::class, 'approveEnrollment']);
 

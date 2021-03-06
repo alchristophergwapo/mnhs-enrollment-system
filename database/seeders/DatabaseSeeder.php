@@ -32,11 +32,13 @@ class DatabaseSeeder extends Seeder
         //Section::factory()->count(50)->create();
         //Teacher::factory()->count(50)->create();
 
+        // Section::factory()->count(50)->create();
+        // Teacher::factory()->count(50)->create();
         $students = Student::factory()->count(50)->create();
         foreach($students as $student) {
             Enrollment::create([
-                'start_school_year' => 2021,
-                'end_school_year' => 2022,
+                'start_school_year' => 2020,
+                'end_school_year' => 2021,
                 'enrollment_status' => 'Approved',
                 'student_id' =>$student->id,
                 'card_image' => '1613828301313_(SD) But-anon,Judilyn.png',
@@ -49,7 +51,6 @@ class DatabaseSeeder extends Seeder
             ]);
 
         };
-
         
         // User::create([
         //     'user_type' => 'admin',
@@ -58,7 +59,6 @@ class DatabaseSeeder extends Seeder
         //     'remember_token' => \Str::random(10),
         // ]);
 
-        
         // $grade_levels = [
         //         [
         //             'grade_level' => 7
@@ -82,6 +82,5 @@ class DatabaseSeeder extends Seeder
         // foreach($grade_levels as $grade_level){
         //     GradeLevel::create($grade_level);
         // }
-
     }
 }
