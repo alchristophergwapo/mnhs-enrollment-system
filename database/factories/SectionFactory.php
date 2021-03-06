@@ -22,7 +22,12 @@ class SectionFactory extends Factory
     public function definition()
     {
         return [
-            //
+            'name' => 'Section '.$this->faker->numberBetween(1,5),
+            'capacity' => 50,
+            'total_students' => 0,
+            'teacher_id' => 1,
+            'student_id' => NULL,
+            'gradelevel_id' => 1
         ];
     }
 }

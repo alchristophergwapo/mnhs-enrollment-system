@@ -21,5 +21,7 @@ class GradeLevel extends Model
         'students'
     ];
 
-
+    public function sections(){
+        return $this->hasMany('App\Models\Section','gradelevel_id','id');
+    }
 }

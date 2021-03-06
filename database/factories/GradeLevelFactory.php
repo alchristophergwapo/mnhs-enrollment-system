@@ -22,7 +22,7 @@ class GradeLevelFactory extends Factory
     public function definition()
     {
         return [
-            //
+            'grade_level' => $this->faker->numberBetween(7, 12)
         ];
     }
 }

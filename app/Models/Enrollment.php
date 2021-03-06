@@ -25,4 +25,7 @@ class Enrollment extends Model
         return $this->hasOne('App\Models\Student','id','student_id');
     }
 
+    public function section() {
+        return $this->hasOne('App\Models\Section', 'name', 'student_section');
+    }
 }

@@ -15,7 +15,7 @@ class Section extends Model
      * @var array
      */
     protected $casts = [
-        'students_id'=> 'array',
+        'student_id'=> 'array',
     ];
 
     protected $fillable = [
@@ -23,7 +23,7 @@ class Section extends Model
         'capacity',
         'total_students',
         'teacher_id',
-        'students_id',
+        'student_id',
         'gradelevel_id'
     ];
 
@@ -31,4 +31,7 @@ class Section extends Model
         return $this->hasOne('App\Models\GradeLevel','id','gradelevel_id');
     }
     
+    public function adviser() {
+        return $this->hasOne('App\Models\Teacher','id','teacher_id');
+    }
 }

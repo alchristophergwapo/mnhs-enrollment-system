@@ -9,6 +9,7 @@ use App\Models\Student;
 use App\Models\SeniorHigh;
 use App\Models\Transferee;
 use App\Models\User;
+use App\Models\Section;
 
 use App\Http\Requests\StudentEnrollmentRequest;
 use App\Http\Requests\TransfereeEnrollmentRequest;
@@ -26,6 +27,7 @@ class EnrollmentController extends Controller
 
                 $student = Student::create([
                     'grade_level' => $request->grade_level,
+                    'PSA' => $request->PSA,
                     'LRN' => $request->LRN,
                     'average' =>  $request->average,
                     'firstname' => $request->firstname,
@@ -102,9 +104,11 @@ class EnrollmentController extends Controller
                 $imageName = $request->card_image->getClientOriginalName();
     
                 Enrollment::create([
+                    'start_school_year' => $request->start_school_year,
+                    'end_school_year' => $request->end_school_year,
                     'enrollment_status' => $request->enrollment_status,
                     'student_id' => $student->id,
-                    'card_image' => $imageName
+                    'card_image' => $imageName,
                 ]);
 
                 $request->card_image->move(public_path('images'), $imageName);
@@ -126,34 +130,50 @@ class EnrollmentController extends Controller
         return response()->json(['pendingEnrollment'=>$pendingEnrollment]);
     }
 
-    public function allEnrollendStudents() {
+    public function allEnrolledStudents() {
         $approvedEnrollment = Enrollment::where('enrollment_status','Approved')->with('student')->get();
 
         return response()->json(['approvedEnrollment'=>$approvedEnrollment]);
+    }
+
+    public function allDeclinedStudents() {
+        $declinedEnrollments = Enrollment::where('enrollment_status','Declined')->with('student')->get();
+
+        return response()->json(['declinedEnrollment' => $declinedEnrollments],200);
     }
 
     public function approveEnrollment(Request $request, $id) {
         try {
             \DB::beginTransaction();
 
-            $enrollment = Enrollment::find($id)->get();
+            $enrollment = Enrollment::where('id', $id)->get();
 
-            $student = Student::where('id',$enrollment[0]->student_id)->get();
+            $student = Student::where('id', $enrollment[0]->student_id)->get();
 
-            User::updateOrCreate([
-                'user_type' => 'student',
-                'username' => $student[0]->LRN,
-                'password' => \Hash::make($student[0]->lastname.$student[0]->LRN),
-            ]);
+            $section = Section::where('name',$request->section)->get();
 
-            Enrollment::find($id)->update([
-                'enrollment_status' => 'Approved',
-                'student_section' => $request->section
-            ]);
+            if (count($section) > 0 && $section[0]->total_students < $section[0]->capacity) {
+                $section[0]->total_students += 1;
+                $section[0]->save();
+                User::updateOrCreate([
+                    'user_type' => 'student',
+                    'username' => $student[0]->LRN,
+                    'password' => \Hash::make($student[0]->lastname.$student[0]->LRN),
+                ]);
+    
+                Enrollment::find($id)->update([
+                    'enrollment_status' => 'Approved',
+                    'student_section' => $request->section
+                ]);
+            } if(count($section) > 0 && $section[0]->total_students >= $section[0]->capacity) {
+                return response()->json(['message' => $request->section.' capacity is full. Please select another section or update max capacity'],400);
+            } if(count($section) == 0) {
+                return response()->json(['message' => $request->section.' cannot be found on the database. It may be deleted or have been modified.'],404);
+            }
 
             \DB::commit();
 
-            return response()->json(['success' => 'Enrollment approved']);
+            return response()->json(['success' => 'Enrollment approved'],200);
         } catch (\Exception $e) {
             \DB::rollback();
 

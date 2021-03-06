@@ -1,6 +1,6 @@
 <?php
 
-namespace App;
+namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -16,6 +16,7 @@ class Student extends Model
      */
      protected $fillable = [
         'grade_level',
+        'PSA',
         'LRN',
         'average',
         'firstname',
@@ -39,4 +40,7 @@ class Student extends Model
     // public function teacher(){
     //     return $this->belongsTo('App\Models\Teacher');
     // }
+    public function enrollment() {
+        return $this->hasOne('App\Models\Enrollment','student_id','id');
+    }
 }

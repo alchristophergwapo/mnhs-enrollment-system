@@ -14,11 +14,10 @@ class CreateGradeLevelsTable extends Migration
     public function up()
     {
         Schema::create('grade_levels', function (Blueprint $table) {
-            //$table->id();
             $table->increments('id');
             $table->json('sections')->nullable();
             $table->json('students')->nullable();
-            $table->integer('grade_level');
+            $table->integer('grade_level')->unique();
             $table->timestamps();
         });
     }
