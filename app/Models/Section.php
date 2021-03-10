@@ -14,9 +14,9 @@ class Section extends Model
      *
      * @var array
      */
-    protected $casts = [
-        'student_id'=> 'array',
-    ];
+    // protected $casts = [
+    //     'student_id'=> 'array',
+    // ];
 
     protected $fillable = [
         'name',

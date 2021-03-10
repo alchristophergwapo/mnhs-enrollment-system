@@ -20,7 +20,7 @@ if($valids){
         \DB::beginTransaction();
         if($request->section_id!=null){
             //$result=Str::of($secName)->split('/[\s,]+/')[3];
-            $sectionTable=Section::where('name','=',$request->section_id)->first(); 
+            $sectionTable=Section::where('id','=',$request->section_id)->first(); 
             if($sectionTable->teacher_id==null){
                 $valid=Teacher::create([
                     'name' =>$request['name'],
@@ -35,7 +35,7 @@ if($valids){
             }
             else{
               $teacherTable=Section::where('id','=',$sectionTable->id)->with("adviser")->get();
-              return response()->json(['teacher'=>$teacherTable->get(0)->adviser->name],200);  
+              return response()->json(['teacher'=>$teacherTable->get(0)->adviser->name,'section'=>$teacherTable->get(0)->name],200);  
             }
           }   
        else{
@@ -62,10 +62,12 @@ if($valids){
        $List=Teacher::cursor();
       foreach($List as $teacher){
           if($teacher->section_id==null){
+            $teacher->student_id=$teacher->section_id;
              array_push($array,$teacher);
           }
           else{
             $sectionTable=Section::where('id','=',$teacher->section_id)->with("gradelevel")->get();
+            $teacher->student_id=$teacher->section_id;
             $teacher->section_id="Gr. ".$sectionTable->get(0)->gradelevel->grade_level." --- ".$sectionTable->get(0)->name;
             array_push($array,$teacher); 
           }     
@@ -116,7 +118,7 @@ if($valids){
          else{
              //$result=Str::of($secName)->split('/[\s,]+/')[3];
             if($id!='update'){
-                $sections=Section::where('name','=',$request->section_id)->first();
+                $sections=Section::where('id','=',$request->section_id)->first();
                 if($sections->teacher_id==null){
                    $updateCurrentSec=Section::where('teacher_id','=',$id)->update(['teacher_id'=>null]); 
                    $updated=Teacher::where("id","=",$id)->update(['name' => $request['name'],'email' =>$request['email'],'contact'=> $request['contact'],'section_id'=>$sections->id]);
@@ -133,14 +135,14 @@ if($valids){
                    return response()->json(['message'=>'Successfully Updated!'],200); 
                  }
                 else{
-                 $assignTeacher=Section::where('name','=',$request->section_id)->with("adviser")->get();
-                 return response()->json(['teacher'=>$assignTeacher->get(0)->adviser->name],200);
+                 $assignTeacher=Section::where('id','=',$request->section_id)->with("adviser")->get();
+                 return response()->json(['teacher'=>$assignTeacher->get(0)->adviser->name,'section'=>$assignTeacher->get(0)->name],200);
                 }
                 }  
              }
              else{ 
 
-               $sections=Section::where('name','=',$request->section_id)->with("adviser")->get();  
+               $sections=Section::where('id','=',$request->section_id)->with("adviser")->get();  
               //The current assigned teacher in this section  where teacher_id must be null
                 $requestSections=Section::where('teacher_id','=',$request->updateId)->update(['teacher_id'=>null]);
               //The assigned Teacher from the ($sections=Section::where('name','=',$request->section_id)->with("adviser")->get()) where section_id must be null
@@ -164,26 +166,6 @@ if($valids){
 
    }
 
-
-
-// //Function For Showing By Id Of A Teacher
-//    public function showByIdTeacher($id){
-//     try{
-//         $teacher=Teacher::where('id','=',$id)->first();
-//         if($teacher->section_id==null){
-//            return response()->json($teacher); 
-//         }
-//         else{
-//          $sectionTable=Section::where('id','=',$teacher->section_id)->with("gradelevel")->get();
-//          $teacher->section_id="Gr. ".$sectionTable->get(0)->gradelevel->grade_level." --- ".$sectionTable->get(0)->name;
-//           return response()->json($teacher); 
-//         }
-      
-//        }
-//        catch(\Exception $e){
-//         return response()->json(['error' => $e->getMessage()],500);
-//       }
-//    }  
 
 
 

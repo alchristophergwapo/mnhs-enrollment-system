@@ -18,7 +18,7 @@ class SectionController extends Controller
     return response()->json(['sections' => $sections],200);
   }
 
-   //Function For Adding Section In Junior High School
+  //Function For Adding Section In Junior High School
   public function addAnySection(SectionRequest $request){
     $addSection=$request->validated();
     if($addSection){
@@ -41,10 +41,10 @@ class SectionController extends Controller
        }
 
      else{
-       $teachers=Teacher::where('name','=',$request->teacher)->first();
+       $teachers=Teacher::where('id','=',$request->teacher)->first();
         if($teachers->section_id!=null){
            $teachers=Teacher::where('id','=',$teachers->id)->with("section")->get();
-           return response()->json(['failed'=>$teachers->get(0)->section->name],200); 
+           return response()->json(['failed'=>$teachers->get(0)->section->name,'teacher'=>$teachers->get(0)->name],200); 
          }
        else{
            $createSection=Section::create($addSection);
@@ -86,13 +86,15 @@ class SectionController extends Controller
         if($val->gradelevel){
            $val->gradelevel->makeHidden(['students','sections','created_at','updated_at']);
             if($val->teacher_id==null){
+              $val->gradelevel_id=$val->teacher_id;
               $val->teacher_id="No Teacher";
-              array_push($arraySection,$val->makeHidden(['gradelevel_id','students','created_at','updated_at']));
+              array_push($arraySection,$val->makeHidden(['students','created_at','updated_at']));
             }
             else{
              $teacher=Teacher::where('id','=',$val->teacher_id)->first();
+             $val->gradelevel_id=$val->teacher_id;
              $val->teacher_id=$teacher->name;
-             array_push($arraySection,$val->makeHidden(['gradelevel_id','students_id','created_at','updated_at']));
+             array_push($arraySection,$val->makeHidden(['students_id','created_at','updated_at']));
             }
         }
   }
@@ -164,13 +166,13 @@ public function updateSection(UpdateSectionRequest $request,$id){
     try{
       \DB::beginTransaction();
     if($id!='update'){
-      if($request->teacher=='No Teacher'){
+      if($request->teacher==null){
         $section=Section::where('id',"=",$id)->update(['name'=>$request['name'],'capacity'=>$request['capacity']]); 
         \DB::commit();
         return ['message'=>'Successfully Added!','section'=>$section]; 
      }
      else{
-      $infoTeacher=Teacher::where('name','=',$request->teacher)->first();
+      $infoTeacher=Teacher::where('id','=',$request->teacher)->first();
       if($infoTeacher->section_id!=null){
         if($infoTeacher->section_id==$id){
          $section=Section::where('id',"=",$id)->update(['name'=>$request['name'],'capacity'=>$request['capacity']]); 
@@ -178,8 +180,8 @@ public function updateSection(UpdateSectionRequest $request,$id){
          return ['message'=>'Successfully Added!'];   
         }
         else{
-          $assignTeacher=Teacher::where('name','=',$request->teacher)->with("section")->get();
-          return response()->json(['failed'=>$assignTeacher->get(0)->section->name],200);
+          $assignTeacher=Teacher::where('id','=',$request->teacher)->with("section")->get();
+          return response()->json(['failed'=>$assignTeacher->get(0)->section->name,'teacher'=>$assignTeacher->get(0)->name],200);
         }
        
       }
@@ -197,7 +199,7 @@ public function updateSection(UpdateSectionRequest $request,$id){
 
    else{
 
-   $Teachers=Teacher::where('name','=',$request->teacher)->with("section")->get();
+   $Teachers=Teacher::where('id','=',$request->teacher)->with("section")->get();
 
    //currentSection_id from the section name of the $request['teacher']
    $currentSection_id=Teacher::where('section_id','=',$request->updateId)->update(['section_id'=>null]);
@@ -228,7 +230,8 @@ public function allTeachersForSection()
     $arrayTeacher=[];
     $List=Teacher::cursor();
    foreach($List as $teacher){
-          $teacher->makeHidden(['contact','students_id','section_id','email','created_at','updated_at']);
+          $teacher->makeHidden(['contact','students_id','section_id','email','updated_at']);
+          $teacher->created_at=$teacher->id;
           array_push($arrayTeacher,$teacher);   
      }
        return response()->json($arrayTeacher,200); 
