@@ -21,16 +21,24 @@ class DatabaseSeeder extends Seeder
     public function run()
     {
        
+        Section::factory()->count(50)->create();
+        Teacher::factory()->count(50)->create();
 
-        // \DB::table('users')->insert([
-        //     'username' => 'admin',
-        //     'password' => \Hash::make('Administrator'),
-        //     'user_type' => 'admin',
-        //     'remember_token' => \Str::random(10),
-        // ]);
+        // $students = Student::factory()->count(50)->create();
+        // foreach($students as $student) {
+        //     Enrollment::create([
+        //         'start_school_year' => 2020,
+        //         'end_school_year' => 2021,
+        //         'enrollment_status' => 'Approved',
+        //         'student_id' =>$student->id,
+        //         'card_image' => '1613828301313_(SD) But-anon,Judilyn.png',
+        //     ]);
 
-        //Section::factory()->count(50)->create();
-        //Teacher::factory()->count(50)->create();
+        //     User::create([
+        //         'user_type' => 'student',
+        //         'username' => $student->LRN,
+        //         'password' => \Hash::make($student->lastname.$student->LRN)
+        //     ]);
 
         // Section::factory()->count(50)->create();
         // Teacher::factory()->count(50)->create();

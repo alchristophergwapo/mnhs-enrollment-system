@@ -134,7 +134,7 @@ class EnrollmentController extends Controller
         return response()->json(['pendingEnrollment'=>$pendingEnrollment]);
     }
 
- public function allEnrolledStudents() {
+    public function allEnrolledStudents() {
         $approvedEnrollment = Enrollment::where('enrollment_status','Approved')->with('student')->get();
         return response()->json(['approvedEnrollment'=>$approvedEnrollment]);
     }
@@ -151,11 +151,27 @@ class EnrollmentController extends Controller
             ]);
         try{
             \DB::beginTransaction();
+            $section=$request->student_section;
+           // foreach($request->student_section as $name){$section=$name;}
+            $enrollment = Enrollment::find($id)->get();
 
             $enrollment = Enrollment::where('id', $id)->get();
 
             $student = Student::where('id', $enrollment[0]->student_id)->get();
 
+            User::updateOrCreate([
+                'user_type' => 'student',
+                'username' => $student[0]->LRN,
+                'password' => \Hash::make($student[0]->lastname.$student[0]->LRN),
+                'remember_token' => \Str::random(10),
+            ]);
+
+            Enrollment::find($id)->update([
+                'enrollment_status' => 'Approved',
+                'student_section' =>$section
+            ]);
+            \DB::commit();
+            return response()->json(['success' => 'Enrollment approved']);
             $section = Section::where('name',$request->section)->get();
 
             if (count($section) > 0 && $section[0]->total_students < $section[0]->capacity) {
@@ -166,11 +182,8 @@ class EnrollmentController extends Controller
                     'username' => $student[0]->LRN,
                     'password' => \Hash::make($student[0]->lastname.$student[0]->LRN),
                 ]);
-    
-                Enrollment::find($id)->update([
-                    'enrollment_status' => 'Approved',
-                    'student_section' => $request->section
-                ]);
+               Enrollment::find($id)->update(['enrollment_status' => 'Approved','student_section' => $request->student_section ]);
+               // Enrollment::where('student_id', '=',$id)->update(['enrollment_status' => 'Approved','student_section' => $request->student_section]);
             } if(count($section) > 0 && $section[0]->total_students >= $section[0]->capacity) {
                 return response()->json(['message' => $request->section.' capacity is full. Please select another section or update max capacity'],400);
             } if(count($section) == 0) {
@@ -190,11 +203,8 @@ class EnrollmentController extends Controller
     public function declineEnrollment($id) {
         try {
             \DB::beginTransaction();
-
-            Enrollment::find($id)->update([
-                'enrollment_status' => "Declined"
-            ]);
-
+            Enrollment::findOrFail($id)->update(['enrollment_status' => "Declined" ]);
+           // Enrollment::where('student_id', '=',$id)->update(['enrollment_status' => "Declined" ]);
             \DB::commit();
 
             return response()->json(['success' => 'Enrollment declined']);
@@ -227,5 +237,5 @@ class EnrollmentController extends Controller
         } 
   }
 
-  
+
 }

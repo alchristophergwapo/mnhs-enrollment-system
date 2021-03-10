@@ -30,6 +30,7 @@ class StudentEnrollmentRequest extends FormRequest
                 'min:7',
                 'max:12'
             ],
+            'PSA' => 'nullable',
             'LRN' => ['required'],
             'firstname' => [
                 'min:3',

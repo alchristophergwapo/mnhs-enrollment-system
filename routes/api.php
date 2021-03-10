@@ -36,10 +36,6 @@ Route::get('delTeacher/{id}',[TeacherController::class, 'removeTeacher']);
 //Updating A Teacher
 Route::post('updateTeacher/{id}',[TeacherController::class, 'updateTeacher']);
 
-//Showing A Teacher By Id
-Route::get('showByIdTeacher/{id}',[TeacherController::class, 'showByIdTeacher']);
-
-
 //----------------------Admin Controller-----------------------------//
 //Login For Admin 
 Route::post('/login',[Authentication::class, 'login']);
@@ -55,45 +51,40 @@ Route::post('/change',[Authentication::class, 'changePassword']);
 //Api For Adding Junior High School For A Section
 Route::post('addSection',[SectionController::class, 'addAnySection']);
 
-//Api For Getting All The Available Sections
-Route::get('sections',[TeacherController::class, 'availableSection']);
-
-//Api For Getting The Specific Section In A  Grade For Junior High School
-Route::get('getSection/{grade}',[SectionController::class,'specificSection']);
-
-//Api For Getting All The Section In Grade 7 And This Function is used also for gettinig All Grade 11
-Route::get('grade7Section/{grade}',[SectionController::class,'grade7']);
-
-//Api For Getting All The Section In Grade 12
-Route::get('grade12Section/{grade}',[SectionController::class,'grade7']);
+//Api For Getting All The Sections In Every GradeLevel
+Route::get('allGradeLevelSections',[SectionController::class,'allGradeLevelSections']);
 
 //Deleting Any Kind Of Sections
 Route::get('delAnySection/{id}',[SectionController::class, 'delAnySection']);
 
-//Retrieving The Specificy Sections For Updating Purposes In The FrontEnd With Any Kind Of Sections
-Route::get('editSection/{id}',[SectionController::class,'editSection']);
-
-//Display All kinds of Sections In Grade_Level
-//Route::get('allSection',[SectionController::class,'allSection']);
-
-//Getting The Selected GradeLever In GradeLevel Model
-Route::get('selectedGradeLevel/{id}',[SectionController::class,'selectedGradeLevel']);
-
-//Deleting Any Kind Of Sections
+//Updating Any Kind Of Sections
 Route::post('updateSection/{id}',[SectionController::class,'updateSection']);
+
 Route::get('/allSections',[SectionController::class, 'allSections']);
+
+Route::get('/allTeachersForSection',[SectionController::class, 'allTeachersForSection']);
+
+
+
 
 //--------------------------------------------------This Is For Enrollment Process API----------------------------------------//
 Route::post('/addStudent', [EnrollmentController::class, 'addStudent']);
+
+Route::get('/pendingEnrollment',[EnrollmentController::class, 'allPendingStudents']);
+
+Route::get('/approvedEnrollment',[EnrollmentController::class , 'allEnrolledStudents']);
+
 Route::get('/pendingEnrollments', [EnrollmentController::class, 'allPendingStudents']);
+
 Route::get('/approvedEnrollments',[EnrollmentController::class , 'allEnrolledStudents']);
+
 Route::get('/declinedEnrollments', [EnrollmentController::class, 'allDeclinedStudents']);
 Route::post('/addEnrollment',[EnrollmentController::class, 'addEnrollment']);
+
 Route::post('/approveEnrollment/{id}', [EnrollmentController::class, 'approveEnrollment']);
 
 
 //Getting The Selected Section In When Approving Button In Enrollment.vue
 Route::get('selectedGradeForSection/{id}', [EnrollmentController::class, 'selectedGradeForSection']);
-
 
 Route::post('/declineEnrollment/{id}', [EnrollmentController::class, 'declineEnrollment']);
