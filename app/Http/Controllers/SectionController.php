@@ -222,6 +222,7 @@ public function updateSection(UpdateSectionRequest $request,$id){
  
 }
 
+<<<<<<< HEAD
 
 //Function For Getting All Teachers For Sections
 public function allTeachersForSection()
@@ -235,6 +236,17 @@ public function allTeachersForSection()
           array_push($arrayTeacher,$teacher);   
      }
        return response()->json($arrayTeacher,200); 
+=======
+//Function Filter For Getting The Selected GradLevel 
+public function selectedGradeLevel($id){
+   $grade=GradeLevel::where('grade_level','=',$id)->first();
+   if($grade->sections!=null){
+     $allSections=[];
+    $result=Str::of($grade->sections)->split('/[\s,]+/');
+    foreach($result as $val){
+      $section=Section::where('id','=',$val)->first();
+      array_push($allSections,$section->name);
+>>>>>>> 9ba7111ce1c95686d853f0124a4506d804e7b7dd
     }
     catch(\Exception $e){
      return response()->json(['error'=> $e->getMessage()],500);

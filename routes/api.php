@@ -79,7 +79,6 @@ Route::get('/pendingEnrollments', [EnrollmentController::class, 'allPendingStude
 Route::get('/approvedEnrollments',[EnrollmentController::class , 'allEnrolledStudents']);
 
 Route::get('/declinedEnrollments', [EnrollmentController::class, 'allDeclinedStudents']);
-
 Route::post('/addEnrollment',[EnrollmentController::class, 'addEnrollment']);
 
 Route::post('/approveEnrollment/{id}', [EnrollmentController::class, 'approveEnrollment']);

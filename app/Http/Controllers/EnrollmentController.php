@@ -13,7 +13,6 @@ use App\Models\User;
 use App\Models\Section;
 use App\Models\GradeLevel;
 
-
 use App\Http\Requests\StudentEnrollmentRequest;
 use App\Http\Requests\TransfereeEnrollmentRequest;
 use App\Http\Requests\SeniorHighEnrollmentRequest;
@@ -135,12 +134,11 @@ class EnrollmentController extends Controller
         return response()->json(['pendingEnrollment'=>$pendingEnrollment]);
     }
 
- public function allEnrolledStudents() {
+    public function allEnrolledStudents() {
         $approvedEnrollment = Enrollment::where('enrollment_status','Approved')->with('student')->get();
         return response()->json(['approvedEnrollment'=>$approvedEnrollment]);
     }
 
-    
     public function allDeclinedStudents() {
         $declinedEnrollments = Enrollment::where('enrollment_status','Declined')->with('student')->get();
 
