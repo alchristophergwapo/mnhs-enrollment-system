@@ -40,4 +40,7 @@ class Student extends Model
     // public function teacher(){
     //     return $this->belongsTo('App\Models\Teacher');
     // }
+    public function enrollment() {
+        return $this->hasOne('App\Models\Enrollment','student_id','id');
+    }
 }

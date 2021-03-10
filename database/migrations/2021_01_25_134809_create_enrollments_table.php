@@ -13,7 +13,7 @@ class CreateEnrollmentsTable extends Migration
     public function up()
     {
         Schema::create('enrollments', function (Blueprint $table) {
-            $table->id();
+            $table->increments('id');
             $table->year('start_school_year');
             $table->year('end_school_year');
             $table->string('enrollment_status');
