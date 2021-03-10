@@ -65,8 +65,8 @@ class Authentication extends Controller
 
     try{
         $user=User::where('username','=',$request->username)->first();
-           if(Hash::check($request->currentpassword,$user->password)){
-              $user->password=Hash::make($request->new_password);
+           if(\Hash::check($request->currentpassword,$user->password)){
+              $user->password=\Hash::make($request->new_password);
               $user->save();
               return ['message'=>'Password is successfully changed!'];           
            }

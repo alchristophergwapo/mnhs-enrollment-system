@@ -178,7 +178,7 @@ public function updateSection(SectionRequest $request,$id){
         'capacity'=>$request['capacity']
       ]); 
       \DB::commit();
-      return ['message'=>'Successfully Added!','section'=>$section];  
+      return ['message'=>'Successfully updated!','section'=>$section];  
      }
      catch(\Exception $e){
       \DB::rollback();
