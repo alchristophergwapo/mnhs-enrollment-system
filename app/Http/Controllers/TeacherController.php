@@ -104,6 +104,7 @@ if($valids){
       
    }
 
+   
 //Function For Updating The Data Of Teachers
    public function updateTeacher(TeacherRequest $request,$id){
     $update=$request->validated();

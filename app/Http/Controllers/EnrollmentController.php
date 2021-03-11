@@ -215,27 +215,5 @@ class EnrollmentController extends Controller
         }
     }
 
-
-
-//Selected Section For A Gradelevel In EnrollmenData.Vue
-  public function selectedGradeForSection($id){
-    try{
-        $array=[];
-        $list=Section::cursor();
-        foreach($list  as $sec){
-            $gradeLevel=GradeLevel::where('id','=',$sec->gradelevel_id)->first();
-            if($gradeLevel->grade_level==$id){
-                $sec->name="Gr. ".$gradeLevel->grade_level." --- ".$sec->name;   
-                array_push($array,$sec->makeHidden(['id','teacher_id','gradelevel','total_students','capacity','gradelevel_id','students_id','created_at','updated_at']));
-            }
-        }
-
-      return response()->json($array); 
-        }
-        catch(\Exception $e){
-         return response()->json(['error'=> $e->getMessage()],500);
-        } 
-  }
-
-
+    
 }

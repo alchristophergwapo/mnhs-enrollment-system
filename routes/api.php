@@ -62,10 +62,6 @@ Route::post('updateSection/{id}',[SectionController::class,'updateSection']);
 
 Route::get('/allSections',[SectionController::class, 'allSections']);
 
-Route::get('/allTeachersForSection',[SectionController::class, 'allTeachersForSection']);
-
-
-
 
 //--------------------------------------------------This Is For Enrollment Process API----------------------------------------//
 Route::post('/addStudent', [EnrollmentController::class, 'addStudent']);
@@ -83,8 +79,5 @@ Route::post('/addEnrollment',[EnrollmentController::class, 'addEnrollment']);
 
 Route::post('/approveEnrollment/{id}', [EnrollmentController::class, 'approveEnrollment']);
 
-
-//Getting The Selected Section In When Approving Button In Enrollment.vue
-Route::get('selectedGradeForSection/{id}', [EnrollmentController::class, 'selectedGradeForSection']);
 
 Route::post('/declineEnrollment/{id}', [EnrollmentController::class, 'declineEnrollment']);
