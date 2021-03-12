@@ -25,6 +25,9 @@ class EnrollmentRequest extends FormRequest
     {
         return [
         'enrollment_status' => ['required'],
+        'student_section'=>['required'],
+        'start_school_year' => ['required'],
+        'end_school_year' => ['required'],
         'student_id' => ['required'],
         'card_image' => [
             'required',

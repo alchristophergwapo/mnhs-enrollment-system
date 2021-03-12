@@ -28,7 +28,7 @@ class StudentFactory extends Factory
             'LRN' => '303000'.$this->faker->numberBetween(100000,999999),
             'average' => $this->faker->numberBetween(75,100),
             'firstname' => $this->faker->firstName($gender),
-            'middlename' => NULL,
+            'middlename' =>$this->faker->lastName,
             'lastname' => $this->faker->lastName,
             'birthdate' => $this->faker->date,
             'age' => $this->faker->numberBetween(11,30),

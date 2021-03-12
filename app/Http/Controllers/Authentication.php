@@ -50,29 +50,40 @@ class Authentication extends Controller
    }
 
 
-   //Changing a password in Admin User
    public function changePassword(Request $request){
-
         $request->validate([
             'username'=>'required',
-            'currentpassword' =>'required',
+            'currentpassword' =>['required'
+            // ,function($attribute, $value, $fail) {
+            //     $user=User::where('username',$request->username)->first();
+            //     if(!\Hash::check($value,$user->password)){          
+            //         $fail('Your current password is incorrect.');
+            //      }
+            // }
+            ],
             'new_password' =>'required|different:currentpassword|min:8|regex:/^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{6,}$/',
-            'confirm_password'=>'required|same:new_password',
+            'confirm_password'=>'required|same:new_password|min:8|regex:/^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{6,}$/',
         ],
         [
-         'new_password.regex' => 'Your password should  be atleast 8 characters long ,contains-atleast 1 Uppercase,1 Lowercase,1 Numeric and 1 special character',
+         'new_password.regex' => 'Your new password should  be atleast 8 characters long ,contains-atleast 1 Uppercase,1 Lowercase,1 Numeric and 1 special character',
+         'confirm_password.regex' => 'Your confirm password should  be atleast 8 characters long ,contains-atleast 1 Uppercase,1 Lowercase,1 Numeric and 1 special character',
         ]);
 
-    try{
+      
+  
+    try{ 
         $user=User::where('username','=',$request->username)->first();
-           if(\Hash::check($request->currentpassword,$user->password)){
-              $user->password=\Hash::make($request->new_password);
+           if( \Hash::check($request->currentpassword,$user->password)){
+              $user->password= \Hash::make($request->new_password);
+              $user->updated = 1;
               $user->save();
-              return ['message'=>'Password is successfully changed!'];           
+              return  response()->json(['message'=>'Password is successfully changed!'],200);           
+           } else {
+               return response()->json(['message' => 'Current password is incorrect!'], 400);
            }
        }
     catch(\Exception $e){
-        return response()->json(['error' => $e->getMessage()], 401);
+        return response()->json(['error' => $e->getMessage()],500);
      }
    
 

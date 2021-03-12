@@ -20,6 +20,25 @@ class DatabaseSeeder extends Seeder
      */
     public function run()
     {
+       
+        Section::factory()->count(50)->create();
+        Teacher::factory()->count(50)->create();
+
+        // $students = Student::factory()->count(50)->create();
+        // foreach($students as $student) {
+        //     Enrollment::create([
+        //         'start_school_year' => 2020,
+        //         'end_school_year' => 2021,
+        //         'enrollment_status' => 'Approved',
+        //         'student_id' =>$student->id,
+        //         'card_image' => '1613828301313_(SD) But-anon,Judilyn.png',
+        //     ]);
+
+        //     User::create([
+        //         'user_type' => 'student',
+        //         'username' => $student->LRN,
+        //         'password' => \Hash::make($student->lastname.$student->LRN)
+        //     ]);
 
         // Section::factory()->count(50)->create();
         // Teacher::factory()->count(50)->create();
@@ -29,9 +48,10 @@ class DatabaseSeeder extends Seeder
                 'start_school_year' => 2020,
                 'end_school_year' => 2021,
                 'enrollment_status' => 'Approved',
-                'student_id' => $student->id,
+                'student_id' =>$student->id,
                 'card_image' => '1613828301313_(SD) But-anon,Judilyn.png',
             ]);
+
             User::create([
                 'user_type' => 'student',
                 'username' => $student->LRN,
@@ -39,11 +59,14 @@ class DatabaseSeeder extends Seeder
             ]);
 
         };
+        
         // User::create([
         //     'user_type' => 'admin',
         //     'username' => 'admin',
-        //     'password' => \Hash::make('Administrator')
+        //     'password' => \Hash::make('Administrator'),
+        //     'remember_token' => \Str::random(10),
         // ]);
+
         // $grade_levels = [
         //         [
         //             'grade_level' => 7

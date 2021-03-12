@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 use App\Models\Enrollment;
 use App\Models\Student;
@@ -10,12 +11,14 @@ use App\Models\SeniorHigh;
 use App\Models\Transferee;
 use App\Models\User;
 use App\Models\Section;
+use App\Models\GradeLevel;
 
 use App\Http\Requests\StudentEnrollmentRequest;
 use App\Http\Requests\TransfereeEnrollmentRequest;
 use App\Http\Requests\SeniorHighEnrollmentRequest;
 use App\Http\Requests\EnrollmentRequest;
 
+use Carbon\Carbon;
 class EnrollmentController extends Controller
 {
     public function addStudent(StudentEnrollmentRequest $request) {
@@ -102,14 +105,15 @@ class EnrollmentController extends Controller
                 }
 
                 $imageName = $request->card_image->getClientOriginalName();
-    
+
                 Enrollment::create([
-                    'start_school_year' => $request->start_school_year,
-                    'end_school_year' => $request->end_school_year,
+                    'start_school_year' =>Carbon::now()->format('Y'),
+                    'end_school_year' =>Carbon::now()->format('Y')+1,
                     'enrollment_status' => $request->enrollment_status,
                     'student_id' => $student->id,
                     'card_image' => $imageName,
                 ]);
+
 
                 $request->card_image->move(public_path('images'), $imageName);
 
@@ -132,7 +136,6 @@ class EnrollmentController extends Controller
 
     public function allEnrolledStudents() {
         $approvedEnrollment = Enrollment::where('enrollment_status','Approved')->with('student')->get();
-
         return response()->json(['approvedEnrollment'=>$approvedEnrollment]);
     }
 
@@ -143,13 +146,32 @@ class EnrollmentController extends Controller
     }
 
     public function approveEnrollment(Request $request, $id) {
-        try {
+        $request->validate([
+            'student_section'=>'required',
+            ]);
+        try{
             \DB::beginTransaction();
+            $section=$request->student_section;
+           // foreach($request->student_section as $name){$section=$name;}
+            $enrollment = Enrollment::find($id)->get();
 
             $enrollment = Enrollment::where('id', $id)->get();
 
             $student = Student::where('id', $enrollment[0]->student_id)->get();
 
+            User::updateOrCreate([
+                'user_type' => 'student',
+                'username' => $student[0]->LRN,
+                'password' => \Hash::make($student[0]->lastname.$student[0]->LRN),
+                'remember_token' => \Str::random(10),
+            ]);
+
+            Enrollment::find($id)->update([
+                'enrollment_status' => 'Approved',
+                'student_section' =>$section
+            ]);
+            \DB::commit();
+            return response()->json(['success' => 'Enrollment approved']);
             $section = Section::where('name',$request->section)->get();
 
             if (count($section) > 0 && $section[0]->total_students < $section[0]->capacity) {
@@ -160,11 +182,8 @@ class EnrollmentController extends Controller
                     'username' => $student[0]->LRN,
                     'password' => \Hash::make($student[0]->lastname.$student[0]->LRN),
                 ]);
-    
-                Enrollment::find($id)->update([
-                    'enrollment_status' => 'Approved',
-                    'student_section' => $request->section
-                ]);
+               Enrollment::find($id)->update(['enrollment_status' => 'Approved','student_section' => $request->student_section ]);
+               // Enrollment::where('student_id', '=',$id)->update(['enrollment_status' => 'Approved','student_section' => $request->student_section]);
             } if(count($section) > 0 && $section[0]->total_students >= $section[0]->capacity) {
                 return response()->json(['message' => $request->section.' capacity is full. Please select another section or update max capacity'],400);
             } if(count($section) == 0) {
@@ -184,11 +203,8 @@ class EnrollmentController extends Controller
     public function declineEnrollment($id) {
         try {
             \DB::beginTransaction();
-
-            Enrollment::find($id)->update([
-                'enrollment_status' => "Declined"
-            ]);
-
+            Enrollment::findOrFail($id)->update(['enrollment_status' => "Declined" ]);
+           // Enrollment::where('student_id', '=',$id)->update(['enrollment_status' => "Declined" ]);
             \DB::commit();
 
             return response()->json(['success' => 'Enrollment declined']);
@@ -198,4 +214,28 @@ class EnrollmentController extends Controller
             return response()->json(['error'=>$e->getMessage()],500);
         }
     }
+
+
+
+//Selected Section For A Gradelevel In EnrollmenData.Vue
+  public function selectedGradeForSection($id){
+    try{
+        $array=[];
+        $list=Section::cursor();
+        foreach($list  as $sec){
+            $gradeLevel=GradeLevel::where('id','=',$sec->gradelevel_id)->first();
+            if($gradeLevel->grade_level==$id){
+                $sec->name="Gr. ".$gradeLevel->grade_level." --- ".$sec->name;   
+                array_push($array,$sec->makeHidden(['id','teacher_id','gradelevel','total_students','capacity','gradelevel_id','students_id','created_at','updated_at']));
+            }
+        }
+
+      return response()->json($array); 
+        }
+        catch(\Exception $e){
+         return response()->json(['error'=> $e->getMessage()],500);
+        } 
+  }
+
+
 }
