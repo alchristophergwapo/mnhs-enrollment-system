@@ -87,7 +87,7 @@ class SectionController extends Controller
            $val->gradelevel->makeHidden(['students','sections','created_at','updated_at']);
             if($val->teacher_id==null){
               $val->gradelevel_id=$val->teacher_id;
-              $val->teacher_id="No Teacher";
+              $val->teacher_id="No Adviser";
               array_push($arraySection,$val->makeHidden(['student_id','created_at','updated_at']));
             }
             else{
