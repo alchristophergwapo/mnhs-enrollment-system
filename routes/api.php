@@ -8,6 +8,7 @@ use App\Http\Controllers\SectionController;
 use App\Http\Controllers\Authentication;
 use App\Http\Controllers\EnrollmentController;
 
+use App\Models\User;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -82,6 +83,15 @@ Route::get('/declinedEnrollments', [EnrollmentController::class, 'allDeclinedStu
 Route::post('/addEnrollment',[EnrollmentController::class, 'addEnrollment']);
 
 Route::post('/approveEnrollment/{id}', [EnrollmentController::class, 'approveEnrollment']);
+
+Route::get('/mark-all-read/{user}',function(User $user){
+    $user->unreadNotifications->markAsRead();
+    if($user) {
+        return response(["message"=>"done"]);
+    } else {
+        return response(["message" => "Error"],400);
+    }
+});
 
 
 //Getting The Selected Section In When Approving Button In Enrollment.vue

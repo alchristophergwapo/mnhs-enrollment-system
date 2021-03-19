@@ -4,6 +4,9 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Notification;
+
+use App\Notifications\StudentEnrollmentNotification;
 
 use App\Models\Enrollment;
 use App\Models\Student;
@@ -117,6 +120,10 @@ class EnrollmentController extends Controller
 
                 $request->card_image->move(public_path('images'), $imageName);
 
+                $admin = User::where('username', 'admin')->first();
+
+                Notification::send($admin, new StudentEnrollmentNotification($student));
+
                 \DB::commit();
 
                 return response()->json(['success' => 'Student added succesfully'],200);
@@ -135,12 +142,12 @@ class EnrollmentController extends Controller
     }
 
     public function allEnrolledStudents() {
-        $approvedEnrollment = Enrollment::where('enrollment_status','Approved')->with('student')->get();
+        $approvedEnrollment = Enrollment::where('enrollment_status','Approved')->with('student')->orderByDesc('id')->get();
         return response()->json(['approvedEnrollment'=>$approvedEnrollment]);
     }
 
     public function allDeclinedStudents() {
-        $declinedEnrollments = Enrollment::where('enrollment_status','Declined')->with('student')->get();
+        $declinedEnrollments = Enrollment::where('enrollment_status','Declined')->with('student')->orderByDesc('id')->get();
 
         return response()->json(['declinedEnrollment' => $declinedEnrollments],200);
     }

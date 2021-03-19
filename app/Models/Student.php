@@ -4,6 +4,11 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Notification;
+
+use App\Models\User;
+
+use App\Notifications\StudentEnrollmentNotification;
 
 class Student extends Model
 {
@@ -42,5 +47,15 @@ class Student extends Model
     // }
     public function enrollment() {
         return $this->hasOne('App\Models\Enrollment','student_id','id');
+    }
+
+    public static function boot() {
+        parent::boot();
+
+        static::created(function($model) {
+            $admin = User::where('username', 'admin')->first();
+
+            Notification::send($admin, new StudentEnrollmentNotification($model));
+        });
     }
 }

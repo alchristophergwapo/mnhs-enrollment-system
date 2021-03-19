@@ -19,7 +19,7 @@ class Authentication extends Controller
         try {
             if(Auth::attempt($credentials)) {
                 if ($request->user_type == 'admin') {
-                    $user = Auth::user();
+                    $user = Auth::user()->load('notifications');
                     return response()->json(["user" => $user], 200);
                 } else {
                     $user = Auth::user();
