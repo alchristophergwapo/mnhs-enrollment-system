@@ -22,7 +22,7 @@ class CreateSectionsTable extends Migration
             $table->integer('student_id')->nullable();
            // $table->json('student_id')->nullable();
             $table->integer('gradelevel_id')->nullable();
-            $table->foreign('gradelevel_id')->references('id')->on('grade_levels');
+            // $table->foreign('gradelevel_id')->references('id')->on('grade_levels');
             $table->timestamps();
         });
     }
