@@ -6,6 +6,7 @@ use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
+use Illuminate\Notifications\Messages\BroadcastMessage;
 
 use App\Models\Student;
 
@@ -19,9 +20,9 @@ class StudentEnrollmentNotification extends Notification
      *
      * @return void
      */
-    public function __construct(Student $enrollment)
+    public function __construct(Student $student)
     {
-        $this->enrollment = $enrollment;
+        $this->enrollment = $student;
     }
 
     /**
@@ -32,7 +33,7 @@ class StudentEnrollmentNotification extends Notification
      */
     public function via($notifiable)
     {
-        return ['database'];
+        return ['database', 'broadcast'];
     }
 
     /**
@@ -57,9 +58,22 @@ class StudentEnrollmentNotification extends Notification
      */
     public function toArray($notifiable)
     {
+        print(json($this->enrollment));
         return [
             'enrollment'=> $this->enrollment,
-            // 'admin' => $notifiable
+            'admin' => $notifiable
         ];
+    }
+
+    /**
+     * Get the broadcastable representation of the notification.
+     *
+     * @param  mixed  $notifiable
+     * @return BroadcastMessage
+     */
+    public function toBroadCast($notifiable){
+        return new BroadcastMessage([
+            'notification' => $notifiable->notifications()->latest()->first()
+        ]);
     }
 }

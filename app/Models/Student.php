@@ -53,9 +53,9 @@ class Student extends Model
         parent::boot();
 
         static::created(function($model) {
-            $admin = User::where('username', 'admin')->first();
+            // $admin = User::where('username', 'admin')->first();
 
-            Notification::send($admin, new StudentEnrollmentNotification($model));
+            // Notification::send($admin, new StudentEnrollmentNotification($model));
         });
     }
 }

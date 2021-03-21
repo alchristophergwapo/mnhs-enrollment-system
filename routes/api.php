@@ -66,8 +66,6 @@ Route::get('/allSections',[SectionController::class, 'allSections']);
 Route::get('/allTeachersForSection',[SectionController::class, 'allTeachersForSection']);
 
 
-
-
 //--------------------------------------------------This Is For Enrollment Process API----------------------------------------//
 Route::post('/addStudent', [EnrollmentController::class, 'addStudent']);
 

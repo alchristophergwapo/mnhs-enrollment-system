@@ -126,12 +126,12 @@ class EnrollmentController extends Controller
 
                 \DB::commit();
 
-                return response()->json(['success' => 'Student added succesfully'],200);
+                return response(['success' => 'Student added succesfully', "student"=>$student, 'admin'=>$admin]);
 
             } catch (\Exception $e){
                 \DB::rollback();
 
-                return response()->json(["error"=>$e],500);
+                return response()->json(["error"=>$e->getMessage()],500);
             }
         }
     }
