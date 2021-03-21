@@ -23,11 +23,24 @@ class Authentication extends Controller
                     return response()->json(["user" => $user], 200);
                 } else {
                     $user = Auth::user();
-                    $userInfo = Student::with('enrollment')->where('lrn', $user->username)->get();
-                    $classmates = Enrollment::with('student')->where('student_section',$userInfo[0]->enrollment->student_section)->get();
-                    $section = Section::with('adviser')->where('name',$userInfo[0]->enrollment->student_section)->get();
-                    $userInfo[0]['section'] = $section[0];
-                    return response()->json(['user' => $user, 'userInfo' => $userInfo[0], 'classmates' => $classmates], 200);
+                    $userInfo = Student::with('enrollment')
+                                        ->where('lrn', $user->username)
+                                        ->first();
+
+                    $classmates = Enrollment::with('student')
+                                            ->where('student_section',$userInfo->enrollment->student_section)->first();
+
+                    $section = Section::with('adviser')
+                                        ->where('name',$userInfo->enrollment->student_section)
+                                        ->first();
+
+                    $userInfo['section'] = $section;
+
+                    return response([
+                            'user' => $user, 
+                            'userInfo' => $userInfo, 
+                            'classmates' => $classmates
+                        ]);
                 }
             } else {
                 return response()->json(['error' => 'The credentials provided are invalid!'], 406);
