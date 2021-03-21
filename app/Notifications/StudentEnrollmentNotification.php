@@ -58,7 +58,6 @@ class StudentEnrollmentNotification extends Notification
      */
     public function toArray($notifiable)
     {
-        print(json($this->enrollment));
         return [
             'enrollment'=> $this->enrollment,
             'admin' => $notifiable

@@ -47,6 +47,7 @@ Route::get('/getAdminProfile',[Authentication::class, 'getAdminProfile']);
 //Changing The Data In Admin Profile(ex. password)
 Route::post('/change',[Authentication::class, 'changePassword']);
 
+Route::get('/mark-all-read/{user}',[Authentication::class, "markAllAsRead"]);
 
 //--------------------------Section Controller---------------------//
 //Api For Adding Junior High School For A Section
@@ -81,16 +82,6 @@ Route::get('/declinedEnrollments', [EnrollmentController::class, 'allDeclinedStu
 Route::post('/addEnrollment',[EnrollmentController::class, 'addEnrollment']);
 
 Route::post('/approveEnrollment/{id}', [EnrollmentController::class, 'approveEnrollment']);
-
-Route::get('/mark-all-read/{user}',function(User $user){
-    $user->unreadNotifications->markAsRead();
-    if($user) {
-        return response(["message"=>"done"]);
-    } else {
-        return response(["message" => "Error"],400);
-    }
-});
-
 
 //Getting The Selected Section In When Approving Button In Enrollment.vue
 Route::get('selectedGradeForSection/{id}', [EnrollmentController::class, 'selectedGradeForSection']);

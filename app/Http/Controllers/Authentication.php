@@ -98,8 +98,16 @@ class Authentication extends Controller
     catch(\Exception $e){
         return response()->json(['error' => $e->getMessage()],500);
      }
-   
-
    }
+
+   public function markAllAsRead(User $user){
+
+    $user->unreadNotifications->markAsRead();
+    if($user) {
+        return response(["message"=>"done","user"=>$user->load('notifications')]);
+    } else {
+        return response(["message" => "Error"],400);
+    }
+}
 
 }

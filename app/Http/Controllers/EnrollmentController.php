@@ -8,6 +8,8 @@ use Illuminate\Support\Facades\Notification;
 
 use App\Notifications\StudentEnrollmentNotification;
 
+use App\Events\StudentEnrollEvent;
+
 use App\Models\Enrollment;
 use App\Models\Student;
 use App\Models\SeniorHigh;
@@ -120,9 +122,11 @@ class EnrollmentController extends Controller
 
                 $request->card_image->move(public_path('images'), $imageName);
 
-                $admin = User::where('username', 'admin')->first();
+                $admin = User::where('username', 'admin')->first()->load('notifications');
 
                 Notification::send($admin, new StudentEnrollmentNotification($student));
+
+                broadcast(new StudentEnrollEvent($student, $admin));
 
                 \DB::commit();
 

@@ -3,7 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AppController;
 
-use App\Events\StudentEnrollEvent;
+    use App\Events\StudentEnrollEvent;
 /*
 |--------------------------------------------------------------------------
 | Web Routes

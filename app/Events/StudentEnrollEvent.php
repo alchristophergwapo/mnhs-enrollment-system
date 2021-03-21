@@ -10,23 +10,28 @@ use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
 
-class StudentEnrollEvent
+class StudentEnrollEvent implements ShouldBroadcast
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
+    public $student;
+    public $notifiable;
     /**
      * Create a new event instance.
      *
      * @return void
      */
-    public function __construct()
+    public function __construct($student, $notifiable)
     {
-        //
+        $this->student = $student;
+        $this->notifiable = $notifiable;
     }
 
     public function broadcastWith() {
         return [
-            'student_enrolled' => 'New Student Submits an Enrollment',
+            'student_enrolled' => $this->student,
+            'notification' => $this->notifiable->notifications()->latest()->first(),
+            'user' => $this->notifiable,
         ];
     }
 
