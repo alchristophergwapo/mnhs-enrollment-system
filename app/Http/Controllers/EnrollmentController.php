@@ -111,7 +111,7 @@ class EnrollmentController extends Controller
 
                 $imageName = $request->card_image->getClientOriginalName();
 
-                Enrollment::create([
+                $enrollment = Enrollment::create([
                     'start_school_year' =>Carbon::now()->format('Y'),
                     'end_school_year' =>Carbon::now()->format('Y')+1,
                     'enrollment_status' => $request->enrollment_status,
