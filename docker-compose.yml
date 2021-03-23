@@ -1,74 +1,81 @@
 # For more information: https://laravel.com/docs/sail
 version: '3'
 services:
-    laravel.test:
-        build:
-            context: ./vendor/laravel/sail/runtimes/8.0
-            dockerfile: Dockerfile
-            args:
-                WWWGROUP: '${WWWGROUP}'
-        image: sail-8.0/app
+    nginx:
+        image: nginx:stable-alpine
+        container_name: nginx
         ports:
-            - '${APP_PORT:-80}:80'
-        environment:
-            WWWUSER: '${WWWUSER}'
-            LARAVEL_SAIL: 1
-        volumes:
-            - '.:/var/www/html'
-        networks:
-            - sail
+            - "8000:80"
+        volumes: 
+            - ./src:/var/www/html
+            - ./nginx/default.conf:/etc/nginx/conf.d/default.conf
         depends_on:
             - mysql
-            - redis
-            # - selenium
-    # selenium:
-    #     image: 'selenium/standalone-chrome'
-    #     volumes:
-    #         - '/dev/shm:/dev/shm'
-    #     networks:
-    #         - sail
-    #     depends_on:
-    #         - laravel.test
+            - php
+        networks:
+            - laravel
     mysql:
-        image: 'mysql:8.0'
+        image: mysql:5.7.22
+        container_name: mysql
+        restart: unless-stopped
+        tty: true
         ports:
-            - '${FORWARD_DB_PORT:-3306}:3306'
+            - "3306:3306"
+        volumes:
+            - ./mysql:/var/lib/mysql
         environment:
-            MYSQL_ROOT_PASSWORD: '${DB_PASSWORD}'
-            MYSQL_DATABASE: '${DB_DATABASE}'
-            MYSQL_USER: '${DB_USERNAME}'
-            MYSQL_PASSWORD: '${DB_PASSWORD}'
-            MYSQL_ALLOW_EMPTY_PASSWORD: 'yes'
+            MYSQL_DATABASE: mnhsenrollment
+            MYSQL_USER: mnhs
+            MYSQL_PASSWORD: secret
+            MYSQL_ROOT_PASSWORD: secret
+            SERVICE_TAGS: dev
+            SERVICE_NAME: mysql    
+        networks:
+            - laravel
+    php:
+        build:
+            context: .
+            dockerfile: Dockerfile
+        container_name: php
         volumes:
-            - 'sailmysql:/var/lib/mysql'
-        networks:
-            - sail
-    redis:
-        image: 'redis:alpine'
+            - ./src:/var/www/html
         ports:
-            - '${FORWARD_REDIS_PORT:-6379}:6379'
+            - "9000:9000"
+        networks:
+            - laravel
+    ssms-app:
+        build:
+            context: ./docker/app
+        # args:
+        #     uid: ${UID}
+        container_name: ssms-app
+        environment:
+            - APACHE_RUN_USER=#${UID}
+            - APACHE_RUN_GROUP=#${UID}
         volumes:
-            - 'sailredis:/data'
-        networks:
-            - sail
-    # memcached:
-    #     image: 'memcached:alpine'
-    #     ports:
-    #         - '11211:11211'
-    #     networks:
-    #         - sail
-    mailhog:
-        image: 'mailhog/mailhog:latest'
+            - ./src:/var/www/html
         ports:
-            - 1025:1025
-            - 8025:8025
+            # - "${HOST_PORT}:80"
+            - "6001:6001"
+        links:
+            # - ssms-redis
+            - ssms-sockets
         networks:
-            - sail
+            backend:
+                aliases:
+                    - ssms-app
+    ssms-sockets:
+        build:
+            context: ./docker/websockets
+        container_name: ssms-sockets
+        volumes:
+            - ./src:/var/www/html
+        ports:
+            - "6001:6001"
+        networks:
+            backend:
+                aliases:
+                    - ssms-sockets
 networks:
-    sail:
-        driver: bridge
-volumes:
-    sailmysql:
-        driver: local
-    sailredis:
-        driver: local
+    laravel:
+    backend:
