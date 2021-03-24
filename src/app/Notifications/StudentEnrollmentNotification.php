@@ -70,9 +70,9 @@ class StudentEnrollmentNotification extends Notification
      * @param  mixed  $notifiable
      * @return BroadcastMessage
      */
-    public function toBroadCast($notifiable){
-        return new BroadcastMessage([
-            'notification' => $notifiable->notifications()->latest()->first()
-        ]);
-    }
+    // public function toBroadCast($notifiable){
+    //     return new BroadcastMessage([
+    //         'notification' => $notifiable->notifications()->latest()->first()
+    //     ]);
+    // }
 }

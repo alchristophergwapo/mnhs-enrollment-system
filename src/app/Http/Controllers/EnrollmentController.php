@@ -31,106 +31,151 @@ class EnrollmentController extends Controller
 
         if ($validated) {
             try {
-                \DB::beginTransaction();
+                $enrollmentSubmitted = Student::query()
+                    ->where([
+                        ['LRN', '=', $request->LRN],
+                        ['grade_level', '<=', $request->grade_level],
+                        ['firstname', '=', $request->firstname],
+                        ['middlename', '=', $request->middlename],
+                        ['lastname', '=', $request->lastname]
+                    ])
+                    ->with(['enrollment'=> function($query){
+                        $query->where('start_school_year', '=', Carbon::now()->format('Y'));
+                    }])->orderBy('id', 'desc')->first();
 
-                $student = Student::create([
-                    'grade_level' => $request->grade_level,
-                    'PSA' => $request->PSA,
-                    'LRN' => $request->LRN,
-                    'average' =>  $request->average,
-                    'firstname' => $request->firstname,
-                    'middlename' => $request->middlename,
-                    'lastname' => $request->lastname,
-                    'birthdate' => $request->birthdate,
-                    'age' => $request->age,
-                    'gender' => $request->gender,
-                    'IP' => $request->IP,
-                    'IP_community' => $request->IP_Community,
-                    'mother_tongue' => $request->mother_tongue,
-                    'contact' => $request->contact,
-                    'address' => $request->address,
-                    'zipcode' => $request->zipcode,
-                    'father' => $request->father,
-                    'mother' => $request->mother,
-                    'guardian' => $request->guardian,
-                    'parent_number' => $request->parent_number,
-                ]);
-
-                if ($request->isSeniorHigh) {
-                    $request->validate([
-                        'semester' => [
-                            'required'
-                        ],
-                        'track' => [
-                            'required'
-                        ],
-                        'strand' => [
-                            'required'
-                        ],
-                    ]);
-                    SeniorHigh::create([
-                        'student_id' => $student->id,
-                        'semester' => $request->semester,
-                        'track' => $request->track,
-                        'strand' => $request->strand,
-                    ]);
+                $passEnrollment = Student::query()
+                    ->where([
+                        ['LRN', '=', $request->LRN],
+                        ['grade_level', '=', $request->grade_level],
+                        ['firstname', '=', $request->firstname],
+                        ['middlename', '=', $request->middlename],
+                        ['lastname', '=', $request->lastname]
+                    ])
+                    ->with(['enrollment'=> function($query){
+                        $query->where('start_school_year', '<', Carbon::now()->format('Y'));
+                    }])->orderBy('id', 'desc')->first(); 
+                    
+                if ($enrollmentSubmitted) {
+                    return response(['error' => "You have already submitted an enrollment", 'currentEnrollment' => $enrollmentSubmitted], 406);
                 }
 
-                if ($request->isBalikOrTransfer) {
-                    $request->validate([
-                        'last_grade_completed' => [
-                            'required',
-                            'integer',
-                            'min:7',
-                            'max:12'
-                        ],
-                        'last_year_completed' => [
-                            'required'
-                        ],
-                        'last_school_attended' => [
-                            'required',
-                            'min:8'
-                        ],
-                        'last_school_ID' => [
-                            'required'
-                        ],
-                        'last_school_address' => [
-                            'required',
-                            'min:8'
-                        ]
+                elseif ($passEnrollment) {
+                    return response([
+                        'error' => "You have already submitted an enrollment/enrolled for grade ".$request->grade_level." last school year ".$passEnrollment->enrollment->start_school_year. '-'.$passEnrollment->enrollment->end_school_year,
+                        'passEnrollment' => $passEnrollment
+                    ], 406);
+                } else {
+                    \DB::beginTransaction();
+                    $student = Student::create([
+                        'grade_level' => $request->grade_level,
+                        'PSA' => $request->PSA,
+                        'LRN' => $request->LRN,
+                        'average' =>  $request->average,
+                        'firstname' => $request->firstname,
+                        'middlename' => $request->middlename,
+                        'lastname' => $request->lastname,
+                        'birthdate' => $request->birthdate,
+                        'age' => $request->age,
+                        'gender' => $request->gender,
+                        'IP' => $request->IP,
+                        'IP_community' => $request->IP_Community,
+                        'mother_tongue' => $request->mother_tongue,
+                        'contact' => $request->contact,
+                        'address' => $request->address,
+                        'zipcode' => $request->zipcode,
+                        'father' => $request->father,
+                        'mother' => $request->mother,
+                        'guardian' => $request->guardian,
+                        'parent_number' => $request->parent_number,
                     ]);
-                    Transferee::create([
+    
+                    if ($request->isSeniorHigh) {
+                        $request->validate([
+                            'semester' => [
+                                'required'
+                            ],
+                            'track' => [
+                                'required'
+                            ],
+                            'strand' => [
+                                'required'
+                            ],
+                        ]);
+                        SeniorHigh::create([
+                            'student_id' => $student->id,
+                            'semester' => $request->semester,
+                            'track' => $request->track,
+                            'strand' => $request->strand,
+                        ]);
+                    }
+    
+                    if ($request->isBalikOrTransfer) {
+                        $request->validate([
+                            'last_grade_completed' => [
+                                'required',
+                                'integer',
+                                'min:7',
+                                'max:12'
+                            ],
+                            'last_year_completed' => [
+                                'required'
+                            ],
+                            'last_school_attended' => [
+                                'required',
+                                'min:8'
+                            ],
+                            'last_school_ID' => [
+                                'required'
+                            ],
+                            'last_school_address' => [
+                                'required',
+                                'min:8'
+                            ]
+                        ]);
+                        Transferee::create([
+                            'student_id' => $student->id,
+                            'last_grade_completed' => $request->last_grade_completed,
+                            'last_year_completed' => $request->last_year_completed,
+                            'last_school_attended' => $request->last_school_attended,
+                            'last_school_ID' => $request->last_school_ID,
+                            'last_school_address' => $request->last_school_address,
+                        ]);
+                    }
+    
+                    $imageName = $request->card_image->getClientOriginalName();
+    
+                    $enrollment = Enrollment::create([
+                        'start_school_year' =>Carbon::now()->format('Y'),
+                        'end_school_year' =>Carbon::now()->format('Y')+1,
+                        'enrollment_status' => $request->enrollment_status,
                         'student_id' => $student->id,
-                        'last_grade_completed' => $request->last_grade_completed,
-                        'last_year_completed' => $request->last_year_completed,
-                        'last_school_attended' => $request->last_school_attended,
-                        'last_school_ID' => $request->last_school_ID,
-                        'last_school_address' => $request->last_school_address,
+                        'card_image' => $imageName,
                     ]);
+    
+    
+                    $request->card_image->move(public_path('images'), $imageName);
+    
+                    $admin = User::where('username', 'admin')->first();
+                    
+                    $notif =Student::with('enrollment')
+                        ->where('id', '=', $student->id)
+                        ->first();
+                    Notification::send($admin, new StudentEnrollmentNotification($notif));
+    
+                    broadcast(new StudentEnrollEvent($student, $admin));
+    
+                    \DB::commit();
+
+                    $admin->load('notifications');
+    
+                    return response([
+                        'success' => 'Student added succesfully',
+                        "student"=>$notif, 
+                        'admin'=>$admin
+                    ]);
+                    // return response(['student' => $notif]);
+                // }
                 }
-
-                $imageName = $request->card_image->getClientOriginalName();
-
-                $enrollment = Enrollment::create([
-                    'start_school_year' =>Carbon::now()->format('Y'),
-                    'end_school_year' =>Carbon::now()->format('Y')+1,
-                    'enrollment_status' => $request->enrollment_status,
-                    'student_id' => $student->id,
-                    'card_image' => $imageName,
-                ]);
-
-
-                $request->card_image->move(public_path('images'), $imageName);
-
-                $admin = User::where('username', 'admin')->first()->load('notifications');
-
-                Notification::send($admin, new StudentEnrollmentNotification($student));
-
-                broadcast(new StudentEnrollEvent($student, $admin));
-
-                \DB::commit();
-
-                return response(['success' => 'Student added succesfully', "student"=>$student, 'admin'=>$admin]);
 
             } catch (\Exception $e){
                 \DB::rollback();

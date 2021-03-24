@@ -102,12 +102,32 @@ class Authentication extends Controller
 
    public function markAllAsRead(User $user){
 
-    $user->unreadNotifications->markAsRead();
-    if($user) {
-        return response(["message"=>"done","user"=>$user->load('notifications')]);
-    } else {
-        return response(["message" => "Error"],400);
+        $user->unreadNotifications->markAsRead();
+        if($user) {
+            return response(["message"=>"done","user"=>$user->load('notifications')]);
+        } else {
+            return response(["message" => "Error"],400);
+        }
     }
-}
+
+    public function markNotifAsOpened(Request $request, $id) {
+        try {
+            \DB::beginTransaction();
+
+            \DB::table('notifications')
+                ->where('id', '=', $id)
+                ->update([
+                    'opened_at' => $request->opened_at
+                ]);
+
+            \DB::commit();
+
+            return response(['message' => 'Marked as opened.']);
+        } catch (\Exception $e) {
+            \DB::rollback();
+
+            return response(['error' => $e->getMessage()]);
+        }
+    }
 
 }

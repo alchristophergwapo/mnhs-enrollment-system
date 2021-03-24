@@ -49,6 +49,9 @@ Route::post('/change',[Authentication::class, 'changePassword']);
 
 Route::get('/mark-all-read/{user}',[Authentication::class, "markAllAsRead"]);
 
+Route::post('/mark-as-opened/{id}',[Authentication::class, "markNotifAsOpened"]);
+
+
 //--------------------------Section Controller---------------------//
 //Api For Adding Junior High School For A Section
 Route::post('addSection',[SectionController::class, 'addAnySection']);

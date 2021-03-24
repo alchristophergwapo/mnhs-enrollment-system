@@ -55,7 +55,7 @@ class Student extends Model
         static::created(function($model) {
             $admin = User::where('username', 'admin')->first();
 
-            Notification::send($admin, new StudentEnrollmentNotification($model));
+            // Notification::send($admin, new StudentEnrollmentNotification($model));
         });
     }
 }
