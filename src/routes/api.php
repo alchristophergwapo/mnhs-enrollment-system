@@ -49,7 +49,7 @@ Route::post('/change',[Authentication::class, 'changePassword']);
 
 Route::get('/mark-all-read/{user}',[Authentication::class, "markAllAsRead"]);
 
-Route::post('/mark-as-opened/{id}',[Authentication::class, "markNotifAsOpened"]);
+Route::get('/mark-as-opened/{id}',[Authentication::class, "markNotifAsOpened"]);
 
 
 //--------------------------Section Controller---------------------//

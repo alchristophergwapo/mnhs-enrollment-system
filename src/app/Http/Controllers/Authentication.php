@@ -10,6 +10,8 @@ use App\Models\User;
 use App\Models\Student;
 use App\Models\Enrollment;
 use App\Models\Section;
+
+use Carbon\Carbon;
                                                                                         
 class Authentication extends Controller
 {
@@ -110,23 +112,27 @@ class Authentication extends Controller
         }
     }
 
-    public function markNotifAsOpened(Request $request, $id) {
+    public function markNotifAsOpened($id) {
         try {
             \DB::beginTransaction();
 
             \DB::table('notifications')
                 ->where('id', '=', $id)
                 ->update([
-                    'opened_at' => $request->opened_at
+                    'opened_at' => Carbon::now()
                 ]);
 
             \DB::commit();
 
-            return response(['message' => 'Marked as opened.']);
+            $notif = \DB::table('notifications')
+                ->where('id', '=', $id)
+                ->first();
+
+            return response()->json(['message' => 'Marked as opened.', 'notification' => $notif]);
         } catch (\Exception $e) {
             \DB::rollback();
 
-            return response(['error' => $e->getMessage()]);
+            return response(['error' => $e->getMessage()],500);
         }
     }
 

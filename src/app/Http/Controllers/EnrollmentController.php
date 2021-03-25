@@ -207,48 +207,37 @@ class EnrollmentController extends Controller
             ]);
         try{
             \DB::beginTransaction();
-            $section=$request->student_section;
-           // foreach($request->student_section as $name){$section=$name;}
-            $enrollment = Enrollment::find($id)->get();
+            $enrollment = Enrollment::where('id', '=', $id)->with('student')->first();
+            $student = Student::where('id', $enrollment->student_id)->with('enrollment')->first();
+            $section = Section::where('name',$request->student_section)->first();
 
-            $enrollment = Enrollment::where('id', $id)->get();
-
-            $student = Student::where('id', $enrollment[0]->student_id)->get();
-
-            User::updateOrCreate([
-                'user_type' => 'student',
-                'username' => $student[0]->LRN,
-                'password' => \Hash::make($student[0]->lastname.$student[0]->LRN),
-                'remember_token' => \Str::random(10),
-            ]);
-
-            Enrollment::find($id)->update([
-                'enrollment_status' => 'Approved',
-                'student_section' =>$section
-            ]);
-            \DB::commit();
-            return response()->json(['success' => 'Enrollment approved']);
-            $section = Section::where('name',$request->section)->get();
-
-            if (count($section) > 0 && $section[0]->total_students < $section[0]->capacity) {
-                $section[0]->total_students += 1;
-                $section[0]->save();
-                User::updateOrCreate([
-                    'user_type' => 'student',
-                    'username' => $student[0]->LRN,
-                    'password' => \Hash::make($student[0]->lastname.$student[0]->LRN),
-                ]);
-               Enrollment::find($id)->update(['enrollment_status' => 'Approved','student_section' => $request->student_section ]);
-               // Enrollment::where('student_id', '=',$id)->update(['enrollment_status' => 'Approved','student_section' => $request->student_section]);
-            } if(count($section) > 0 && $section[0]->total_students >= $section[0]->capacity) {
-                return response()->json(['message' => $request->section.' capacity is full. Please select another section or update max capacity'],400);
-            } if(count($section) == 0) {
-                return response()->json(['message' => $request->section.' cannot be found on the database. It may be deleted or have been modified.'],404);
+            if ($enrollment->enrollment_status == 'Pending') {
+                if ($section != null && $section->total_students < $section->capacity) {
+                    $section->total_students += 1;
+                    $section->save();
+                    User::updateOrCreate([
+                        'user_type' => 'student',
+                        'username' => $student->LRN,
+                        'password' => \Hash::make($student->lastname.$student->LRN),
+                    ]);
+                    $enrollment->update([
+                       'enrollment_status' => 'Approved',
+                       'student_section' => $request->student_section 
+                    ]);
+    
+                    \DB::commit();
+                    
+                    return response()->json(['message' => 'Enrollment approved', 'student' => $enrollment],200);
+    
+                } if($section != null && $section->total_students >= $section->capacity) {
+                    return response()->json(['message' => $request->section.' capacity is full. Please select another section or update max capacity'],400);
+                } if($section == null) {
+                    return response()->json(['message' => $request->section.' cannot be found on the database. It may be deleted or have been modified.'],404);
+                }
+            } else {
+                return response()->json(['message' => 'Enrollment approved', 'student' => $enrollment],200);
             }
 
-            \DB::commit();
-
-            return response()->json(['success' => 'Enrollment approved'],200);
         } catch (\Exception $e) {
             \DB::rollback();
 

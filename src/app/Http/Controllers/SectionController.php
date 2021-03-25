@@ -169,7 +169,7 @@ public function updateSection(UpdateSectionRequest $request,$id){
       if($request->teacher==null){
         $section=Section::where('id',"=",$id)->update(['name'=>$request['name'],'capacity'=>$request['capacity']]); 
         \DB::commit();
-        return ['message'=>'Successfully Added!','section'=>$section]; 
+        return ['message'=>'Successfully Updated!','section'=>$section]; 
      }
      else{
       $infoTeacher=Teacher::where('id','=',$request->teacher)->first();
@@ -177,7 +177,7 @@ public function updateSection(UpdateSectionRequest $request,$id){
         if($infoTeacher->section_id==$id){
          $section=Section::where('id',"=",$id)->update(['name'=>$request['name'],'capacity'=>$request['capacity']]); 
          \DB::commit();
-         return ['message'=>'Successfully Added!'];   
+         return ['message'=>'Successfully updated!', 'section' => $section];   
         }
         else{
           $assignTeacher=Teacher::where('id','=',$request->teacher)->with("section")->get();
@@ -190,7 +190,7 @@ public function updateSection(UpdateSectionRequest $request,$id){
        $updateSec=Section::where('id',"=",$id)->update(['name'=>$request['name'],'capacity'=>$request['capacity'],'teacher_id'=>$infoTeacher->id]);
        $infoTeacher->update(['section_id'=>$id]);
        \DB::commit();
-       return ['message'=>'Successfully Added!'];  
+       return ['message'=>'Successfully updated!'];  
       }  
 
      }
