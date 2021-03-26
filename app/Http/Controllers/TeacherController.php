@@ -104,6 +104,7 @@ if($valids){
       
    }
 
+   
 //Function For Updating The Data Of Teachers
    public function updateTeacher(TeacherRequest $request,$id){
     $update=$request->validated();
@@ -167,24 +168,6 @@ if($valids){
    }
 
 
-
-
-
-//Function For Getting All OF All Avalable Sectiong
-// public function availableSection(){
-//     try{
-//     $sectionTable=Section::where('teacher_id','=',null)->cursor();
-//     $arraySection=[];
-//     foreach($sectionTable as $sec){
-//       $sec->name="Gr. ".$sec->gradelevel->grade_level." --- ".$sec->name;   
-//       array_push($arraySection,$sec->makeHidden(['id','teacher_id','gradelevel','total_students','capacity','gradelevel_id','students_id','created_at','updated_at']));
-//     }
-//     return response()->json($arraySection); 
-//    } 
-//     catch(\Exception $e){
-//          return response()->json(['error'=> $e->getMessage()],500);
-//    } 
-// }
 
 
 }

@@ -77,7 +77,7 @@ class SectionController extends Controller
 }
 
 
-//Function For Getting The All Sections In GradelevelSections
+//Function For Getting The All Sections In GradelevelSections in Allsections.Vue
  public function allGradeLevelSections(){
    try{
   $arraySection=[];
@@ -87,19 +87,19 @@ class SectionController extends Controller
            $val->gradelevel->makeHidden(['students','sections','created_at','updated_at']);
             if($val->teacher_id==null){
               $val->gradelevel_id=$val->teacher_id;
-              $val->teacher_id="No Teacher";
-              array_push($arraySection,$val->makeHidden(['students','created_at','updated_at']));
+              $val->teacher_id="No Adviser";
+              array_push($arraySection,$val->makeHidden(['student_id','created_at','updated_at']));
             }
             else{
              $teacher=Teacher::where('id','=',$val->teacher_id)->first();
              $val->gradelevel_id=$val->teacher_id;
              $val->teacher_id=$teacher->name;
-             array_push($arraySection,$val->makeHidden(['students_id','created_at','updated_at']));
+             array_push($arraySection,$val->makeHidden(['student_id','created_at','updated_at']));
             }
         }
   }
 
-  return ['message'=>'Successfully Added!',"sections"=>$arraySection]; 
+  return response()->json(['message'=>'Successfully Added!',"sections"=>$arraySection],200);
    }
    catch(\Exception $e){
     return response()->json(['error' => $e->getMessage()],500);
@@ -220,25 +220,6 @@ public function updateSection(UpdateSectionRequest $request,$id){
     }
   }
  
-}
-
-
-//Function For Getting All Teachers For Sections
-public function allTeachersForSection()
-{
- try{
-    $arrayTeacher=[];
-    $List=Teacher::cursor();
-   foreach($List as $teacher){
-          $teacher->makeHidden(['contact','students_id','section_id','email','updated_at']);
-          $teacher->created_at=$teacher->id;
-          array_push($arrayTeacher,$teacher);   
-     }
-       return response()->json($arrayTeacher,200); 
-    }
-    catch(\Exception $e){
-     return response()->json(['error'=> $e->getMessage()],500);
-    } 
 }
 
 
