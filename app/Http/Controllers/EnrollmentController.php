@@ -198,7 +198,7 @@ class EnrollmentController extends Controller
     public function allDeclinedStudents() {
         $declinedEnrollments = Enrollment::where('enrollment_status','Declined')->with('student')->orderByDesc('id')->get();
 
-        return response()->json(['declinedEnrollment' => $declinedEnrollments],200);
+        return response()->json(['declinedEnrollment' => $declinedEnrollments]);
     }
 
     public function approveEnrollment(Request $request, $id) {

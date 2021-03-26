@@ -30,7 +30,7 @@ class Authentication extends Controller
                                         ->first();
 
                     $classmates = Enrollment::with('student')
-                                            ->where('student_section',$userInfo->enrollment->student_section)->first();
+                                            ->where('student_section',$userInfo->enrollment->student_section)->get();
 
                     $section = Section::with('adviser')
                                         ->where('name',$userInfo->enrollment->student_section)
