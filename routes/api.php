@@ -7,6 +7,7 @@ use App\Http\Controllers\TeacherController;
 use App\Http\Controllers\SectionController;
 use App\Http\Controllers\Authentication;
 use App\Http\Controllers\EnrollmentController;
+use App\Http\Controllers\SubjectController;
 
 use App\Models\User;
 /*
@@ -26,61 +27,87 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 
 //-------------------Teacher  Controller----------------------------//
 //Adding A New Teacher
-Route::post('addNewTeacher',[TeacherController::class, 'addTeacher']);
+Route::post('addNewTeacher', [TeacherController::class, 'addTeacher']);
 
 //Getting All Teachers
-Route::get('allTeacher',[TeacherController::class, 'allTeachers']);
+Route::get('allTeacher', [TeacherController::class, 'allTeachers']);
 
 //Deleting All Teachers
-Route::get('delTeacher/{id}',[TeacherController::class, 'removeTeacher']);
+Route::get('delTeacher/{id}', [TeacherController::class, 'removeTeacher']);
 
 //Updating A Teacher
-Route::post('updateTeacher/{id}',[TeacherController::class, 'updateTeacher']);
+Route::post('updateTeacher/{id}', [TeacherController::class, 'updateTeacher']);
 
 //----------------------Admin Controller-----------------------------//
-//Login For Admin 
-Route::post('/login',[Authentication::class, 'login']);
+//Login For Admin
+Route::post('/login', [Authentication::class, 'login']);
 
 //Getting The Admin Profile
-Route::get('/getAdminProfile',[Authentication::class, 'getAdminProfile']);
+Route::get('/getAdminProfile', [Authentication::class, 'getAdminProfile']);
 
 //Changing The Data In Admin Profile(ex. password)
-Route::post('/change',[Authentication::class, 'changePassword']);
+Route::post('/change', [Authentication::class, 'changePassword']);
 
-Route::get('/mark-all-read/{user}',[Authentication::class, "markAllAsRead"]);
+Route::get('/mark-all-read/{user}', [Authentication::class, 'markAllAsRead']);
 
-Route::get('/mark-as-opened/{id}',[Authentication::class, "markNotifAsOpened"]);
-
+Route::get('/mark-as-opened/{id}', [
+    Authentication::class,
+    'markNotifAsOpened',
+]);
 
 //--------------------------Section Controller---------------------//
 //Api For Adding Junior High School For A Section
-Route::post('addSection',[SectionController::class, 'addAnySection']);
+Route::post('addSection', [SectionController::class, 'addAnySection']);
 
 //Api For Getting All The Sections In Every GradeLevel
-Route::get('allGradeLevelSections',[SectionController::class,'allGradeLevelSections']);
+Route::get('allGradeLevelSections', [
+    SectionController::class,
+    'allGradeLevelSections',
+]);
 
 //Deleting Any Kind Of Sections
-Route::get('delAnySection/{id}',[SectionController::class, 'delAnySection']);
+Route::get('delAnySection/{id}', [SectionController::class, 'delAnySection']);
 
 //Updating Any Kind Of Sections
-Route::post('updateSection/{id}',[SectionController::class,'updateSection']);
+Route::post('updateSection/{id}', [SectionController::class, 'updateSection']);
 
-Route::get('/allSections',[SectionController::class, 'allSections']);
+Route::get('/allSections', [SectionController::class, 'allSections']);
 
 //--------------------------------------------------This Is For Enrollment Process API----------------------------------------//
 Route::post('/addStudent', [EnrollmentController::class, 'addStudent']);
+Route::get('/pendingEnrollment', [
+    EnrollmentController::class,
+    'allPendingStudents',
+]);
+Route::get('/approvedEnrollment', [
+    EnrollmentController::class,
+    'allEnrolledStudents',
+]);
+Route::get('/pendingEnrollments', [
+    EnrollmentController::class,
+    'allPendingStudents',
+]);
+Route::get('/approvedEnrollments', [
+    EnrollmentController::class,
+    'allEnrolledStudents',
+]);
+Route::get('/declinedEnrollments', [
+    EnrollmentController::class,
+    'allDeclinedStudents',
+]);
+Route::post('/addEnrollment', [EnrollmentController::class, 'addEnrollment']);
+Route::post('/approveEnrollment/{id}', [
+    EnrollmentController::class,
+    'approveEnrollment',
+]);
+Route::post('/declineEnrollment/{id}', [
+    EnrollmentController::class,
+    'declineEnrollment',
+]);
 
-Route::get('/pendingEnrollment',[EnrollmentController::class, 'allPendingStudents']);
+Route::get('/gradelevelSubject', [
+    SubjectController::class,
+    'allSubjectsByGrLevel',
+]);
 
-Route::get('/approvedEnrollment',[EnrollmentController::class , 'allEnrolledStudents']);
-
-Route::get('/pendingEnrollments', [EnrollmentController::class, 'allPendingStudents']);
-
-Route::get('/approvedEnrollments',[EnrollmentController::class , 'allEnrolledStudents']);
-
-Route::get('/declinedEnrollments', [EnrollmentController::class, 'allDeclinedStudents']);
-Route::post('/addEnrollment',[EnrollmentController::class, 'addEnrollment']);
-
-Route::post('/approveEnrollment/{id}', [EnrollmentController::class, 'approveEnrollment']);
-
-Route::post('/declineEnrollment/{id}', [EnrollmentController::class, 'declineEnrollment']);
+Route::post('/addSubject', [SubjectController::class, 'addSubjectInGrLevel']);

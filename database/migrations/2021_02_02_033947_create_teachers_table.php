@@ -19,7 +19,11 @@ class CreateTeachersTable extends Migration
             $table->string('email');
             $table->string('contact');
             $table->json('students_id')->nullable();
-            $table->integer('section_id')->unsigned()->nullable();
+            $table
+                ->integer('section_id')
+                ->unsigned()
+                ->nullable();
+            $table->string('subjects_id')->nullable();
             $table->timestamps();
         });
     }
@@ -33,5 +37,4 @@ class CreateTeachersTable extends Migration
     {
         Schema::dropIfExists('teachers');
     }
-
 }

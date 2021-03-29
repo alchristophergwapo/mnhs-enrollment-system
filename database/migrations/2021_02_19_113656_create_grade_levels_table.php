@@ -18,6 +18,7 @@ class CreateGradeLevelsTable extends Migration
             $table->json('sections')->nullable();
             $table->json('students')->nullable();
             $table->integer('grade_level')->unique();
+            $table->string('subjects_id')->nullable();
             $table->timestamps();
         });
     }

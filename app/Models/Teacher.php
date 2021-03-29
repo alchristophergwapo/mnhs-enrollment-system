@@ -15,11 +15,11 @@ class Teacher extends Model
      * @var array
      */
 
-    protected $table="teachers";
+    protected $table = 'teachers';
 
     protected $casts = [
-        'students_id'=> 'array',
-    ]; 
+        'students_id' => 'array',
+    ];
 
     protected $fillable = [
         'name',
@@ -27,12 +27,13 @@ class Teacher extends Model
         'contact',
         'students_id',
         'section_id',
+        'subjects_id',
     ];
 
-    protected $guarded=[];
+    protected $guarded = [];
 
-   
-    public function section(){
-        return $this->hasOne('App\Models\Section','id','section_id');
+    public function section()
+    {
+        return $this->hasOne('App\Models\Section', 'id', 'section_id');
     }
 }

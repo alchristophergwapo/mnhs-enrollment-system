@@ -10,18 +10,20 @@ class GradeLevel extends Model
     use HasFactory;
 
     protected $casts = [
-        'sections'=> 'array',
-        'students'=> 'array'
+        'sections' => 'array',
+        'students' => 'array',
     ];
 
     protected $fillable = [
         'sections',
         'students',
         'grade_level',
-        'students'
+        'students',
+        'subjects_id',
     ];
 
-    public function sections(){
-        return $this->hasMany('App\Models\Section','gradelevel_id','id');
+    public function sections()
+    {
+        return $this->hasMany('App\Models\Section', 'gradelevel_id', 'id');
     }
 }
