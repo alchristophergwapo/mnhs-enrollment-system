@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 
+use Illuminate\Support\Facades\Validator;
+
 use App\Http\Requests\SubjectRequest;
 
 use App\Models\Subject;
@@ -27,38 +29,59 @@ class SubjectController extends Controller
     public function addSubjectInGrLevel(Request $request)
     {
         $datas = $request->all();
+        $added = 0;
         // return response(count($data));
         foreach ($datas as $data) {
             $gradelevel = GradeLevel::where(
                 'grade_level',
                 '=',
-                $data['grade_level']
+                $data['grade_level_id']
             )->first();
+            // return response($gradelevel);
             $teacher = Teacher::where('name', $data['teacher_id'])->first();
-            $newRequest = new Request($data);
-            $newRequest->teacher_id = $teacher->id;
-            $newRequest->grade_level_id = $gradelevel->id;
-            $validated = $newRequest->validate([
-                'name' => ['required', 'string', 'min:2', 'max:255'],
-                'teacher_id' => ['required'],
-                'grade_level_id' => ['required', 'integer'],
-            ]);
-            return response($validated);
-            if ($validated) {
-                try {
-                    \DB::beginTransaction();
-                    $subject = Subject::create([
-                        'name' => $validated->name,
-                        'teacher_id' => $validated->teacher_id,
-                        'grade_level_id' => $gradelevel->id,
-                    ]);
-                    // \DB::commit();
-                    return response(['success' => 'Added Successfully.']);
-                } catch (\Exception $e) {
-                    \DB::rollback();
-                    return response(['error' => $e->getMessage()], 500);
+            $subOnDb = Subject::where('name', '=', $data['name'])
+                ->where('grade_level_id', '=', $gradelevel->id)
+                ->first();
+
+            if ($subOnDb == null) {
+                $newRequest = [
+                    'name' => $data['name'],
+                    'teacher_id' => $teacher->id,
+                    'grade_level_id' => $gradelevel->id,
+                ];
+
+                $validated = Validator::make($newRequest, [
+                    'name' => ['required', 'string', 'min:2', 'max:255'],
+                    'teacher_id' => ['required'],
+                    'grade_level_id' => ['required', 'integer'],
+                ])->validate();
+
+                if ($validated) {
+                    try {
+                        \DB::beginTransaction();
+                        $subject = Subject::create($validated);
+                        \DB::commit();
+                        $added += 1;
+                    } catch (\Exception $e) {
+                        \DB::rollback();
+                        return response(['error' => $e->getMessage()], 500);
+                    }
                 }
+            } else {
+                return response(
+                    [
+                        'error' =>
+                            $data['name'] .
+                            ' already exist on Grade ' .
+                            $gradelevel->grade_level,
+                    ],
+                    400
+                );
             }
+        }
+
+        if ($added == count($datas)) {
+            return response(['success' => 'Added Successfully.']);
         }
     }
 }

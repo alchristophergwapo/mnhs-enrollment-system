@@ -105,7 +105,7 @@ Route::post('/declineEnrollment/{id}', [
     'declineEnrollment',
 ]);
 
-Route::get('/gradelevelSubject', [
+Route::get('/gradelevelSubject/{grade_level}', [
     SubjectController::class,
     'allSubjectsByGrLevel',
 ]);

@@ -25,7 +25,7 @@ class Teacher extends Model
         'name',
         'email',
         'contact',
-        'students_id',
+        'grade_level_id',
         'section_id',
         'subjects_id',
     ];

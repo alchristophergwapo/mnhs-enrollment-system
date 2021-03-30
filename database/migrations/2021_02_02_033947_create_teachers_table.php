@@ -18,11 +18,8 @@ class CreateTeachersTable extends Migration
             $table->string('name');
             $table->string('email');
             $table->string('contact');
-            $table->json('students_id')->nullable();
-            $table
-                ->integer('section_id')
-                ->unsigned()
-                ->nullable();
+            $table->string('grade_level_id')->nullable();
+            $table->integer('section_id')->nullable();
             $table->string('subjects_id')->nullable();
             $table->timestamps();
         });
