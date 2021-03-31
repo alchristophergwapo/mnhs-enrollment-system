@@ -37,20 +37,28 @@ class SubjectController extends Controller
                 $data['grade_level_id']
             )->first();
             // return response($gradelevel);
-            $teacher = Teacher::where('name', $data['teacher_id'])->first();
-            $subOnDb = Subject::where('name', '=', $data['name'])
+            $teacher = Teacher::where(
+                'teacher_name',
+                $data['teacher_id']
+            )->first();
+            $subOnDb = Subject::where('subject_name', '=', $data['name'])
                 ->where('grade_level_id', '=', $gradelevel->id)
                 ->first();
 
             if ($subOnDb == null) {
                 $newRequest = [
-                    'name' => $data['name'],
+                    'subject_name' => $data['name'],
                     'teacher_id' => $teacher->id,
                     'grade_level_id' => $gradelevel->id,
                 ];
 
                 $validated = Validator::make($newRequest, [
-                    'name' => ['required', 'string', 'min:2', 'max:255'],
+                    'subject_name' => [
+                        'required',
+                        'string',
+                        'min:2',
+                        'max:255',
+                    ],
                     'teacher_id' => ['required'],
                     'grade_level_id' => ['required', 'integer'],
                 ])->validate();

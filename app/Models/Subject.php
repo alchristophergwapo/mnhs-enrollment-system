@@ -15,5 +15,10 @@ class Subject extends Model
      * @var array
      */
 
-    protected $fillable = ['name', 'teacher_id', 'grade_level_id', 'schedules'];
+    protected $fillable = [
+        'subject_name',
+        'teacher_id',
+        'grade_level_id',
+        'schedules',
+    ];
 }
