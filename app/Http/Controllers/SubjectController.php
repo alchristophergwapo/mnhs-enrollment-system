@@ -17,11 +17,10 @@ class SubjectController extends Controller
     public function allSubjectsByGrLevel($grade)
     {
         $gradelevel = GradeLevel::where('grade_level', '=', $grade)->first();
-        $subjects = Subject::where(
-            'grade_level_id',
-            '=',
-            $gradelevel->id
-        )->get();
+        $subjects = Subject::where('grade_level_id', '=', $gradelevel->id)
+            ->join('teachers', 'subjects.teacher_id', 'teachers.id')
+            ->select('subjects.*', 'teachers.teacher_name')
+            ->get();
 
         return response(['subjects' => $subjects]);
     }

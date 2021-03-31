@@ -22,7 +22,7 @@ class Teacher extends Model
     ];
 
     protected $fillable = [
-        'name',
+        'teacher_name',
         'email',
         'contact',
         'grade_level_id',
