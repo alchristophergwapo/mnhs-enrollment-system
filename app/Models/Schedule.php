@@ -24,8 +24,8 @@ class Schedule extends Model
         'teacher_id',
     ];
 
-    // public function section()
-    // {
-    //     return null;
-    // }
+    public function section()
+    {
+        return belongsTo('App\Models\Section', 'id', 'section_id');
+    }
 }
