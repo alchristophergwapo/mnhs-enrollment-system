@@ -49,14 +49,6 @@ class SectionController extends Controller
 
                 for ($i = 0; $i < count($schedules); $i++) {
                     $sched = $schedules[$i];
-                    // $start_time = date_create_from_format(
-                    //     'd-m-Y H:i',
-                    //     $sched['start_time']
-                    // );
-                    // $end_time = date_create_from_format(
-                    //     'd-m-Y H:i',
-                    //     $sched['end_time']
-                    // );
 
                     $new = new Request([
                         'section_id' => $section->id,
@@ -76,50 +68,44 @@ class SectionController extends Controller
                     ]);
 
                     if ($validatedSched) {
-                        // $newSched = Schedule::create($validatedSched);
+                        $newSched = Schedule::create($validatedSched);
                         array_push($newScheds, $validatedSched);
                     }
                 }
 
-                return response([
-                    'newScheds' => $newScheds,
-                    // 'schedules' => $schedules,
-                    'section' => $section,
-                ]);
-
-                // if ($request->teacher == null) {
-                //     \DB::commit();
-                //     return ['message' => 'Successfully Added!'];
-                // } else {
-                //     $teachers = Teacher::where('id', '=', $request->teacher)
-                //         ->with('section')
-                //         ->first();
-                //     if ($teachers->section_id != null) {
-                //         return response()->json(
-                //             [
-                //                 'failed' => $teachers->section->name,
-                //                 'teacher' => $teachers->teacher_name,
-                //             ],
-                //             200
-                //         );
-                //     } else {
-                //         $updateSection = Section::where(
-                //             'id',
-                //             '=',
-                //             $section->id
-                //         )->update([
-                //             'teacher_id' => $teachers->id,
-                //             'gradelevel_id' => $grade->id,
-                //         ]);
-                //         $updateTeacher = Teacher::where(
-                //             'id',
-                //             '=',
-                //             $teachers->id
-                //         )->update(['section_id' => $section->id]);
-                //         \DB::commit();
-                //         return ['message' => 'Successfully Added!'];
-                //     }
-                // }
+                if ($request->teacher == null) {
+                    \DB::commit();
+                    return ['message' => 'Successfully Added!'];
+                } else {
+                    $teachers = Teacher::where('id', '=', $request->teacher)
+                        ->with('section')
+                        ->first();
+                    if ($teachers->section_id != null) {
+                        return response()->json(
+                            [
+                                'failed' => $teachers->section->name,
+                                'teacher' => $teachers->teacher_name,
+                            ],
+                            200
+                        );
+                    } else {
+                        $updateSection = Section::where(
+                            'id',
+                            '=',
+                            $section->id
+                        )->update([
+                            'teacher_id' => $teachers->id,
+                            'gradelevel_id' => $grade->id,
+                        ]);
+                        $updateTeacher = Teacher::where(
+                            'id',
+                            '=',
+                            $teachers->id
+                        )->update(['section_id' => $section->id]);
+                        \DB::commit();
+                        return ['message' => 'Successfully Added!'];
+                    }
+                }
             } catch (\Exception $e) {
                 \DB::rollback();
                 return response()->json(['error' => $e->getMessage()], 500);
