@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Validator;
 use App\Models\GradeLevel;
 use App\Models\Section;
 use App\Models\Teacher;
+use App\Models\Schedule;
 
 use Illuminate\Support\Str;
 use App\Http\Requests\SectionRequest;
@@ -32,113 +33,97 @@ class SectionController extends Controller
         if ($addSection) {
             try {
                 \DB::beginTransaction();
-                $schedules = $request->schedules;
-                if ($request->teacher == null) {
-                    $section = Section::create($addSection);
-                    for ($i = 0; $i < count($schedules); $i++) {
-                        $schedules[$i]['section_id'] = $section->id;
-                    }
-                    $nSched = $this->addSchedule($schedules);
-                    return response([$nSched, $schedules]);
-                    // $grade = GradeLevel::where(
-                    //     'grade_level',
-                    //     '=',
-                    //     $request['grade']
-                    // )->first();
-                    // $updated = Section::where('id', '=', $section->id)->update([
-                    //     'gradelevel_id' => $grade->id,
-                    // ]);
-                    // if ($grade->sections == null) {
-                    //     $grade->update(['sections' => $section->id]);
-                    //     \DB::commit();
-                    //     return ['message' => 'Successfully Added!'];
-                    // } else {
-                    //     $grade->update([
-                    //         'sections' => $grade->sections . ',' . $section->id,
-                    //     ]);
-                    //     \DB::commit();
-                    //     return ['message' => 'Successfully Added!'];
-                    // }
-                } else {
-                    $teachers = Teacher::where('id', '=', $request->teacher)
-                        ->with('section')
-                        ->first();
-                    if ($teachers->section_id != null) {
-                        return response()->json(
-                            [
-                                'failed' => $teachers->section->name,
-                                'teacher' => $teachers->teacher_name,
-                            ],
-                            200
-                        );
-                    } else {
-                        $createSection = Section::create($addSection);
-                        for ($i = 0; $i < count($schedules); $i++) {
-                            $schedules[$i]['section_id'] = $createSection->id;
-                        }
-                        $newSched = $this->addSchedule($schedules);
 
-                        return response([
-                            $newSched,
-                            $schedules,
-                            $createSection,
-                        ]);
-                        // $updateSection = Section::where(
-                        //     'id',
-                        //     '=',
-                        //     $createSection->id
-                        // )->update(['teacher_id' => $teachers->id]);
-                        // $updateTeacher = Teacher::where(
-                        //     'id',
-                        //     '=',
-                        //     $teachers->id
-                        // )->update(['section_id' => $createSection->id]);
-                        // $updateGrade = GradeLevel::where(
-                        //     'grade_level',
-                        //     '=',
-                        //     $request['grade']
-                        // )->first();
-                        // $update = Section::where(
-                        //     'id',
-                        //     '=',
-                        //     $createSection->id
-                        // )->update(['gradelevel_id' => $updateGrade->id]);
-                        // if ($updateGrade->sections == null) {
-                        //     $updateGrade->update([
-                        //         'sections' => $createSection->id,
-                        //     ]);
-                        //     \DB::commit();
-                        //     return ['message' => 'Successfully Added!'];
-                        // } else {
-                        //     $updateGrade->update([
-                        //         'sections' =>
-                        //             $updateGrade->sections .
-                        //             ',' .
-                        //             $createSection->id,
-                        //     ]);
-                        //     \DB::commit();
-                        //     return ['message' => 'Successfully Added!'];
-                        // }
+                $schedules = $request->schedules;
+                $newScheds = [];
+                $section = Section::create($addSection);
+
+                $grade = GradeLevel::where(
+                    'grade_level',
+                    $request['grade']
+                )->first();
+
+                $updated = Section::where('id', '=', $section->id)->update([
+                    'gradelevel_id' => $grade->id,
+                ]);
+
+                for ($i = 0; $i < count($schedules); $i++) {
+                    $sched = $schedules[$i];
+                    // $start_time = date_create_from_format(
+                    //     'd-m-Y H:i',
+                    //     $sched['start_time']
+                    // );
+                    // $end_time = date_create_from_format(
+                    //     'd-m-Y H:i',
+                    //     $sched['end_time']
+                    // );
+
+                    $new = new Request([
+                        'section_id' => $section->id,
+                        'subject_id' => $sched['subject_id'],
+                        'day' => $sched['day'],
+                        'start_time' => $sched['start_time'],
+                        'end_time' => $sched['end_time'],
+                        'teacher_id' => $sched['teacher_id'],
+                    ]);
+                    $validatedSched = $new->validate([
+                        'section_id' => 'required',
+                        'subject_id' => 'required',
+                        'day' => 'required|string|regex:/^[a-zA-Z]+$/u',
+                        'start_time' => 'required|date_format:h:i A',
+                        'end_time' => 'required|date_format:h:i A',
+                        'teacher_id' => 'required',
+                    ]);
+
+                    if ($validatedSched) {
+                        // $newSched = Schedule::create($validatedSched);
+                        array_push($newScheds, $validatedSched);
                     }
                 }
+
+                return response([
+                    'newScheds' => $newScheds,
+                    // 'schedules' => $schedules,
+                    'section' => $section,
+                ]);
+
+                // if ($request->teacher == null) {
+                //     \DB::commit();
+                //     return ['message' => 'Successfully Added!'];
+                // } else {
+                //     $teachers = Teacher::where('id', '=', $request->teacher)
+                //         ->with('section')
+                //         ->first();
+                //     if ($teachers->section_id != null) {
+                //         return response()->json(
+                //             [
+                //                 'failed' => $teachers->section->name,
+                //                 'teacher' => $teachers->teacher_name,
+                //             ],
+                //             200
+                //         );
+                //     } else {
+                //         $updateSection = Section::where(
+                //             'id',
+                //             '=',
+                //             $section->id
+                //         )->update([
+                //             'teacher_id' => $teachers->id,
+                //             'gradelevel_id' => $grade->id,
+                //         ]);
+                //         $updateTeacher = Teacher::where(
+                //             'id',
+                //             '=',
+                //             $teachers->id
+                //         )->update(['section_id' => $section->id]);
+                //         \DB::commit();
+                //         return ['message' => 'Successfully Added!'];
+                //     }
+                // }
             } catch (\Exception $e) {
                 \DB::rollback();
                 return response()->json(['error' => $e->getMessage()], 500);
             }
-        }
-    }
-
-    public function addSchedule($schedules)
-    {
-        foreach ($schedules as $sched) {
-            $validated = Validator::make($sched, [
-                'section_id',
-                'subjects',
-                'day',
-                'start_time',
-                'end_time',
-                'teacher_id',
-            ])->validate();
         }
     }
 

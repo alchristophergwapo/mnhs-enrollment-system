@@ -23,9 +23,9 @@ class Section extends Model
         'capacity',
         'total_students',
         'teacher_id',
-        'student_id',
+        // 'student_id',
         'gradelevel_id',
-        'schedules',
+        // 'schedules',
     ];
 
     public function gradelevel()
