@@ -62,8 +62,8 @@ class SectionController extends Controller
                         'section_id' => 'required',
                         'subject_id' => 'required',
                         'day' => 'required|string|regex:/^[a-zA-Z]+$/u',
-                        'start_time' => 'required|date_format:h:i A',
-                        'end_time' => 'required|date_format:h:i A',
+                        'start_time' => 'required|date_format:h:i',
+                        'end_time' => 'required|date_format:h:i',
                         'teacher_id' => 'required',
                     ]);
 

@@ -37,10 +37,10 @@ class SubjectController extends Controller
                 $data['grade_level_id']
             )->first();
             // return response($gradelevel);
-            $teacher = Teacher::where(
-                'teacher_name',
-                $data['teacher_id']
-            )->first();
+            // $teacher = Teacher::where(
+            //     'teacher_name',
+            //     $data['teacher_id']
+            // )->first();
             $subOnDb = Subject::where('subject_name', '=', $data['name'])
                 ->where('grade_level_id', '=', $gradelevel->id)
                 ->first();
@@ -48,7 +48,7 @@ class SubjectController extends Controller
             if ($subOnDb == null) {
                 $newRequest = [
                     'subject_name' => $data['name'],
-                    'teacher_id' => $teacher->id,
+                    'teacher_id' => $data['teacher_id'],
                     'grade_level_id' => $gradelevel->id,
                 ];
 
