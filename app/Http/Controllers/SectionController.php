@@ -19,8 +19,9 @@ class SectionController extends Controller
     public function allSections()
     {
         $sections = Section::with('gradelevel')
-            ->join('teachers', 'sections.teacher_id', 'teachers.id')
-            ->select('sections.*', 'teachers.teacher_name')
+            // ->join('teachers', 'sections.teacher_id', 'teachers.id')
+            // ->select('sections.*', 'teachers.teacher_name')
+            ->with('adviser')
             ->get();
         return response()->json(['sections' => $sections], 200);
     }

@@ -105,6 +105,10 @@ Route::post('/declineEnrollment/{id}', [
     EnrollmentController::class,
     'declineEnrollment',
 ]);
+Route::get('/studentSectionDetails/{section}', [
+    EnrollmentController::class,
+    'studentSectionDetails',
+]);
 
 Route::get('/gradelevelSubject/{grade_level}', [
     SubjectController::class,
