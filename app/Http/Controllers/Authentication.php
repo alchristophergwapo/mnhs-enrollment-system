@@ -30,13 +30,6 @@ class Authentication extends Controller
                         ->where('lrn', $user->username)
                         ->first();
 
-                    // $classmates = Enrollment::with('student')
-                    //     ->where(
-                    //         'student_section',
-                    //         $userInfo->enrollment->student_section
-                    //     )
-                    //     ->get();
-
                     $section = Section::with('adviser')
                         ->where('name', $userInfo->enrollment->student_section)
                         ->first();
@@ -46,7 +39,6 @@ class Authentication extends Controller
                     return response([
                         'user' => $user,
                         'userInfo' => $userInfo,
-                        // 'classmates' => $classmates,
                     ]);
                 }
             } else {

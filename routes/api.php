@@ -121,3 +121,4 @@ Route::get('/classSchedules/{section_id}', [
     ScheduleController::class,
     'getSectionSchedule',
 ]);
+Route::post('/editSchedules', [ScheduleController::class, 'editSchedules']);
