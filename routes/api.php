@@ -122,3 +122,8 @@ Route::get('/classSchedules/{section_id}', [
     'getSectionSchedule',
 ]);
 Route::post('/editSchedules', [ScheduleController::class, 'editSchedules']);
+
+Route::get('/getTeacherSchedule/{teacher_id}', [
+    ScheduleController::class,
+    'getTeacherSchedule',
+]);

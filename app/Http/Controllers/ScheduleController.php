@@ -29,6 +29,17 @@ class ScheduleController extends Controller
         return response(['schedules' => $schedules]);
     }
 
+    public function getTeacherSchedule($teacher_id)
+    {
+        $teacher_schedule = \DB::table('schedules')
+            ->where('schedules.teacher_id', $teacher_id)
+            ->join('subjects', 'schedules.subject_id', 'subjects.id')
+            ->join('sections', 'schedules.section_id', 'sections.id')
+            ->select('schedules.*', 'sections.name', 'subjects.subject_name')
+            ->get();
+        return response()->json(['schedules' => $teacher_schedule]);
+    }
+
     public function editSchedules(Request $request)
     {
         $schedules = $request->all();
