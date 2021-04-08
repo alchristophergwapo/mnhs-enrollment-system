@@ -22,7 +22,7 @@ class TeacherFactory extends Factory
     public function definition()
     {
         return [
-            'name' => $this->faker->name,
+            'teacher_name' => $this->faker->name,
             'email' => preg_replace('/@example\..*/', '@gmail.com', $this->faker->safeEmail),
             'contact' => '09'.$this->faker->numberBetween(100000000,999999999)
         ];

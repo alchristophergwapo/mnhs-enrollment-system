@@ -13,7 +13,7 @@ class SubjectRequest extends FormRequest
      */
     public function authorize()
     {
-        return false;
+        return true;
     }
 
     /**
@@ -24,8 +24,13 @@ class SubjectRequest extends FormRequest
     public function rules()
     {
         return [
-            'name' => ['required', 'string', 'min:2', 'max:255'],
-            'teacher_id' => ['required', 'integer'],
+            'subject_name' => [
+                'required',
+                'string',
+                'min:2',
+                'max:255',
+            ],
+            'teacher_id' => ['required'],
             'grade_level_id' => ['required', 'integer'],
         ];
     }

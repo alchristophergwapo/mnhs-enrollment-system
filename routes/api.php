@@ -9,7 +9,7 @@ use App\Http\Controllers\Authentication;
 use App\Http\Controllers\EnrollmentController;
 use App\Http\Controllers\SubjectController;
 use App\Http\Controllers\ScheduleController;
-
+use App\Http\Requests\SubjectRequest;
 use App\Models\User;
 /*
 |--------------------------------------------------------------------------
@@ -116,6 +116,8 @@ Route::get('/gradelevelSubject/{grade_level}', [
 ]);
 
 Route::post('/addSubject', [SubjectController::class, 'addSubjectInGrLevel']);
+Route::post('/updateSubject', [SubjectController::class, 'updateSubject']);
+Route::get('/deleteSubject/{id}',[SubjectController::class, 'deleteSubject']);
 
 Route::get('/classSchedules/{section_id}', [
     ScheduleController::class,
