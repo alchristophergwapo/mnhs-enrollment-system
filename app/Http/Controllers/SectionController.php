@@ -35,8 +35,6 @@ class SectionController extends Controller
             try {
                 \DB::beginTransaction();
 
-                $schedules = $request->schedules;
-                $newScheds = [];
                 $section = Section::create($addSection);
 
                 $grade = GradeLevel::where(
@@ -47,32 +45,6 @@ class SectionController extends Controller
                 $updated = Section::where('id', '=', $section->id)->update([
                     'gradelevel_id' => $grade->id,
                 ]);
-
-                for ($i = 0; $i < count($schedules); $i++) {
-                    $sched = $schedules[$i];
-
-                    $new = new Request([
-                        'section_id' => $section->id,
-                        'subject_id' => $sched['subject_id'],
-                        'day' => $sched['day'],
-                        'start_time' => $sched['start_time'],
-                        'end_time' => $sched['end_time'],
-                        'teacher_id' => $sched['teacher_id'],
-                    ]);
-                    $validatedSched = $new->validate([
-                        'section_id' => 'required',
-                        'subject_id' => 'required',
-                        'day' => 'required|string|regex:/^[a-zA-Z]+$/u',
-                        'start_time' => 'required|date_format:h:i',
-                        'end_time' => 'required|date_format:h:i',
-                        'teacher_id' => 'required',
-                    ]);
-
-                    if ($validatedSched) {
-                        $newSched = Schedule::create($validatedSched);
-                        array_push($newScheds, $validatedSched);
-                    }
-                }
 
                 if ($request->teacher == null) {
                     \DB::commit();

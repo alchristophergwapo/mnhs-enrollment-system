@@ -117,15 +117,15 @@ Route::get('/gradelevelSubject/{grade_level}', [
 
 Route::post('/addSubject', [SubjectController::class, 'addSubjectInGrLevel']);
 Route::post('/updateSubject', [SubjectController::class, 'updateSubject']);
-Route::get('/deleteSubject/{id}',[SubjectController::class, 'deleteSubject']);
+Route::get('/deleteSubject/{id}', [SubjectController::class, 'deleteSubject']);
 
 Route::get('/classSchedules/{section_id}', [
     ScheduleController::class,
     'getSectionSchedule',
 ]);
 Route::post('/editSchedules', [ScheduleController::class, 'editSchedules']);
-
 Route::get('/getTeacherSchedule/{teacher_id}', [
     ScheduleController::class,
     'getTeacherSchedule',
 ]);
+Route::post('/addSchedules', [ScheduleController::class, 'addSchedules']);
