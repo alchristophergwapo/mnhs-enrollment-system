@@ -24,20 +24,21 @@ class TeacherRequest extends FormRequest
     public function rules()
     {
         //'unique:teachers,name'
-     return [ 
-         'name' => ['required','string','max:50'],
-         'email' => ['required','email','max:50'],
-         'contact' => ['required','string','max:11','digits:11'],  
-         'student_id'=>['nullable'],
-         'section_id'=>['nullable'] 
-      ];
+        return [
+            'teacher_name' => ['required', 'string', 'max:50'],
+            'email' => ['required', 'email', 'max:50'],
+            'contact' => ['required', 'string', 'max:11', 'digits:11'],
+            'student_id' => ['nullable'],
+            'section_id' => ['nullable'],
+        ];
     }
 
     public function messages()
-{
-    return [
-        'name.required' => 'Fullname is required.',
-        'name.unique'=>'The fullname of the teacher must be unique.'
-    ];
-}
+    {
+        return [
+            'teacher_name.required' => 'Fullname is required.',
+            'teacher_name.unique' =>
+                'The fullname of the teacher must be unique.',
+        ];
+    }
 }
