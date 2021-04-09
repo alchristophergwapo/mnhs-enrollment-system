@@ -24,12 +24,12 @@ class UpdateSectionRequest extends FormRequest
     public function rules()
     {
         return [
-            'name' => ['required','string','max:50'],
-            'capacity' => ['required','numeric'],
-            'total_students'=>['nullable'],  
-            'student_id'=>['nullable'],
-            'teacher_id'=>['nullable'],
-            'gradelevel_id'=>['nullable'],
+            'name' => ['required', 'string', 'max:50'],
+            'capacity' => ['required', 'numeric'],
+            'total_students' => ['nullable'],
+            'student_id' => ['nullable'],
+            'teacher_id' => ['nullable'],
+            'gradelevel_id' => ['nullable'],
         ];
     }
 }
