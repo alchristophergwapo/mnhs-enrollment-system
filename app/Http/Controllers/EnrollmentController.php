@@ -16,16 +16,50 @@ use App\Models\SeniorHigh;
 use App\Models\Transferee;
 use App\Models\User;
 use App\Models\Section;
-use App\Models\GradeLevel;
 
 use App\Http\Requests\StudentEnrollmentRequest;
-use App\Http\Requests\TransfereeEnrollmentRequest;
-use App\Http\Requests\SeniorHighEnrollmentRequest;
-use App\Http\Requests\EnrollmentRequest;
 
 use Carbon\Carbon;
+
 class EnrollmentController extends Controller
 {
+    public function updateStudent(StudentEnrollmentRequest $request, $id)
+    {
+        $updated = $request->validated();
+        if ($updated) {
+            try {
+                error_log($id);
+                \DB::beginTransaction();
+                $student = Student::findOrFail($id)->update([
+                    'PSA' => $request->PSA,
+                    'LRN' => $request->LRN,
+                    'average' => $request->average,
+                    'firstname' => $request->firstname,
+                    'middlename' => $request->middlename,
+                    'lastname' => $request->lastname,
+                    'birthdate' => $request->birthdate,
+                    'age' => $request->age,
+                    'gender' => $request->gender,
+                    'IP' => $request->IP,
+                    'IP_community' => $request->IP_community,
+                    'mother_tongue' => $request->mother_tongue,
+                    'contact' => $request->contact,
+                    'address' => $request->address,
+                    'zipcode' => $request->zipcode,
+                    'father' => $request->father,
+                    'mother' => $request->mother,
+                    'guardian' => $request->guardian,
+                    'parent_number' => $request->parent_number,
+                ]);
+                \DB::commit();
+                return response()->json(['updated' => 'Student updated succesfully'], 200);
+            } catch (\Exception $e) {
+                \DB::rollback();
+                return response()->json(["error" => $e], 500);
+            }
+        }
+    }
+
     public function addStudent(StudentEnrollmentRequest $request)
     {
         $validated = $request->validated();
@@ -76,7 +110,7 @@ class EnrollmentController extends Controller
                     return response(
                         [
                             'error' =>
-                                'You have already submitted an enrollment',
+                            'You have already submitted an enrollment',
                             'currentEnrollment' => $enrollmentSubmitted,
                         ],
                         406
@@ -85,7 +119,7 @@ class EnrollmentController extends Controller
                     return response(
                         [
                             'error' =>
-                                'You have already submitted an enrollment/enrolled for grade ' .
+                            'You have already submitted an enrollment/enrolled for grade ' .
                                 $request->grade_level .
                                 ' last school year ' .
                                 $passEnrollment->enrollment->start_school_year .
@@ -150,14 +184,14 @@ class EnrollmentController extends Controller
                         Transferee::create([
                             'student_id' => $student->id,
                             'last_grade_completed' =>
-                                $request->last_grade_completed,
+                            $request->last_grade_completed,
                             'last_year_completed' =>
-                                $request->last_year_completed,
+                            $request->last_year_completed,
                             'last_school_attended' =>
-                                $request->last_school_attended,
+                            $request->last_school_attended,
                             'last_school_ID' => $request->last_school_ID,
                             'last_school_address' =>
-                                $request->last_school_address,
+                            $request->last_school_address,
                         ]);
                     }
 
@@ -305,8 +339,8 @@ class EnrollmentController extends Controller
                     return response()->json(
                         [
                             'message' =>
-                                $request->section .
-                                ' capacity is full. Please select another section or update max capacity',
+                            $request->section .
+                                $section->name . ' is full. Please select another section or update max capacity',
                         ],
                         400
                     );
@@ -315,7 +349,7 @@ class EnrollmentController extends Controller
                     return response()->json(
                         [
                             'message' =>
-                                $request->section .
+                            $request->section .
                                 ' cannot be found on the database. It may be deleted or have been modified.',
                         ],
                         404

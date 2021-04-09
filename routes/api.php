@@ -76,6 +76,9 @@ Route::get('/allSections', [SectionController::class, 'allSections']);
 
 //--------------------------------------------------This Is For Enrollment Process API----------------------------------------//
 Route::post('/addStudent', [EnrollmentController::class, 'addStudent']);
+//This is for updating the student details
+Route::post('/updateStudent/{id}', [EnrollmentController::class, 'updateStudent']);
+
 Route::get('/pendingEnrollment', [
     EnrollmentController::class,
     'allPendingStudents',

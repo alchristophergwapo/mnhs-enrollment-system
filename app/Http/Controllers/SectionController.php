@@ -26,7 +26,7 @@ class SectionController extends Controller
         return response()->json(['sections' => $sections], 200);
     }
 
-    //Function For Adding Section In Junior High School
+//Function For Adding Section In Junior High School
     public function addAnySection(SectionRequest $request)
     {
         $addSection = $request->validated();
@@ -86,7 +86,7 @@ class SectionController extends Controller
         }
     }
 
-    //Function For Getting The All Sections In GradelevelSections in Allsections.Vue
+//Function For Getting The All Sections In GradelevelSections in Allsections.Vue
     public function allGradeLevelSections()
     {
         try {
@@ -256,7 +256,7 @@ class SectionController extends Controller
                                         'failed' => $assignTeacher->get(0)
                                             ->section->name,
                                         'teacher' => $assignTeacher->get(0)
-                                            ->name,
+                                            ->teacher_name,
                                     ],
                                     200
                                 );

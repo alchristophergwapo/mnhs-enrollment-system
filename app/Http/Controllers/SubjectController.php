@@ -65,7 +65,6 @@ class SubjectController extends Controller
     {
         $subject = Subject::where('id', '=', $request->id)
             ->first();
-
         try {
             \DB::beginTransaction();
             $teacher = \DB::table('teachers')->where('teachers.id', '=', $request->teacher_id)
