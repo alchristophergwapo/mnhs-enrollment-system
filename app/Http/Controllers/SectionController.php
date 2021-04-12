@@ -14,19 +14,18 @@ use App\Models\Schedule;
 use Illuminate\Support\Str;
 use App\Http\Requests\SectionRequest;
 use App\Http\Requests\UpdateSectionRequest;
+
 class SectionController extends Controller
 {
     public function allSections()
     {
         $sections = Section::with('gradelevel')
-            // ->join('teachers', 'sections.teacher_id', 'teachers.id')
-            // ->select('sections.*', 'teachers.teacher_name')
             ->with('adviser')
             ->get();
         return response()->json(['sections' => $sections], 200);
     }
 
-//Function For Adding Section In Junior High School
+    //Function For Adding Section In Junior High School
     public function addAnySection(SectionRequest $request)
     {
         $addSection = $request->validated();
@@ -86,7 +85,7 @@ class SectionController extends Controller
         }
     }
 
-//Function For Getting The All Sections In GradelevelSections in Allsections.Vue
+    //Function For Getting The All Sections In GradelevelSections in Allsections.Vue
     public function allGradeLevelSections()
     {
         try {
@@ -174,7 +173,7 @@ class SectionController extends Controller
                 return [
                     'message' => 'Successfully Added!',
                     'section' =>
-                        'Grade ' . $section->get(0)->gradelevel->grade_level,
+                    'Grade ' . $section->get(0)->gradelevel->grade_level,
                 ];
             } else {
                 $gradelevel_section = Gradelevel::findOrFail(
@@ -195,7 +194,7 @@ class SectionController extends Controller
                 return [
                     'message' => 'Successfully Added!',
                     'section' =>
-                        'Grade ' . $section->get(0)->gradelevel->grade_level,
+                    'Grade ' . $section->get(0)->gradelevel->grade_level,
                 ];
             }
         } catch (\Exception $e) {
