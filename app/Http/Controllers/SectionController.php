@@ -21,7 +21,7 @@ class SectionController extends Controller
     {
         $sections = Section::with('gradelevel')
             ->with('adviser')
-            ->get();
+            ->all();
         return response()->json(['sections' => $sections], 200);
     }
 
