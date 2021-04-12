@@ -68,18 +68,12 @@ class Authentication extends Controller
             [
                 'username' => 'required',
                 'currentpassword' => [
-                    'required',
-                    // ,function($attribute, $value, $fail) {
-                    //     $user=User::where('username',$request->username)->first();
-                    //     if(!\Hash::check($value,$user->password)){
-                    //         $fail('Your current password is incorrect.');
-                    //      }
-                    // }
+                    'required'
                 ],
                 'new_password' =>
-                    'required|different:currentpassword|min:8|regex:/^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{6,}$/',
+                    'required|different:currentpassword|min:8|max:16|regex:/^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{6,}$/',
                 'confirm_password' =>
-                    'required|same:new_password|min:8|regex:/^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{6,}$/',
+                'required|same:new_password|min:8|max:16|regex:/^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{6,}$/',
             ],
             [
                 'new_password.regex' =>
