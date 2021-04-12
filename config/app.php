@@ -177,8 +177,6 @@ return [
 
         Laravel\Socialite\SocialiteServiceProvider::class,
 
-        Barryvdh\LaravelIdeHelper\IdeHelperServiceProvider::class,
-
     ],
 
     /*
