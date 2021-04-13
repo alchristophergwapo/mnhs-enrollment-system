@@ -10,6 +10,12 @@ use Illuminate\Support\Str;
 use App\Http\Requests\TeacherRequest;
 class TeacherController extends Controller
 {
+
+    public function allTeachersWithNoAdvisory() {
+        $teacher = Teacher::where('section_id', '=', null)->get();
+
+        return response(['teacher' => $teacher]);
+    }
     //Function For Adding A New Teacher
     public function addTeacher(TeacherRequest $request)
     {
@@ -74,30 +80,31 @@ class TeacherController extends Controller
     public function allTeachers()
     {
         try {
-            $array = [];
-            $List = Teacher::cursor();
-            foreach ($List as $teacher) {
-                if ($teacher->section_id == null) {
-                    $teacher->student_id = $teacher->section_id;
-                    array_push($array, $teacher);
-                } else {
-                    $sectionTable = Section::where(
-                        'id',
-                        '=',
-                        $teacher->section_id
-                    )
-                        ->with('gradelevel')
-                        ->get();
-                    $teacher->student_id = $teacher->section_id;
-                    $teacher->section_id =
-                        'Gr. ' .
-                        $sectionTable->get(0)->gradelevel->grade_level .
-                        ' --- ' .
-                        $sectionTable->get(0)->name;
-                    array_push($array, $teacher);
-                }
-            }
-            return response()->json($array, 200);
+            // $array = [];
+            // $List = Teacher::cursor();
+            // foreach ($List as $teacher) {
+            //     if ($teacher->section_id == null) {
+            //         $teacher->student_id = $teacher->section_id;
+            //         array_push($array, $teacher);
+            //     } else {
+            //         $sectionTable = Section::where(
+            //             'id',
+            //             '=',
+            //             $teacher->section_id
+            //         )
+            //             ->with('gradelevel')
+            //             ->get();
+            //         $teacher->student_id = $teacher->section_id;
+            //         $teacher->section_id =
+            //             'Gr. ' .
+            //             $sectionTable->get(0)->gradelevel->grade_level .
+            //             ' --- ' .
+            //             $sectionTable->get(0)->name;
+            //         array_push($array, $teacher);
+            //     }
+            // }
+            $teacher = Teacher::all();
+            return response()->json(['teacher' => $teacher], 200);
         } catch (\Exception $e) {
             return response()->json(['error' => $e->getMessage()], 500);
         }

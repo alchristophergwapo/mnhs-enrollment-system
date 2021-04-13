@@ -25,6 +25,13 @@ class SectionController extends Controller
         return response()->json(['sections' => $sections], 200);
     }
 
+    public function allSectionsWithNoAdviser()
+    {
+        $sections = Section::where('teacher_id', '=', null)->get();
+
+        return response(['sections' => $sections]);
+    }
+
     //Function For Adding Section In Junior High School
     public function addAnySection(SectionRequest $request)
     {

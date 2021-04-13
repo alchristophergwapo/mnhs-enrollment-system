@@ -25,7 +25,7 @@ class SubjectController extends Controller
                 ->select('subjects.*', 'teachers.teacher_name')
                 ->get();
 
-            return response(['subjects' => $subjects]);
+            return response(['subject' => $subjects]);
         }
     }
 

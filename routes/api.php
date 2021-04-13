@@ -9,8 +9,6 @@ use App\Http\Controllers\Authentication;
 use App\Http\Controllers\EnrollmentController;
 use App\Http\Controllers\SubjectController;
 use App\Http\Controllers\ScheduleController;
-use App\Http\Requests\SubjectRequest;
-use App\Models\User;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -38,6 +36,7 @@ Route::get('delTeacher/{id}', [TeacherController::class, 'removeTeacher']);
 
 //Updating A Teacher
 Route::post('updateTeacher/{id}', [TeacherController::class, 'updateTeacher']);
+Route::get('/allNoneAdvisoryTeacher', [TeacherController::class, 'allTeachersWithNoAdvisory']);
 
 //----------------------Admin Controller-----------------------------//
 //Login For Admin
@@ -73,6 +72,7 @@ Route::get('delAnySection/{id}', [SectionController::class, 'delAnySection']);
 Route::post('updateSection/{id}', [SectionController::class, 'updateSection']);
 
 Route::get('/allSections', [SectionController::class, 'allSections']);
+Route::get('/noAdviserSections', [SectionController::class, 'allSectionsWithNoAdviser']);
 
 //--------------------------------------------------This Is For Enrollment Process API----------------------------------------//
 Route::post('/addStudent', [EnrollmentController::class, 'addStudent']);
