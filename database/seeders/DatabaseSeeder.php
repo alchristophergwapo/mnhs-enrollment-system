@@ -4,12 +4,14 @@ namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
 
-use App\Models\Section;
 use App\Models\GradeLevel;
 use App\Models\Teacher;
 use App\Models\Student;
 use App\Models\Enrollment;
 use App\Models\User;
+
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Str;
 
 class DatabaseSeeder extends Seeder
 {
@@ -24,8 +26,8 @@ class DatabaseSeeder extends Seeder
         User::create([
             'user_type' => 'admin',
             'username' => 'Administrator',
-            'password' => \Hash::make('Password'),
-            'remember_token' => \Str::random(10),
+            'password' => Hash::make('Password'),
+            'remember_token' => Str::random(10),
         ]);
         Teacher::factory()->count(50)->create();
 
