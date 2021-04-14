@@ -14,7 +14,7 @@ class CreateTransfereeTable extends Migration
     public function up()
     {
         Schema::create('transferees', function (Blueprint $table) {
-            $table->id();
+            $table->increments('id');
             $table->integer('student_id');
             $table->string('last_grade_completed');
             $table->string('last_year_completed');
