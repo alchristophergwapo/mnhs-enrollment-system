@@ -1,2 +1,2 @@
-php private/bin/start_socket.php &
+php socket/bin/start_socket.php &
 exec "$@"
