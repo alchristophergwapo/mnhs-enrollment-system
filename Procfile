@@ -1,1 +1,1 @@
-web: private/bin/start_socket vendor/bin/heroku-php-nginx -C nginx_app.conf vendor/bin/heroku-php-apache2 public/
+web: socket/bin/start_socket vendor/bin/heroku-php-nginx -C nginx_app.conf vendor/bin/heroku-php-apache2 public/
