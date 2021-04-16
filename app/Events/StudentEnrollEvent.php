@@ -4,8 +4,6 @@ namespace App\Events;
 
 use Illuminate\Broadcasting\Channel;
 use Illuminate\Broadcasting\InteractsWithSockets;
-use Illuminate\Broadcasting\PresenceChannel;
-use Illuminate\Broadcasting\PrivateChannel;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
@@ -21,13 +19,16 @@ class StudentEnrollEvent implements ShouldBroadcast
      *
      * @return void
      */
-    public function __construct($student, $notifiable)
-    {
+    public function __construct(
+        $student,
+        $notifiable
+    ) {
         $this->student = $student;
         $this->notifiable = $notifiable;
     }
 
-    public function broadcastWith() {
+    public function broadcastWith()
+    {
         return [
             'student_enrolled' => $this->student,
             'notification' => $this->notifiable->notifications()->latest()->first(),
@@ -44,4 +45,9 @@ class StudentEnrollEvent implements ShouldBroadcast
     {
         return new Channel('student_enroll');
     }
+
+    // public function broadcastAs()
+    // {
+    //     return 'newEnrollment';
+    // }
 }

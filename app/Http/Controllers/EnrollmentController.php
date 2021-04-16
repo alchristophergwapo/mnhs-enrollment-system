@@ -197,7 +197,7 @@ class EnrollmentController extends Controller
 
                     $imageName = $request->card_image->getClientOriginalName();
 
-                    $enrollment = Enrollment::create([
+                    Enrollment::create([
                         'start_school_year' => Carbon::now()->format('Y'),
                         'end_school_year' => Carbon::now()->format('Y') + 1,
                         'enrollment_status' => $request->enrollment_status,
@@ -215,12 +215,14 @@ class EnrollmentController extends Controller
                     $notif = Student::with('enrollment')
                         ->where('id', '=', $student->id)
                         ->first();
-                    Notification::send(
-                        $admin,
-                        new StudentEnrollmentNotification($notif)
-                    );
-
+                    // Notification::send(
+                    //     $admin,
+                    //     new StudentEnrollmentNotification($notif)
+                    // );
+                    $admin->notify(new StudentEnrollmentNotification($notif));
                     broadcast(new StudentEnrollEvent($student, $admin));
+                    // event(new StudentEnrollEvent($student, $admin));
+
 
                     \DB::commit();
 

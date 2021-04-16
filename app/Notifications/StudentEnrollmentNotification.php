@@ -42,13 +42,13 @@ class StudentEnrollmentNotification extends Notification
      * @param  mixed  $notifiable
      * @return \Illuminate\Notifications\Messages\MailMessage
      */
-    public function toMail($notifiable)
-    {
-        return (new MailMessage)
-                    ->line('The introduction to the notification.')
-                    ->action('Notification Action', url('/'))
-                    ->line('Thank you for using our application!');
-    }
+    // public function toMail($notifiable)
+    // {
+    //     return (new MailMessage)
+    //                 ->line('The introduction to the notification.')
+    //                 ->action('Notification Action', url('/'))
+    //                 ->line('Thank you for using our application!');
+    // }
 
     /**
      * Get the array representation of the notification.
@@ -64,15 +64,23 @@ class StudentEnrollmentNotification extends Notification
         ];
     }
 
+    public function toDatabase($notifiable){
+        return [
+            'enrollment' => $this->enrollment,
+            'admin' => $notifiable
+        ];
+    }
+
     /**
      * Get the broadcastable representation of the notification.
      *
      * @param  mixed  $notifiable
      * @return BroadcastMessage
      */
-    // public function toBroadCast($notifiable){
-    //     return new BroadcastMessage([
-    //         'notification' => $notifiable->notifications()->latest()->first()
-    //     ]);
-    // }
+    public function toBroadCast($notifiable){
+        return new BroadcastMessage([
+            'enrollment' => $this->enrollment,
+            'notification' => $notifiable->notifications()->latest()->first()
+        ]);
+    }
 }
