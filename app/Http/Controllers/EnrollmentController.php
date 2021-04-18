@@ -34,12 +34,12 @@ class EnrollmentController extends Controller
                 $student = Student::findOrFail($id)->update([
                     'PSA' => $request->PSA,
                     'LRN' => $request->LRN,
-                    'average' => $request->average,
+                    'average' => (int)$request->average,
                     'firstname' => $request->firstname,
                     'middlename' => $request->middlename,
                     'lastname' => $request->lastname,
                     'birthdate' => $request->birthdate,
-                    'age' => $request->age,
+                    'age' => (int)$request->age,
                     'gender' => $request->gender,
                     'IP' => $request->IP,
                     'IP_community' => $request->IP_community,
@@ -131,8 +131,28 @@ class EnrollmentController extends Controller
                     );
                 } else {
                     \DB::beginTransaction();
-                    $student = Student::create($validated
-                );
+                    $student = Student::create([
+                        'grade_level' => (int)$request->grade_level,
+                        'PSA' => $request->PSA,
+                        'LRN' => $request->LRN,
+                        'average' => (int)$request->average,
+                        'firstname' => $request->firstname,
+                        'middlename' => $request->middlename,
+                        'lastname' => $request->lastname,
+                        'birthdate' => $request->birthdate,
+                        'age' => (int)$request->age,
+                        'gender' => $request->gender,
+                        'IP' => $request->IP,
+                        'IP_community' => $request->IP_community,
+                        'mother_tongue' => $request->mother_tongue,
+                        'contact' => $request->contact,
+                        'address' => $request->address,
+                        'zipcode' => $request->zipcode,
+                        'father' => $request->father,
+                        'mother' => $request->mother,
+                        'guardian' => $request->guardian,
+                        'parent_number' => $request->parent_number
+                    ]);
 
                     if ($request->isSeniorHigh == 'true') {
                         $request->validate([
