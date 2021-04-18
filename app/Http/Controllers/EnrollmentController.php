@@ -64,7 +64,6 @@ class EnrollmentController extends Controller
     public function addStudent(StudentEnrollmentRequest $request)
     {
         $validated = $request->validated();
-
         if ($validated) {
             try {
                 $enrollmentSubmitted = Student::query()
@@ -133,8 +132,8 @@ class EnrollmentController extends Controller
                 } else {
                     \DB::beginTransaction();
                     $student = Student::create([
-                        'grade_level' => $request->grade_level,
                         'PSA' => $request->PSA,
+                        'grade_level' => $request->grade_level,
                         'LRN' => $request->LRN,
                         'average' => $request->average,
                         'firstname' => $request->firstname,
@@ -144,7 +143,7 @@ class EnrollmentController extends Controller
                         'age' => $request->age,
                         'gender' => $request->gender,
                         'IP' => $request->IP,
-                        'IP_community' => $request->IP_Community,
+                        'IP_community' => $request->IP_community,
                         'mother_tongue' => $request->mother_tongue,
                         'contact' => $request->contact,
                         'address' => $request->address,
@@ -155,7 +154,7 @@ class EnrollmentController extends Controller
                         'parent_number' => $request->parent_number,
                     ]);
 
-                    if ($request->isSeniorHigh) {
+                    if ($request->isSeniorHigh == 'true') {
                         $request->validate([
                             'semester' => ['required'],
                             'track' => ['required'],
@@ -169,7 +168,7 @@ class EnrollmentController extends Controller
                         ]);
                     }
 
-                    if ($request->isBalikOrTransfer) {
+                    if ($request->isBalikOrTransfer == 'true') {
                         $request->validate([
                             'last_grade_completed' => [
                                 'required',
@@ -206,7 +205,7 @@ class EnrollmentController extends Controller
                         'card_image' => $imageName,
                     ]);
 
-                    $admin = User::where('username', 'admin')->first();
+                    $admin = User::where('username', 'Administrator')->first();
 
                     $notif = Student::with('enrollment')
                         ->where('id', '=', $student->id)
@@ -217,14 +216,12 @@ class EnrollmentController extends Controller
                             new StudentEnrollmentNotification($notif)
                         );
                     } catch (\Exception $e) {
-                        //throw $th;
                         \Log::error(get_class() . ' pusher event ' . $e);
                     }
 
                     try {
                         event(new StudentEnrollEvent($student, $admin));
                     } catch (\Exception $e) {
-                        //throw $th;
                         \Log::error(get_class() . ' pusher event ' . $e);
                     }
 
@@ -246,7 +243,7 @@ class EnrollmentController extends Controller
             } catch (\Exception $e) {
                 \DB::rollback();
                 \Log::error(get_class() . 'pusher event');
-                return response()->json(['error' => $e->getMessage()], 500);
+                return response()->json(['error' => $e], 500);
             }
         }
     }

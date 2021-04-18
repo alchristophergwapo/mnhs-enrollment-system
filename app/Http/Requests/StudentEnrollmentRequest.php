@@ -24,9 +24,10 @@ class StudentEnrollmentRequest extends FormRequest
     public function rules()
     {
         return [
+            'average' => ['required', 'numeric', 'min:0', 'max:100'],
             'grade_level' => [
                 'required',
-                'integer',
+                'numeric',
                 'min:7',
                 'max:12'
             ],
@@ -54,7 +55,7 @@ class StudentEnrollmentRequest extends FormRequest
             ],
             'age' => [
                 'required',
-                'integer',
+                'numeric',
                 'min:11',
                 'max:30'
             ],
@@ -93,7 +94,7 @@ class StudentEnrollmentRequest extends FormRequest
                 'min:3',
                 'max:50',
             ],
-            'parent_number' =>[ 
+            'parent_number' => [
                 'required',
                 'min:11',
                 'max:11'
