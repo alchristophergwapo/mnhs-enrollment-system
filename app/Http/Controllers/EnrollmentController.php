@@ -69,7 +69,7 @@ class EnrollmentController extends Controller
                 $enrollmentSubmitted = Student::query()
                     ->where([
                         ['LRN', '=', $request->LRN],
-                        ['grade_level', '<=', $request->grade_level],
+                        ['grade_level', '<=', (int)$request->grade_level],
                         ['firstname', '=', $request->firstname],
                         ['middlename', '=', $request->middlename],
                         ['lastname', '=', $request->lastname],
@@ -89,7 +89,7 @@ class EnrollmentController extends Controller
                 $passEnrollment = Student::query()
                     ->where([
                         ['LRN', '=', $request->LRN],
-                        ['grade_level', '=', $request->grade_level],
+                        ['grade_level', '=', (int)$request->grade_level],
                         ['firstname', '=', $request->firstname],
                         ['middlename', '=', $request->middlename],
                         ['lastname', '=', $request->lastname],
