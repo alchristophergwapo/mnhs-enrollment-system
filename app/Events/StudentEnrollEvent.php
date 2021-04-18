@@ -14,6 +14,7 @@ class StudentEnrollEvent implements ShouldBroadcast
 
     public $student;
     public $notifiable;
+    public $notification;
     /**
      * Create a new event instance.
      *
@@ -25,16 +26,18 @@ class StudentEnrollEvent implements ShouldBroadcast
     ) {
         $this->student = $student;
         $this->notifiable = $notifiable;
+        $this->notification = $notifiable->notifications()->latest()->first();
     }
 
-    public function broadcastWith()
-    {
-        return [
-            'student_enrolled' => $this->student,
-            'notification' => $this->notifiable->notifications()->latest()->first(),
-            'user' => $this->notifiable,
-        ];
-    }
+    // public function broadcastWith()
+    // {
+    //     return [
+    //         'event' => 'event triggered',
+    //         // 'student_enrolled' => $this->student,
+    //         // 'notification' => $this->notifiable->notifications()->latest()->first(),
+    //         // 'user' => $this->notifiable,
+    //     ];
+    // }
 
     /**
      * Get the channels the event should broadcast on.
@@ -43,7 +46,13 @@ class StudentEnrollEvent implements ShouldBroadcast
      */
     public function broadcastOn()
     {
-        return new Channel('student_enroll');
+        // return $this->student;
+        return new Channel('student-enroll', $this->student, $this->notifiable, $this->notification);
+    }
+
+    public function broadcastAs()
+    {
+        return 'new-enrollment';
     }
 
     // public function broadcastAs()

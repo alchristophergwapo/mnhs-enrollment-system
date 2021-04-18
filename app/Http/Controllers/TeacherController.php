@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Http\Controllers;
+
 use Illuminate\Support\LazyCollection;
 use Illuminate\Http\Request;
 use App\Models\Teacher;
@@ -8,13 +9,23 @@ use App\Models\Section;
 use App\Models\GradeLevel;
 use Illuminate\Support\Str;
 use App\Http\Requests\TeacherRequest;
+
 class TeacherController extends Controller
 {
 
-    public function allTeachersWithNoAdvisory() {
+    public function allTeachersWithNoAdvisory()
+    {
         $teacher = Teacher::where('section_id', '=', null)->get();
 
         return response(['teacher' => $teacher]);
+    }
+
+    public function AllTeachersByGradeLvl($grade)
+    {
+        $grade_level = GradeLevel::where('grade_level', $grade)->first();
+
+        $teachers = Teacher::where('grade_level_id', $grade_level->id)->get();
+        return response(['teachers' => $teachers]);
     }
     //Function For Adding A New Teacher
     public function addTeacher(TeacherRequest $request)
@@ -80,31 +91,29 @@ class TeacherController extends Controller
     public function allTeachers()
     {
         try {
-            // $array = [];
-            // $List = Teacher::cursor();
-            // foreach ($List as $teacher) {
-            //     if ($teacher->section_id == null) {
-            //         $teacher->student_id = $teacher->section_id;
-            //         array_push($array, $teacher);
-            //     } else {
-            //         $sectionTable = Section::where(
-            //             'id',
-            //             '=',
-            //             $teacher->section_id
-            //         )
-            //             ->with('gradelevel')
-            //             ->get();
-            //         $teacher->student_id = $teacher->section_id;
-            //         $teacher->section_id =
-            //             'Gr. ' .
-            //             $sectionTable->get(0)->gradelevel->grade_level .
-            //             ' --- ' .
-            //             $sectionTable->get(0)->name;
-            //         array_push($array, $teacher);
-            //     }
-            // }
-            $teacher = Teacher::all();
-            return response()->json(['teacher' => $teacher], 200);
+            $array = [];
+            $List = Teacher::cursor();
+            foreach ($List as $teacher) {
+                if ($teacher->section_id == null) {
+                    array_push($array, $teacher);
+                } else {
+                    $sectionTable = Section::where(
+                        'id',
+                        '=',
+                        $teacher->section_id
+                    )
+                        ->with('gradelevel')
+                        ->get();
+                    $teacher->section_id =
+                        'Gr. ' .
+                        $sectionTable->get(0)->gradelevel->grade_level .
+                        ' --- ' .
+                        $sectionTable->get(0)->name;
+                    array_push($array, $teacher);
+                }
+            }
+            // $teacher = Teacher::all();
+            return response()->json(['teacher' => $array], 200);
         } catch (\Exception $e) {
             return response()->json(['error' => $e->getMessage()], 500);
         }

@@ -55,14 +55,13 @@ class Student extends Model
         return $this->hasOne('App\Models\Enrollment', 'student_id', 'id');
     }
 
-    public static function boot()
-    {
-        parent::boot();
+    // public static function boot() {
+    //     parent::boot();
 
-        static::created(function ($model) {
-            $admin = User::where('username', 'admin')->first();
+    //     static::created(function($model) {
+    //         $admin = User::where('username', 'admin')->first();
 
-            // Notification::send($admin, new StudentEnrollmentNotification($model));
-        });
-    }
+    //         // Notification::send($admin, new StudentEnrollmentNotification($model));
+    //     });
+    // }
 }

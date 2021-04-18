@@ -4,6 +4,8 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AppController;
 
     use App\Events\StudentEnrollEvent;
+use Illuminate\Support\Facades\Broadcast;
+
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -19,6 +21,8 @@ Route::get( '/', [AppController::class, 'index']);
 
 
 // For web socket event
-Route::get('/broadcast', function() {
-    broadcast(new StudentEnrollEvent());
-});
+// Route::get('/broadcast', function() {
+//     broadcast(new StudentEnrollEvent());
+// });
+
+Broadcast::routes();

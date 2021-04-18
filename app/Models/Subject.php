@@ -19,6 +19,5 @@ class Subject extends Model
         'subject_name',
         'teacher_id',
         'grade_level_id',
-        'schedules',
     ];
 }

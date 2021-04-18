@@ -14,6 +14,7 @@ use App\Models\Schedule;
 use Illuminate\Support\Str;
 use App\Http\Requests\SectionRequest;
 use App\Http\Requests\UpdateSectionRequest;
+use App\Models\Enrollment;
 
 class SectionController extends Controller
 {
@@ -36,51 +37,67 @@ class SectionController extends Controller
     public function addAnySection(SectionRequest $request)
     {
         $addSection = $request->validated();
-        // return response($request->schedules);
+
         if ($addSection) {
             try {
                 \DB::beginTransaction();
-
                 $section = Section::create($addSection);
-
-                $grade = GradeLevel::where(
-                    'grade_level',
-                    $request['grade']
-                )->first();
-
-                $updated = Section::where('id', '=', $section->id)->update([
-                    'gradelevel_id' => $grade->id,
-                ]);
-
                 if ($request->teacher == null) {
+                    $grade = GradeLevel::where(
+                        'grade_level',
+                        '=',
+                        $request['grade']
+                    )->first();
+                    Section::where('id', '=', $section->id)->update([
+                        'gradelevel_id' => $grade->id,
+                    ]);
                     \DB::commit();
-                    return ['message' => 'Successfully Added!'];
+                    return [
+                        'message' => 'Successfully Added!',
+                        'section' => $section,
+                    ];
                 } else {
-                    $teachers = Teacher::where('id', '=', $request->teacher)
-                        ->with('section')
-                        ->first();
+                    $teachers = Teacher::where(
+                        'id',
+                        '=',
+                        $request->teacher
+                    )->first();
                     if ($teachers->section_id != null) {
+                        $teachers = Teacher::where('id', '=', $teachers->id)
+                            ->with('section')
+                            ->get();
+
                         return response()->json(
                             [
-                                'failed' => $teachers->section->name,
-                                'teacher' => $teachers->teacher_name,
+                                'failed' => $teachers->get(0)->section->name,
+                                'teacher' => $teachers->get(0)->name,
                             ],
                             200
                         );
                     } else {
-                        $updateSection = Section::where(
+
+                        Section::where(
                             'id',
                             '=',
                             $section->id
-                        )->update([
-                            'teacher_id' => $teachers->id,
-                            'gradelevel_id' => $grade->id,
-                        ]);
-                        $updateTeacher = Teacher::where(
+                        )->update(['teacher_id' => $teachers->id]);
+
+                        Teacher::where(
                             'id',
                             '=',
                             $teachers->id
                         )->update(['section_id' => $section->id]);
+
+                        $updateGrade = GradeLevel::where(
+                            'grade_level',
+                            '=',
+                            $request['grade']
+                        )->first();
+
+                        $section->update([
+                            'gradelevel_id' => $updateGrade->id,
+                        ]);
+
                         \DB::commit();
                         return ['message' => 'Successfully Added!'];
                     }
@@ -137,199 +154,14 @@ class SectionController extends Controller
                 }
             }
 
-            return response()->json(
-                [
-                    'message' => 'Successfully Added!',
-                    'sections' => $arraySection,
-                ],
-                200
-            );
+            return response()->json([
+                'message' => 'Successfully Added!',
+                'sections' => $arraySection,
+            ]);
         } catch (\Exception $e) {
             return response()->json(['error' => $e->getMessage()], 500);
         }
     }
-
-    //Function For Deleting Any Sections
-    public function delAnySection($id)
-    {
-        try {
-            \DB::beginTransaction();
-            $section = Section::where('id', '=', $id)
-                ->with('gradelevel')
-                ->get();
-            $objectGrade = Str::of(
-                $section->get(0)->gradelevel->sections
-            )->split('/[\s,]+/');
-            $remove = $objectGrade->diff([$section->get(0)->id]);
-            $newSection = null;
-            foreach ($remove as $val) {
-                if ($newSection == null) {
-                    $newSection .= $val;
-                } else {
-                    $newSection .= ',' . $val;
-                }
-            }
-            //delete automatically if teacher_id is not null
-            if ($section->get(0)->teacher_id == null) {
-                $gradelevel_section = Gradelevel::findOrFail(
-                    $section->get(0)->gradelevel_id
-                );
-                $gradelevel_section->update(['sections' => $newSection]);
-                $del = Section::findOrFail($id)->delete();
-                \DB::commit();
-                return [
-                    'message' => 'Successfully Added!',
-                    'section' =>
-                    'Grade ' . $section->get(0)->gradelevel->grade_level,
-                ];
-            } else {
-                $gradelevel_section = Gradelevel::findOrFail(
-                    $section->get(0)->gradelevel_id
-                );
-                $gradelevel_section->update([
-                    'sections' => $newSection,
-                ]);
-                $teacher = Teacher::where(
-                    'id',
-                    '=',
-                    $section->get(0)->teacher_id
-                )->first();
-                $teacher->section_id = null;
-                $teacher->save();
-                $del = Section::findOrFail($id)->delete();
-                \DB::commit();
-                return [
-                    'message' => 'Successfully Added!',
-                    'section' =>
-                    'Grade ' . $section->get(0)->gradelevel->grade_level,
-                ];
-            }
-        } catch (\Exception $e) {
-            \DB::rollback();
-            return response()->json(['error' => $e->getMessage()], 500);
-        }
-    }
-
-    // //Function For Updating A Specific Section
-    // public function updateSection(UpdateSectionRequest $request, $id)
-    // {
-    //     $updateSection = $request->validated();
-    //     if ($updateSection) {
-    //         try {
-    //             \DB::beginTransaction();
-    //             if ($id != 'update') {
-    //                 if ($request->teacher == null) {
-    //                     $section = Section::where('id', '=', $id)->update([
-    //                         'name' => $request['name'],
-    //                         'capacity' => $request['capacity'],
-    //                     ]);
-    //                     \DB::commit();
-    //                     return [
-    //                         'message' => 'Successfully Updated!',
-    //                         'section' => $section,
-    //                     ];
-    //                 } else {
-    //                     $infoTeacher = Teacher::where(
-    //                         'id',
-    //                         '=',
-    //                         $request->teacher
-    //                     )->first();
-    //                     if ($infoTeacher->section_id != null) {
-    //                         if ($infoTeacher->section_id == $id) {
-    //                             $section = Section::where(
-    //                                 'id',
-    //                                 '=',
-    //                                 $id
-    //                             )->update([
-    //                                 'name' => $request['name'],
-    //                                 'capacity' => $request['capacity'],
-    //                             ]);
-    //                             \DB::commit();
-    //                             return [
-    //                                 'message' => 'Successfully updated!',
-    //                                 'section' => $section,
-    //                             ];
-    //                         } else {
-    //                             $assignTeacher = Teacher::where(
-    //                                 'id',
-    //                                 '=',
-    //                                 $request->teacher
-    //                             )
-    //                                 ->with('section')
-    //                                 ->get();
-    //                             return response()->json(
-    //                                 [
-    //                                     'failed' => $assignTeacher->get(0)
-    //                                         ->section->name,
-    //                                     'teacher' => $assignTeacher->get(0)
-    //                                         ->name,
-    //                                 ],
-    //                                 200
-    //                             );
-    //                         }
-    //                     } else {
-    //                         $currentSec_idTeacher = Teacher::where(
-    //                             'section_id',
-    //                             '=',
-    //                             $id
-    //                         )->update(['section_id' => null]);
-    //                         $updateSec = Section::where('id', '=', $id)->update(
-    //                             [
-    //                                 'name' => $request['name'],
-    //                                 'capacity' => $request['capacity'],
-    //                                 'teacher_id' => $infoTeacher->id,
-    //                             ]
-    //                         );
-    //                         $infoTeacher->update(['section_id' => $id]);
-    //                         \DB::commit();
-    //                         return ['message' => 'Successfully updated!'];
-    //                     }
-    //                 }
-    //             } else {
-    //                 $Teachers = Teacher::where('id', '=', $request->teacher)
-    //                     ->with('section')
-    //                     ->get();
-
-    //                 //currentSection_id from the section name of the $request['teacher']
-    //                 $currentSection_id = Teacher::where(
-    //                     'section_id',
-    //                     '=',
-    //                     $request->updateId
-    //                 )->update(['section_id' => null]);
-    //                 //currentTeacher_id from the current assigned Teacher to be updated to null
-    //                 $currentTeacher = Section::where(
-    //                     'id',
-    //                     '=',
-    //                     $Teachers->get(0)->section->id
-    //                 )->update(['teacher_id' => null]);
-    //                 //The new data values from the currentSection of the "Id" you want to be update
-    //                 $updateSec = Section::where(
-    //                     'id',
-    //                     '=',
-    //                     $request->updateId
-    //                 )->update([
-    //                     'name' => $request['name'],
-    //                     'capacity' => $request['capacity'],
-    //                     'teacher_id' => $Teachers->get(0)->id,
-    //                 ]);
-    //                 //Set section_id to null from the assigned id of the request teacher
-    //                 $updateTeacher = Teacher::where(
-    //                     'id',
-    //                     '=',
-    //                     $Teachers->get(0)->id
-    //                 )->update(['section_id' => $request->updateId]);
-    //                 \DB::commit();
-    //                 return response()->json(
-    //                     ['newTeacher' => 'Successfully Updated!'],
-    //                     200
-    //                 );
-    //             }
-    //         } catch (\Exception $e) {
-    //             \DB::rollback();
-    //             return response()->json(['error' => $e->getMessage()], 500);
-    //         }
-    //     }
-    // }
 
     //Function For Updating A Specific Section
     public function updateSection(UpdateSectionRequest $request, $id)
@@ -338,15 +170,16 @@ class SectionController extends Controller
         if ($updateSection) {
             try {
                 \DB::beginTransaction();
+                $section = Section::where('id', '=', $id)->first();
                 if ($id != 'update') {
                     if ($request->teacher_id == null) {
-                        $section = Section::where('id', '=', $id)->update([
+                        $section->update([
                             'name' => $request['name'],
                             'capacity' => $request['capacity'],
                         ]);
                         \DB::commit();
                         return [
-                            'message' => 'Successfully Added!',
+                            'message' => 'Successfully Updated!',
                             'section' => $section,
                         ];
                     } else {
@@ -357,21 +190,21 @@ class SectionController extends Controller
                         )->first();
                         if ($infoTeacher->section_id != null) {
                             if ($infoTeacher->section_id == $id) {
-                                $section = Section::where(
-                                    'id',
-                                    '=',
-                                    $id
-                                )->update([
+                                $section->update([
                                     'name' => $request['name'],
                                     'capacity' => $request['capacity'],
+                                    'teacher_id' => $request->teacher_id
                                 ]);
                                 \DB::commit();
-                                return ['message' => 'Successfully Added!'];
+                                return [
+                                    'message' => 'Successfully updated!',
+                                    'section' => $section,
+                                ];
                             } else {
                                 $assignTeacher = Teacher::where(
                                     'id',
                                     '=',
-                                    $request->teacher_id
+                                    $request->teacher
                                 )
                                     ->with('section')
                                     ->get();
@@ -380,18 +213,18 @@ class SectionController extends Controller
                                         'failed' => $assignTeacher->get(0)
                                             ->section->name,
                                         'teacher' => $assignTeacher->get(0)
-                                            ->teacher_name,
+                                            ->name,
                                     ],
                                     200
                                 );
                             }
                         } else {
-                            $currentSec_idTeacher = Teacher::where(
+                            Teacher::where(
                                 'section_id',
                                 '=',
                                 $id
                             )->update(['section_id' => null]);
-                            $updateSec = Section::where('id', '=', $id)->update(
+                            Section::where('id', '=', $id)->update(
                                 [
                                     'name' => $request['name'],
                                     'capacity' => $request['capacity'],
@@ -400,28 +233,28 @@ class SectionController extends Controller
                             );
                             $infoTeacher->update(['section_id' => $id]);
                             \DB::commit();
-                            return ['message' => 'Successfully Added!'];
+                            return ['message' => 'Successfully updated!'];
                         }
                     }
                 } else {
-                    $Teachers = Teacher::where('id', '=', $request->teacher_id)
+                    $Teachers = Teacher::where('id', '=', $request->teacher)
                         ->with('section')
                         ->get();
 
                     //currentSection_id from the section name of the $request['teacher']
-                    $currentSection_id = Teacher::where(
+                    Teacher::where(
                         'section_id',
                         '=',
                         $request->updateId
                     )->update(['section_id' => null]);
                     //currentTeacher_id from the current assigned Teacher to be updated to null
-                    $currentTeacher = Section::where(
+                    Section::where(
                         'id',
                         '=',
                         $Teachers->get(0)->section->id
                     )->update(['teacher_id' => null]);
                     //The new data values from the currentSection of the "Id" you want to be update
-                    $updateSec = Section::where(
+                    Section::where(
                         'id',
                         '=',
                         $request->updateId
@@ -431,7 +264,7 @@ class SectionController extends Controller
                         'teacher_id' => $Teachers->get(0)->id,
                     ]);
                     //Set section_id to null from the assigned id of the request teacher
-                    $updateTeacher = Teacher::where(
+                    Teacher::where(
                         'id',
                         '=',
                         $Teachers->get(0)->id

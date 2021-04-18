@@ -26,26 +26,26 @@ class DatabaseSeeder extends Seeder
         User::create([
             'user_type' => 'admin',
             'username' => 'Administrator',
-            'password' => Hash::make('Password'),
-            'remember_token' => Str::random(10),
+            'password' => \Hash::make('Password'),
+            'remember_token' => \Str::random(10),
         ]);
         Teacher::factory()->count(50)->create();
-
-        $students = Student::factory()->count(100)->create();
+        $students = Student::factory()->count(50)->create();
         foreach ($students as $student) {
             Enrollment::create([
-                'start_school_year' => 2021,
-                'end_school_year' => 2022,
+                'start_school_year' => 2020,
+                'end_school_year' => 2021,
                 'enrollment_status' => 'Pending',
                 'student_id' => $student->id,
-                'card_image' => '1616211904451_WIN_20210311_14_56_12_Pro.jpg',
+                'card_image' => '1618622210432_mesdbmsDashboard.png',
             ]);
 
             // User::create([
             //     'user_type' => 'student',
             //     'username' => $student->LRN,
-            //     'password' => \Hash::make($student->lastname . $student->LRN)
+            //     'password' => \Hash::make($student->lastname.$student->LRN)
             // ]);
+
         };
 
         $grade_levels = [

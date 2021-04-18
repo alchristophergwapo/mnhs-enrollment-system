@@ -66,7 +66,7 @@ class ScheduleController extends Controller
                 ]);
 
                 if ($validatedSched) {
-                    $newSched = Schedule::create($validatedSched);
+                    Schedule::create($validatedSched);
                 }
             }
             \DB::commit();
