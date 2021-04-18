@@ -18,7 +18,7 @@ class CreateStudentsTable extends Migration
             $table->integer('grade_level');
             $table->string('PSA')->nullable();
             $table->string('LRN');
-            $table->string('average');
+            $table->integer('average');
             $table->string('firstname');
             $table->string('middlename')->nullable();
             $table->string('lastname');

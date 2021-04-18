@@ -131,7 +131,8 @@ class EnrollmentController extends Controller
                     );
                 } else {
                     \DB::beginTransaction();
-                    $student = Student::create($validated);
+                    $student = Student::create($validated
+                );
 
                     if ($request->isSeniorHigh == 'true') {
                         $request->validate([
@@ -152,7 +153,7 @@ class EnrollmentController extends Controller
                             'last_grade_completed' => [
                                 'required',
                                 'integer',
-                                'min:7',
+                                'min:6',
                                 'max:12',
                             ],
                             'last_year_completed' => ['required'],
