@@ -7,6 +7,7 @@ use App\Http\Controllers\TeacherController;
 use App\Http\Controllers\SectionController;
 use App\Http\Controllers\Authentication;
 use App\Http\Controllers\EnrollmentController;
+use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\SubjectController;
 use App\Http\Controllers\ScheduleController;
 /*
@@ -30,6 +31,7 @@ Route::post('addNewTeacher', [TeacherController::class, 'addTeacher']);
 
 //Getting All Teachers
 Route::get('allTeacher', [TeacherController::class, 'allTeachers']);
+// Route::get('allTeacher/{grade_level}', [TeacherController::class, 'AllTeachersByGradeLvl']);
 
 //Deleting All Teachers
 Route::get('delTeacher/{id}', [TeacherController::class, 'removeTeacher']);
@@ -47,13 +49,16 @@ Route::get('/getAdminProfile', [Authentication::class, 'getAdminProfile']);
 
 //Changing The Data In Admin Profile(ex. password)
 Route::post('/change', [Authentication::class, 'changePassword']);
-
 Route::get('/mark-all-read/{user}', [Authentication::class, 'markAllAsRead']);
 
 Route::get('/mark-as-opened/{id}', [
     Authentication::class,
     'markNotifAsOpened',
 ]);
+
+// Notifications
+Route::get('/unreadNotif/{user}', [NotificationController::class, 'allUnreadNotif']);
+Route::get('/allNotifications/{user}', [NotificationController::class, 'allNotif']);
 
 //--------------------------Section Controller---------------------//
 //Api For Adding Junior High School For A Section
@@ -132,3 +137,5 @@ Route::get('/getTeacherSchedule/{teacher_id}', [
     'getTeacherSchedule',
 ]);
 Route::post('/addSchedules', [ScheduleController::class, 'addSchedules']);
+
+Broadcast::routes();

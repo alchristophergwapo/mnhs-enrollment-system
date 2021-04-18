@@ -20,6 +20,7 @@ use App\Models\Section;
 use App\Http\Requests\StudentEnrollmentRequest;
 
 use Carbon\Carbon;
+use Log;
 
 class EnrollmentController extends Controller
 {
@@ -197,7 +198,7 @@ class EnrollmentController extends Controller
 
                     $imageName = $request->card_image->getClientOriginalName();
 
-                    $enrollment = Enrollment::create([
+                    Enrollment::create([
                         'start_school_year' => Carbon::now()->format('Y'),
                         'end_school_year' => Carbon::now()->format('Y') + 1,
                         'enrollment_status' => $request->enrollment_status,
@@ -205,24 +206,34 @@ class EnrollmentController extends Controller
                         'card_image' => $imageName,
                     ]);
 
-                    $request->card_image->move(
-                        public_path('images'),
-                        $imageName
-                    );
-
                     $admin = User::where('username', 'admin')->first();
 
                     $notif = Student::with('enrollment')
                         ->where('id', '=', $student->id)
                         ->first();
-                    Notification::send(
-                        $admin,
-                        new StudentEnrollmentNotification($notif)
-                    );
+                    try {
+                        Notification::send(
+                            $admin,
+                            new StudentEnrollmentNotification($notif)
+                        );
+                    } catch (\Exception $e) {
+                        //throw $th;
+                        \Log::error(get_class() . ' pusher event ' . $e);
+                    }
 
-                    broadcast(new StudentEnrollEvent($student, $admin));
+                    try {
+                        event(new StudentEnrollEvent($student, $admin));
+                    } catch (\Exception $e) {
+                        //throw $th;
+                        \Log::error(get_class() . ' pusher event ' . $e);
+                    }
 
                     \DB::commit();
+
+                    $request->card_image->move(
+                        public_path('images'),
+                        $imageName
+                    );
 
                     $admin->load('notifications');
 
@@ -231,12 +242,10 @@ class EnrollmentController extends Controller
                         'student' => $notif,
                         'admin' => $admin,
                     ]);
-                    // return response(['student' => $notif]);
-                    // }
                 }
             } catch (\Exception $e) {
                 \DB::rollback();
-
+                \Log::error(get_class() . 'pusher event');
                 return response()->json(['error' => $e->getMessage()], 500);
             }
         }
@@ -320,7 +329,7 @@ class EnrollmentController extends Controller
                     ]);
                     $enrollment->update([
                         'enrollment_status' => 'Approved',
-                        'student_section' => $request->student_section,
+                        'student_section' => $section->id,
                     ]);
                     \DB::commit();
 

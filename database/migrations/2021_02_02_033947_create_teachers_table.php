@@ -20,7 +20,7 @@ class CreateTeachersTable extends Migration
             $table->string('contact');
             $table->string('grade_level_id')->nullable();
             $table->integer('section_id')->nullable();
-            $table->string('subjects_id')->nullable();
+            // $table->string('subjects_id')->nullable();
             $table->timestamps();
         });
     }

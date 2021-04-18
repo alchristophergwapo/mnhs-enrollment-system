@@ -45,9 +45,9 @@ class StudentEnrollmentNotification extends Notification
     public function toMail($notifiable)
     {
         return (new MailMessage)
-                    ->line('The introduction to the notification.')
-                    ->action('Notification Action', url('/'))
-                    ->line('Thank you for using our application!');
+            ->line('The introduction to the notification.')
+            ->action('Notification Action', url('/'))
+            ->line('Thank you for using our application!');
     }
 
     /**
@@ -59,7 +59,7 @@ class StudentEnrollmentNotification extends Notification
     public function toArray($notifiable)
     {
         return [
-            'enrollment'=> $this->enrollment,
+            'enrollment' => $this->enrollment,
             'admin' => $notifiable
         ];
     }
@@ -70,9 +70,10 @@ class StudentEnrollmentNotification extends Notification
      * @param  mixed  $notifiable
      * @return BroadcastMessage
      */
-    // public function toBroadCast($notifiable){
-    //     return new BroadcastMessage([
-    //         'notification' => $notifiable->notifications()->latest()->first()
-    //     ]);
-    // }
+    public function toBroadCast($notifiable)
+    {
+        return new BroadcastMessage([
+            'notification' => $notifiable->notifications()->latest()->first()
+        ]);
+    }
 }

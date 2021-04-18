@@ -25,7 +25,7 @@ class SectionRequest extends FormRequest
     {
         return [
             'name' => ['required', 'string', 'max:50', 'unique:sections,name'],
-            'capacity' => ['required', 'numeric'],
+            'capacity' => ['required', 'numeric', 'min:0', 'max:60'],
             'total_students' => ['nullable'],
             'student_id' => ['nullable'],
             'teacher_id' => ['nullable'],

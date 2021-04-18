@@ -18,14 +18,16 @@ class SubjectController extends Controller
 {
     public function allSubjectsByGrLevel($grade)
     {
-        $gradelevel = GradeLevel::where('grade_level', '=', $grade)->first();
-        if ($gradelevel) {
+        try {
+            $gradelevel = GradeLevel::where('grade_level', '=', $grade)->first();
             $subjects = \DB::table('subjects')->where('subjects.grade_level_id', '=', $gradelevel->id)
                 ->join('teachers', 'subjects.teacher_id', 'teachers.id')
                 ->select('subjects.*', 'teachers.teacher_name')
                 ->get();
 
             return response(['subject' => $subjects]);
+        } catch (\Exception $e) {
+            return response(['error' => $e->getMessage()()]);
         }
     }
 
@@ -47,11 +49,11 @@ class SubjectController extends Controller
             if ($validated) {
                 try {
                     \DB::beginTransaction();
-                    Subject::create($validated);
-                    // Teacher::where('id','=',$validated->teacher_id)
-                    // ->update([
-                    //     'subjects_id'
-                    // ])
+                    Subject::create([
+                        'subject_name' => $request->subject_name,
+                        'teacher_id' => $request->teacher_id,
+                        'grade_level_id' => $gradelevel->id,
+                    ]);
                     \DB::commit();
                 } catch (\Exception $e) {
                     \DB::rollback();
