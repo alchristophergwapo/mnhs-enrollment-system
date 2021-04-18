@@ -131,28 +131,7 @@ class EnrollmentController extends Controller
                     );
                 } else {
                     \DB::beginTransaction();
-                    $student = Student::create([
-                        'PSA' => $request->PSA,
-                        'grade_level' => $request->grade_level,
-                        'LRN' => $request->LRN,
-                        'average' => $request->average,
-                        'firstname' => $request->firstname,
-                        'middlename' => $request->middlename,
-                        'lastname' => $request->lastname,
-                        'birthdate' => $request->birthdate,
-                        'age' => $request->age,
-                        'gender' => $request->gender,
-                        'IP' => $request->IP,
-                        'IP_community' => $request->IP_community,
-                        'mother_tongue' => $request->mother_tongue,
-                        'contact' => $request->contact,
-                        'address' => $request->address,
-                        'zipcode' => $request->zipcode,
-                        'father' => $request->father,
-                        'mother' => $request->mother,
-                        'guardian' => $request->guardian,
-                        'parent_number' => $request->parent_number,
-                    ]);
+                    $student = Student::create($validated);
 
                     if ($request->isSeniorHigh == 'true') {
                         $request->validate([
