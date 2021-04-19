@@ -201,7 +201,7 @@ class EnrollmentController extends Controller
                         'start_school_year' => Carbon::now()->format('Y'),
                         'end_school_year' => Carbon::now()->format('Y') + 1,
                         'enrollment_status' => $request->enrollment_status,
-                        'student_id' => (string)$student->id,
+                        'student_id' => $student->id,
                         'card_image' => $imageName,
                     ]);
 
