@@ -31,7 +31,7 @@ class EnrollmentController extends Controller
             try {
                 error_log($id);
                 \DB::beginTransaction();
-                $student = Student::findOrFail($id)->update([
+                Student::findOrFail($id)->update([
                     'PSA' => $request->PSA,
                     'LRN' => $request->LRN,
                     'average' => (int)$request->average,
@@ -161,7 +161,7 @@ class EnrollmentController extends Controller
                             'strand' => ['required'],
                         ]);
                         SeniorHigh::create([
-                            'student_id' => $student->id,
+                            'student_id' => (int)$student->id,
                             'semester' => $request->semester,
                             'track' => $request->track,
                             'strand' => $request->strand,
@@ -182,7 +182,7 @@ class EnrollmentController extends Controller
                             'last_school_address' => ['required', 'min:8'],
                         ]);
                         Transferee::create([
-                            'student_id' => $student->id,
+                            'student_id' => (int)$student->id,
                             'last_grade_completed' =>
                             $request->last_grade_completed,
                             'last_year_completed' =>
@@ -201,14 +201,14 @@ class EnrollmentController extends Controller
                         'start_school_year' => Carbon::now()->format('Y'),
                         'end_school_year' => Carbon::now()->format('Y') + 1,
                         'enrollment_status' => $request->enrollment_status,
-                        'student_id' => $student->id,
+                        'student_id' => (int)$student->id,
                         'card_image' => $imageName,
                     ]);
 
                     $admin = User::where('username', 'Administrator')->first();
 
                     $notif = Student::with('enrollment')
-                        ->where('id', '=', $student->id)
+                        ->where('id', '=', (int)$student->id)
                         ->first();
                     try {
                         Notification::send(
