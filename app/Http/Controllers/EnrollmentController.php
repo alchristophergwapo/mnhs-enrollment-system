@@ -182,7 +182,7 @@ class EnrollmentController extends Controller
                             'last_school_address' => ['required', 'min:8'],
                         ]);
                         Transferee::create([
-                            'student_id' => (int)$student->id,
+                            'student_id' => $student->id,
                             'last_grade_completed' =>
                             $request->last_grade_completed,
                             'last_year_completed' =>
@@ -201,7 +201,7 @@ class EnrollmentController extends Controller
                         'start_school_year' => Carbon::now()->format('Y'),
                         'end_school_year' => Carbon::now()->format('Y') + 1,
                         'enrollment_status' => $request->enrollment_status,
-                        'student_id' => (int)$student->id,
+                        'student_id' => (string)$student->id,
                         'card_image' => $imageName,
                     ]);
 
@@ -243,7 +243,7 @@ class EnrollmentController extends Controller
             } catch (\Exception $e) {
                 \DB::rollback();
                 \Log::error(get_class() . 'pusher event');
-                return response()->json(['error' => $e], 500);
+                return response()->json(['error' => $e->getMessage()], 500);
             }
         }
     }
