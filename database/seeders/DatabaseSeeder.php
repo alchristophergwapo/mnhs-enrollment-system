@@ -37,7 +37,7 @@ class DatabaseSeeder extends Seeder
                 'end_school_year' => 2021,
                 'enrollment_status' => 'Pending',
                 'student_id' => $student->id,
-                'card_image' => '1618622210432_mesdbmsDashboard.png',
+                'card_image' => '1618481441042_Use Case.png',
             ]);
 
             // User::create([
