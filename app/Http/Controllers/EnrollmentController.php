@@ -274,8 +274,11 @@ class EnrollmentController extends Controller
     public function allEnrolledStudents()
     {
         $approvedEnrollment = Enrollment::where('enrollment_status', 'Approved')
-            ->with('student')
-            ->orderByDesc('id')
+            // ->with('student')
+            // ->orderByDesc('id')
+            ->join('students', 'enrollments.student_id', 'students.id')
+            ->join('sections', 'enrollments.student_section', 'sections.id')
+            ->select('enrollments.*', 'students.*', 'sections.name as section_name')
             ->get();
         return response()->json(['approvedEnrollment' => $approvedEnrollment]);
     }

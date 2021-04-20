@@ -60,7 +60,7 @@ class SectionController extends Controller
                     $teachers = Teacher::where(
                         'id',
                         '=',
-                        $request->teacher
+                        $request->teacher_id
                     )->first();
                     if ($teachers->section_id != null) {
                         $teachers = Teacher::where('id', '=', $teachers->id)
@@ -237,7 +237,7 @@ class SectionController extends Controller
                         }
                     }
                 } else {
-                    $Teachers = Teacher::where('id', '=', $request->teacher)
+                    $Teachers = Teacher::where('id', '=', $request->teacher_id)
                         ->with('section')
                         ->get();
 
