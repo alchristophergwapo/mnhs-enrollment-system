@@ -327,10 +327,9 @@ class EnrollmentController extends Controller
                             $student->lastname . $student->LRN
                         ),
                     ]);
-                    error_log($section->name);
                     $enrollment->update([
                         'enrollment_status' => 'Approved',
-                        'student_section' => $request->student_section,
+                        'student_section' => $section->id,
                     ]);
                     \DB::commit();
 
