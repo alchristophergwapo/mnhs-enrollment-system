@@ -8,7 +8,6 @@ use Illuminate\Support\Facades\Auth;
 
 use App\Models\User;
 use App\Models\Student;
-use App\Models\Enrollment;
 use App\Models\Section;
 
 use Carbon\Carbon;
@@ -27,7 +26,7 @@ class Authentication extends Controller
                     return response()->json(['user' => $user]);
                 } else {
                     $userInfo = Student::with('enrollment')
-                        ->where('lrn', $user->username)
+                        ->where('LRN', $user->username)
                         ->first();
 
                     $section = Section::with('adviser')
@@ -101,6 +100,23 @@ class Authentication extends Controller
             }
         } catch (\Exception $e) {
             return response()->json(['error' => $e->getMessage()], 500);
+        }
+    }
+
+    public function passwordReset(Request $request)
+    {
+        try {
+            \DB::beginTransaction();
+            $student = Student::where('LRN', '=', $request->LRN)->first();
+            User::where('username', '=', $request->LRN)->update([
+                'password' => \Hash::make($student->lastname . $student->LRN)
+            ]);
+            \DB::commit();
+
+            return response(['success' => 'Password is successfully reset.']);
+        } catch (\Exception $e) {
+            \DB::rollBack();
+            return response(['error' => $e->getMessage()]);
         }
     }
 
