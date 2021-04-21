@@ -293,12 +293,15 @@ class EnrollmentController extends Controller
         return response()->json(['declinedEnrollment' => $declinedEnrollments]);
     }
 
+
     public function approveEnrollment(Request $request, $id)
     {
         $request->validate([
             'student_section' => 'required',
         ]);
         try {
+            error_log($id);
+            error_log($request->student_section);
             \DB::beginTransaction();
             $enrollment = Enrollment::where('id', '=', $id)
                 ->with('student')
@@ -325,9 +328,10 @@ class EnrollmentController extends Controller
                             $student->lastname . $student->LRN
                         ),
                     ]);
+                    error_log($section->name);
                     $enrollment->update([
                         'enrollment_status' => 'Approved',
-                        'student_section' => $section->id,
+                        'student_section' => $section->name,
                     ]);
                     \DB::commit();
 
