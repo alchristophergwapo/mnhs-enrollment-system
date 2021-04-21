@@ -329,7 +329,7 @@ class EnrollmentController extends Controller
                     ]);
                     $enrollment->update([
                         'enrollment_status' => 'Approved',
-                        'student_section' => $section->id,
+                        'student_section' => $section->name,
                     ]);
                     \DB::commit();
 
