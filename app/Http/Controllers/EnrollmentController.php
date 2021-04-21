@@ -302,7 +302,7 @@ class EnrollmentController extends Controller
         try {
             // error_log($request->student_section);
             \DB::beginTransaction();
-            $enrollment = Enrollment::where('id', '=', $id)
+            $enrollment = Enrollment::where('id', '=', (int)$id)
                 ->with('student')
                 ->first();
             $student = Student::where('id', $enrollment->student_id)
@@ -329,7 +329,7 @@ class EnrollmentController extends Controller
                     ]);
                     $enrollment->update([
                         'enrollment_status' => 'Approved',
-                        'student_section' => $section->name,
+                        'student_section' => (string)$section->id,
                     ]);
                     \DB::commit();
 
