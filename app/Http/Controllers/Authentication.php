@@ -30,7 +30,7 @@ class Authentication extends Controller
                         ->first();
 
                     $section = Section::with('adviser')
-                        ->where('id', (int)$userInfo->enrollment->student_section)
+                        ->where('id', $userInfo->enrollment->student_section)
                         ->first();
 
                     $userInfo['section'] = $section;
