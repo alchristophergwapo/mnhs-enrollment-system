@@ -300,8 +300,7 @@ class EnrollmentController extends Controller
             'student_section' => 'required',
         ]);
         try {
-            error_log($id);
-            error_log($request->student_section);
+            // error_log($request->student_section);
             \DB::beginTransaction();
             $enrollment = Enrollment::where('id', '=', $id)
                 ->with('student')
@@ -331,7 +330,7 @@ class EnrollmentController extends Controller
                     error_log($section->name);
                     $enrollment->update([
                         'enrollment_status' => 'Approved',
-                        'student_section' => $section->name,
+                        'student_section' => $request->student_section,
                     ]);
                     \DB::commit();
 
