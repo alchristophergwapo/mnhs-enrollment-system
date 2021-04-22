@@ -260,6 +260,9 @@ class EnrollmentController extends Controller
                 'students.address'
             )
             ->get();
+         foreach ($classmates as  $value) {
+            $value->middlename.=" ".$value->firstname." ".$value->lastname;
+         }
         return response()->json(['classmates' => $classmates]);
     }
 
