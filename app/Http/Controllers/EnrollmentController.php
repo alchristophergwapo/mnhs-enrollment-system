@@ -24,6 +24,7 @@ use Log;
 
 class EnrollmentController extends Controller
 {
+    
     public function updateStudent(StudentEnrollmentRequest $request, $id)
     {
         $updated = $request->validated();
