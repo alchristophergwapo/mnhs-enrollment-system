@@ -10,6 +10,7 @@ use App\Http\Controllers\EnrollmentController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\SubjectController;
 use App\Http\Controllers\ScheduleController;
+use App\Http\Controllers\NexmoSMSController;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -43,7 +44,8 @@ Route::get('/allNoneAdvisoryTeacher', [TeacherController::class, 'allTeachersWit
 //----------------------Admin Controller-----------------------------//
 //Login For Admin
 Route::post('/login', [Authentication::class, 'login']);
-
+//Resetting the password of Student Account 
+Route::post('/reset-password', [Authentication::class, 'passwordReset']);
 //Getting The Admin Profile
 Route::get('/getAdminProfile', [Authentication::class, 'getAdminProfile']);
 
@@ -59,6 +61,9 @@ Route::get('/mark-as-opened/{id}', [
 // Notifications
 Route::get('/unreadNotif/{user}', [NotificationController::class, 'allUnreadNotif']);
 Route::get('/allNotifications/{user}', [NotificationController::class, 'allNotif']);
+
+//Sending the username and password to the users or students_id
+Route::get('send-sms/{id}', [NexmoSMSController::class, 'SMS']);
 
 //--------------------------Section Controller---------------------//
 //Api For Adding Junior High School For A Section
