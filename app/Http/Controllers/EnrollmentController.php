@@ -18,13 +18,14 @@ use App\Models\User;
 use App\Models\Section;
 
 use App\Http\Requests\StudentEnrollmentRequest;
-
+use App\Models\UserDetails;
 use Carbon\Carbon;
 use Log;
+use Mockery\Undefined;
 
 class EnrollmentController extends Controller
 {
-    
+
     public function updateStudent(StudentEnrollmentRequest $request, $id)
     {
         $updated = $request->validated();
@@ -67,20 +68,26 @@ class EnrollmentController extends Controller
         $validated = $request->validated();
         if ($validated) {
             try {
+                $grade_level = $request->grade_level;
                 $enrollmentSubmitted = Student::query()
                     ->where([
                         ['LRN', '=', $request->LRN],
-                        ['grade_level', '<=', (int)$request->grade_level],
                         ['firstname', '=', $request->firstname],
                         ['middlename', '=', $request->middlename],
                         ['lastname', '=', $request->lastname],
                     ])
                     ->with([
-                        'enrollment' => function ($query) {
+                        'enrollment' => function ($query, $grade_level) {
                             $query->where(
-                                'start_school_year',
-                                '=',
-                                Carbon::now()->format('Y')
+                                [
+                                    [
+                                        'start_school_year',
+                                        '=',
+                                        Carbon::now()->format('Y')
+                                    ],
+
+                                    ['grade_level', '<=', (int)$grade_level],
+                                ]
                             );
                         },
                     ])
@@ -90,17 +97,19 @@ class EnrollmentController extends Controller
                 $passEnrollment = Student::query()
                     ->where([
                         ['LRN', '=', $request->LRN],
-                        ['grade_level', '=', (int)$request->grade_level],
                         ['firstname', '=', $request->firstname],
                         ['middlename', '=', $request->middlename],
                         ['lastname', '=', $request->lastname],
                     ])
                     ->with([
-                        'enrollment' => function ($query) {
+                        'enrollment' => function ($query, $grade_level) {
                             $query->where(
-                                'start_school_year',
-                                '<',
-                                Carbon::now()->format('Y')
+                                [
+                                    'start_school_year',
+                                    '<',
+                                    Carbon::now()->format('Y')
+                                ],
+                                ['grade_level', '=', (int)$grade_level],
                             );
                         },
                     ])
@@ -133,7 +142,6 @@ class EnrollmentController extends Controller
                 } else {
                     \DB::beginTransaction();
                     $student = Student::create([
-                        'grade_level' => (int)$request->grade_level,
                         'PSA' => $request->PSA,
                         'LRN' => $request->LRN,
                         'average' => (int)$request->average,
@@ -199,6 +207,7 @@ class EnrollmentController extends Controller
                     $imageName = $request->card_image->getClientOriginalName();
 
                     Enrollment::create([
+                        'grade_level' => (int)$request->grade_level,
                         'start_school_year' => Carbon::now()->format('Y'),
                         'end_school_year' => Carbon::now()->format('Y') + 1,
                         'enrollment_status' => $request->enrollment_status,
@@ -255,24 +264,41 @@ class EnrollmentController extends Controller
             ->join('students', 'enrollments.student_id', 'students.id')
             ->select(
                 'enrollments.id as enrollment_id',
+                'enrollments.grade_level',
                 'students.firstname',
                 'students.middlename',
                 'students.lastname',
                 'students.address'
             )
             ->get();
-         foreach ($classmates as  $value) {
-            $value->middlename.=" ".$value->firstname." ".$value->lastname;
-         }
+        foreach ($classmates as  $value) {
+            $value->middlename .= " " . $value->firstname . " " . $value->lastname;
+        }
         return response()->json(['classmates' => $classmates]);
     }
 
-    public function allPendingStudents()
+    public function allPendingStudents($adminLevel = null)
     {
-        $pendingEnrollment = Enrollment::where('enrollment_status', 'Pending')
-            ->with('student')
+        // return response($adminLevel);
+        if ($adminLevel != 'null') {
+            $pendingEnrollment = Enrollment::where('enrollment_status', 'Pending')
+                ->where('grade_level', (int)$adminLevel)
+                ->join('students', 'enrollments.student_id', 'students.id')
+                ->select('students.*', 'enrollments.*')
+                ->get();
+
+            $sort = $pendingEnrollment->sortBy('average', 1, true);
+            $sorted = $sort->values()->all();
+            return response()->json(['pendingEnrollment' => $sorted]);
+        }
+        $pendingEnrollment = Enrollment::where('enrollment_status', '=', 'Pending')
+            ->join('students', 'enrollments.student_id', 'students.id')
+            ->select('students.*', 'enrollments.*')
             ->get();
-        return response()->json(['pendingEnrollment' => $pendingEnrollment]);
+
+        $sort = $pendingEnrollment->sortBy('average', 1, true);
+        $sorted = $sort->values()->all();
+        return response()->json(['pendingEnrollment' => $sorted]);
     }
 
     public function allEnrolledStudents()
@@ -285,16 +311,32 @@ class EnrollmentController extends Controller
         return response()->json(['approvedEnrollment' => $approvedEnrollment]);
     }
 
-    public function allDeclinedStudents()
+    public function allDeclinedStudents($adminLevel)
     {
-        $declinedEnrollments = Enrollment::where(
-            'enrollment_status',
-            'Declined'
-        )
-            ->with('student')
-            ->orderByDesc('id')
-            ->get();
-        return response()->json(['declinedEnrollment' => $declinedEnrollments]);
+        $declinedEnrollments = null;
+
+        if (!$adminLevel) {
+            $declinedEnrollments = Enrollment::where(
+                'enrollment_status',
+                'Declined'
+            )
+                ->where('grade_level', $adminLevel)
+                ->join('students', 'enrollments.student_id', 'students.id')
+                ->select('students.*', 'enrollments.*')
+                ->get();
+        } else {
+            $declinedEnrollments = Enrollment::where(
+                'enrollment_status',
+                'Declined'
+            )
+                ->join('students', 'enrollments.student_id', 'students.id')
+                ->select('students.*', 'enrollments.*')
+                ->get();
+        }
+
+        $sort = $declinedEnrollments->sortBy('average', 1, true);
+        $sorted = $sort->values()->all();
+        return response()->json(['declinedEnrollment' => $sorted]);
     }
 
 
@@ -324,12 +366,17 @@ class EnrollmentController extends Controller
                 ) {
                     $section->total_students += 1;
                     $section->save();
-                    User::updateOrCreate([
+                    $user = User::updateOrCreate([
                         'user_type' => 'student',
                         'username' => $student->LRN,
                         'password' => \Hash::make(
                             $student->lastname . $student->LRN
                         ),
+                    ]);
+
+                    UserDetails::create([
+                        'user_fullname' => $student->firstname . ' ' . $student->lastname,
+                        'user_id' => $user->id
                     ]);
                     $enrollment->update([
                         'enrollment_status' => 'Approved',

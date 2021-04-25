@@ -4,7 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class EnrollmentRequest extends FormRequest
+class NewUserRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -24,20 +24,19 @@ class EnrollmentRequest extends FormRequest
     public function rules()
     {
         return [
-            'enrollment_status' => ['required'],
-            'grade_level' => [
+            'username' => [
                 'required',
-                'numeric',
-                'min:7',
-                'max:12'
+                'min:6',
+                'max:20',
+                'regex:/^[a-zA-Z0-9_]+$/u'
             ],
-            'student_section' => ['required', 'string'],
-            'start_school_year' => ['required'],
-            'end_school_year' => ['required'],
-            'student_id' => ['required'],
-            'card_image' => [
+            'password' => [
                 'required',
-                'mimes:jpeg,png,jpg'
+                'min:8',
+                'max:20'
+            ],
+            'user_type' => [
+                'required',
             ]
         ];
     }

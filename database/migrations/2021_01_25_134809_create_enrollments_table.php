@@ -15,10 +15,11 @@ class CreateEnrollmentsTable extends Migration
     {
         Schema::create('enrollments', function (Blueprint $table) {
             $table->increments('id');
+            $table->integer('student_id');
+            $table->integer('grade_level');
             $table->year('start_school_year');
             $table->year('end_school_year');
             $table->string('enrollment_status');
-            $table->integer('student_id');
             $table->string('card_image');
             $table->string('student_section')->nullable();
             $table->timestamps();

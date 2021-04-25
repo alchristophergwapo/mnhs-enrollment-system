@@ -24,7 +24,6 @@ class StudentFactory extends Factory
         $gender = $this->faker->randomElement(['Male', 'Female']);
 
         return [
-            'grade_level' => $this->faker->numberBetween(7,10),
             'LRN' => '303000'.$this->faker->numberBetween(100000,999999),
             'average' => $this->faker->numberBetween(75,100),
             'firstname' => $this->faker->firstName($gender),

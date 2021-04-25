@@ -33,6 +33,7 @@ class DatabaseSeeder extends Seeder
         $students = Student::factory()->count(50)->create();
         foreach ($students as $student) {
             Enrollment::create([
+                'grade_level' => rand(7, 10),
                 'start_school_year' => 2020,
                 'end_school_year' => 2021,
                 'enrollment_status' => 'Pending',
