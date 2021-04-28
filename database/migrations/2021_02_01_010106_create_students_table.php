@@ -27,7 +27,7 @@ class CreateStudentsTable extends Migration
             $table->string('IP');
             $table->string('IP_community')->nullable();
             $table->string('mother_tongue');
-            $table->string('contact');
+            $table->string('contact')->nullable();
             $table->string('address');
             $table->string('zipcode');
             $table->string('father')->nullable();

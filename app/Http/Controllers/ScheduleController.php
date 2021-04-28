@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 
 use App\Models\Schedule;
+use Symfony\Component\Console\Input\Input;
 
 class ScheduleController extends Controller
 {
@@ -13,8 +14,8 @@ class ScheduleController extends Controller
     {
         $schedules = \DB::table('schedules')
             ->where('schedules.section_id', '=', $sectionId)
-            ->join('subjects', 'schedules.subject_id', 'subjects.id')
-            ->join('teachers', 'schedules.teacher_id', 'teachers.id')
+            ->leftJoin('subjects', 'schedules.subject_id', 'subjects.id')
+            ->leftJoin('teachers', 'schedules.teacher_id', 'teachers.id')
             ->select(
                 'schedules.*',
                 'subjects.subject_name',
@@ -22,11 +23,7 @@ class ScheduleController extends Controller
             )
             ->get();
 
-        // if (count($schedules) > 0) {
-
-        // }
-
-        return response(['schedules' => $schedules]);
+        return response()->json(['sectionSchedules' => $schedules]);
     }
 
     public function getTeacherSchedule($teacher_id)
@@ -48,25 +45,29 @@ class ScheduleController extends Controller
             for ($i = 0; $i < count($schedules); $i++) {
                 $sched = $schedules[$i];
 
-                $new = new Request([
-                    'section_id' => $sched['section_id'],
-                    'subject_id' => $sched['subject_id'],
-                    'day' => $sched['day'],
-                    'start_time' => $sched['start_time'],
-                    'end_time' => $sched['end_time'],
-                    'teacher_id' => $sched['teacher_id'],
-                ]);
-                $validatedSched = $new->validate([
-                    'section_id' => 'required',
-                    'subject_id' => 'required',
-                    'day' => 'required|string|regex:/^[a-zA-Z]+$/u',
-                    'start_time' => 'required|date_format:h:i',
-                    'end_time' => 'required|date_format:h:i',
-                    'teacher_id' => 'required',
-                ]);
+                if ($sched != null) {
+                    $new = new Request([
+                        'section_id' => $sched['section_id'],
+                        'subject_id' => $sched['subject_id'],
+                        'day' => $sched['day'],
+                        'start_time' => $sched['start_time'],
+                        'end_time' => $sched['end_time'],
+                        'teacher_id' => $sched['teacher_id'],
+                    ]);
+                    if ($sched['start_time'] && $sched['end_time']) {
+                        $validatedSched = $new->validate([
+                            'section_id' => 'required',
+                            'day' => 'required|string|regex:/^[a-zA-Z]+$/u',
+                            // 'start_time' => 'date_format:h:i',
+                            // 'end_time' => 'date_format:h:i',
+                        ]);
 
-                if ($validatedSched) {
-                    Schedule::create($validatedSched);
+                        if ($validatedSched) {
+                            Schedule::create($sched);
+                        }
+                    } else {
+                        Schedule::create($sched);
+                    }
                 }
             }
             \DB::commit();
@@ -85,6 +86,7 @@ class ScheduleController extends Controller
         // return response(['schedules' => $schedules]);
         try {
             \DB::beginTransaction();
+            $edited = [];
             foreach ($schedules as $sched) {
                 $new = new Request([
                     'section_id' => $sched['section_id'],
@@ -94,38 +96,31 @@ class ScheduleController extends Controller
                     'end_time' => $sched['end_time'],
                     'teacher_id' => $sched['teacher_id'],
                 ]);
-                $validatedSched = $new->validate([
-                    'section_id' => 'required',
-                    'subject_id' => 'required',
-                    'day' => 'required|string|regex:/^[a-zA-Z]+$/u',
-                    'start_time' => 'required|date_format:h:i',
-                    'end_time' => 'required|date_format:h:i',
-                    'teacher_id' => 'required',
-                ]);
+                $schedOnDb = Schedule::where('id', '=', $sched['id'])
+                    ->where('day', '=', $sched['day'])
+                    ->update([
+                        'section_id' => $sched['section_id'],
+                        'subject_id' => $sched['subject_id'],
+                        'day' => $sched['day'],
+                        'start_time' => $sched['start_time'],
+                        'end_time' => $sched['end_time'],
+                        'teacher_id' => $sched['teacher_id'],
+                    ]);
+                array_push($edited, $schedOnDb);
+                // return response(['updatedSched' => $validatedSched]);
 
-                if ($validatedSched) {
-                    $schedOnDb = Schedule::where('id', '=', $sched['id'])
-                        ->where('day', '=', $sched['day'])
-                        ->update([
-                            'section_id' => $sched['section_id'],
-                            'subject_id' => $sched['subject_id'],
-                            'day' => $sched['day'],
-                            'start_time' => $sched['start_time'],
-                            'end_time' => $sched['end_time'],
-                            'teacher_id' => $sched['teacher_id'],
-                        ]);
-                    // return response(['updatedSched' => $validatedSched]);
-                }
             }
             \DB::commit();
 
             return response()->json([
+                'edited' => $edited,
                 'success' => 'Successfully updated schedules.',
+
             ]);
         } catch (\Exception $e) {
             \DB::rollback();
 
-            return response(['error' => $e->getMessage()]);
+            return response(['error' => $e->getMessage()], 500);
         }
     }
 }
