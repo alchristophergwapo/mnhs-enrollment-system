@@ -20,6 +20,7 @@ class Enrollment extends Model
         'end_school_year',
         'student_id',
         'card_image',
+        'remark',
         'student_section'
     ];
 

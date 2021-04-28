@@ -29,6 +29,7 @@ class EnrollmentRequest extends FormRequest
         'start_school_year' => ['required'],
         'end_school_year' => ['required'],
         'student_id' => ['required'],
+        'remark' => ['nullable'],
         'card_image' => [
             'required',
             'mimes:jpeg,png,jpg'

@@ -25,8 +25,7 @@ class StudentEnrollmentRequest extends FormRequest
     {
         return [
             'average' => ['required', 'numeric', 'min:0', 'max:100'],
-            'grade_level' => [
-                'required',
+            'grade_level' => ['required',
                 'numeric',
                 'min:7',
                 'max:12'
