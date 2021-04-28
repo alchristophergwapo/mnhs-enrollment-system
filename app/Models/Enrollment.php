@@ -21,6 +21,7 @@ class Enrollment extends Model
         'grade_level',
         'student_id',
         'card_image',
+        'remark',
         'student_section'
     ];
 

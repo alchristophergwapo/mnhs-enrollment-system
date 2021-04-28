@@ -24,21 +24,16 @@ class EnrollmentRequest extends FormRequest
     public function rules()
     {
         return [
-            'enrollment_status' => ['required'],
-            'grade_level' => [
-                'required',
-                'numeric',
-                'min:7',
-                'max:12'
-            ],
-            'student_section' => ['required', 'string'],
-            'start_school_year' => ['required'],
-            'end_school_year' => ['required'],
-            'student_id' => ['required'],
-            'card_image' => [
-                'required',
-                'mimes:jpeg,png,jpg'
-            ]
+        'enrollment_status' => ['required'],
+        'student_section'=>['required','string'],
+        'start_school_year' => ['required'],
+        'end_school_year' => ['required'],
+        'student_id' => ['required'],
+        'remark' => ['nullable'],
+        'card_image' => [
+            'required',
+            'mimes:jpeg,png,jpg'
+        ]
         ];
     }
 }

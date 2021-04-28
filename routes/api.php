@@ -83,6 +83,7 @@ Route::get('delAnySection/{id}', [SectionController::class, 'delAnySection']);
 Route::post('updateSection/{id}', [SectionController::class, 'updateSection']);
 
 Route::get('/allSections', [SectionController::class, 'allSections']);
+
 Route::get('/noAdviserSections', [SectionController::class, 'allSectionsWithNoAdviser']);
 
 //--------------------------------------------------This Is For Enrollment Process API----------------------------------------//
@@ -134,10 +135,7 @@ Route::get('/classSchedules/{section_id}', [
     'getSectionSchedule',
 ]);
 Route::post('/editSchedules', [ScheduleController::class, 'editSchedules']);
-Route::get('/getTeacherSchedule/{teacher_id}', [
-    ScheduleController::class,
-    'getTeacherSchedule',
-]);
+Route::get('/getTeacherSchedule/{teacher_id}', [ScheduleController::class,'getTeacherSchedule',]);
 Route::post('/addSchedules', [ScheduleController::class, 'addSchedules']);
 
 Route::post('/addNewAdmin', [AdminController::class, 'addNewAdmin']);

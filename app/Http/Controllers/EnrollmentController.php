@@ -25,7 +25,7 @@ class EnrollmentController extends Controller
 {
 
     public function updateStudent(StudentEnrollmentRequest $request, $id)
-    {
+    {  
         $updated = $request->validated();
         if ($updated) {
             try {
@@ -236,7 +236,7 @@ class EnrollmentController extends Controller
             } catch (\Exception $e) {
                 \DB::rollback();
                 \Log::error(get_class() . 'pusher event');
-                return response()->json(['error' => $e->getMessage()], 500);
+                return response()->json(['error' => $e->getMessage()],500);
             }
         }
     }
@@ -366,11 +366,7 @@ class EnrollmentController extends Controller
                             $student->lastname . $student->LRN
                         ),
                     ]);
-
-                    UserDetails::create([
-                        'user_fullname' => $student->firstname . ' ' . $student->lastname,
-                        'user_id' => $user->id
-                    ]);
+                    error_log("id:".$id);
                     $enrollment->update([
                         'enrollment_status' => 'Approved',
                         'student_section' => (string)$section->id,
@@ -408,14 +404,61 @@ class EnrollmentController extends Controller
                         404
                     );
                 }
-            } else {
-                return response()->json(
-                    [
-                        'message' => 'Enrollment approved',
-                        'student' => $enrollment,
-                    ],
-                    200
-                );
+            }
+            // FOR  APPROVING THE STUDENT AFTER IT WAS RECHECK AND FIXED WHY IT IS DECLINE
+            else {
+                if (
+                    $section != null &&
+                    $section->total_students < $section->capacity
+                ) {
+                    $section->total_students += 1;
+                    $section->save();
+                    User::updateOrCreate([
+                        'user_type' => 'student',
+                        'username' => $student->LRN,
+                        'password' => \Hash::make(
+                            $student->lastname . $student->LRN
+                        ),
+                    ]);
+                    error_log("id:" . $id);
+                    $enrollment->update([
+                        'enrollment_status' => 'Approved',
+                        'remark'=>null,
+                        'student_section' => (string)$section->id,
+                    ]);
+                    \DB::commit();
+
+                    return response()->json(
+                        [
+                            'message' => 'Enrollment approved',
+                            'student' => $enrollment,
+                        ],
+                        200
+                    );
+                }
+                if (
+                    $section != null &&
+                    $section->total_students >= $section->capacity
+                ) {
+                    return response()->json(
+                        [
+                            'message' =>
+                            $request->section .
+                                $section->name . ' is full. Please select another section or update max capacity',
+                        ],
+                        400
+                    );
+                }
+                if ($section == null) {
+                    return response()->json(
+                        [
+                            'message' =>
+                            $request->section .
+                                ' cannot be found on the database. It may be deleted or have been modified.',
+                        ],
+                        404
+                    );
+                }
             }
         } catch (\Exception $e) {
             \DB::rollback();
@@ -423,12 +466,13 @@ class EnrollmentController extends Controller
         }
     }
 
-    public function declineEnrollment($id)
+    public function declineEnrollment(Request $request,$id)
     {
         try {
             \DB::beginTransaction();
-            Enrollment::findOrFail($id)->update([
+            Enrollment::where('student_id', '=', (int)$id)->update([
                 'enrollment_status' => 'Declined',
+                'remark'=>$request->remarks
             ]);
             // Enrollment::where('student_id', '=',$id)->update(['enrollment_status' => "Declined" ]);
             \DB::commit();
@@ -437,6 +481,24 @@ class EnrollmentController extends Controller
         } catch (\Exception $e) {
             \DB::rollback();
 
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
+    }
+
+    //Check if already enrolled or not
+    public function alreadyEnrolled(Request $request)
+    {
+        try {
+            \DB::beginTransaction();
+            // Enrollment::where('student_id', '=', (int)$id)->update([
+            //     'enrollment_status' => 'Declined',
+            //     'remark' => $request->remarks
+            // ]);
+            // Enrollment::where('student_id', '=',$id)->update(['enrollment_status' => "Declined" ]);
+            \DB::commit();
+            return response()->json(['success' => 'Enrollment declined']);
+        } catch (\Exception $e) {
+            \DB::rollback();
             return response()->json(['error' => $e->getMessage()], 500);
         }
     }
