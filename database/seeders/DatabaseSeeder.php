@@ -10,9 +10,6 @@ use App\Models\Student;
 use App\Models\Enrollment;
 use App\Models\User;
 
-use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Str;
-
 class DatabaseSeeder extends Seeder
 {
     /**
