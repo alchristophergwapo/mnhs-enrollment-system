@@ -43,7 +43,6 @@ class StudentEnrollmentRequest extends FormRequest
                 'max:50',
             ],
             'lastname' => [
-                'regex:/^[a-zA-Z]+$/u',
                 'min:3',
                 'max:50',
                 'required'
