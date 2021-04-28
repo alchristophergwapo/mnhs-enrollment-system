@@ -9,8 +9,8 @@ use App\Http\Controllers\Authentication;
 use App\Http\Controllers\EnrollmentController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\SubjectController;
+use App\Http\Controllers\AdminController;
 use App\Http\Controllers\ScheduleController;
-use App\Http\Controllers\NexmoSMSController;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -43,6 +43,7 @@ Route::get('/allNoneAdvisoryTeacher', [TeacherController::class, 'allTeachersWit
 
 //----------------------Admin Controller-----------------------------//
 //Login For Admin
+Route::get('/auth/init', [Authentication::class, 'init']);
 Route::post('/login', [Authentication::class, 'login']);
 //Resetting the password of Student Account 
 Route::post('/reset-password', [Authentication::class, 'passwordReset']);
@@ -63,7 +64,7 @@ Route::get('/unreadNotif/{user}', [NotificationController::class, 'allUnreadNoti
 Route::get('/allNotifications/{user}', [NotificationController::class, 'allNotif']);
 
 //Sending the username and password to the users or students_id
-Route::get('send-sms/{id}', [NexmoSMSController::class, 'SMS']);
+// Route::get('send-sms/{id}', [NexmoSMSController::class, 'SMS']);
 
 //--------------------------Section Controller---------------------//
 //Api For Adding Junior High School For A Section
@@ -90,15 +91,7 @@ Route::post('/addStudent', [EnrollmentController::class, 'addStudent']);
 //This is for updating the student details
 Route::post('/updateStudent/{id}', [EnrollmentController::class, 'updateStudent']);
 
-Route::get('/pendingEnrollment', [
-    EnrollmentController::class,
-    'allPendingStudents',
-]);
-Route::get('/approvedEnrollment', [
-    EnrollmentController::class,
-    'allEnrolledStudents',
-]);
-Route::get('/pendingEnrollments', [
+Route::get('/pendingEnrollments/{adminlevel?}', [
     EnrollmentController::class,
     'allPendingStudents',
 ]);
@@ -106,9 +99,13 @@ Route::get('/approvedEnrollments', [
     EnrollmentController::class,
     'allEnrolledStudents',
 ]);
-Route::get('/declinedEnrollments', [
+Route::get('/declinedEnrollments/{adminLevel?}', [
     EnrollmentController::class,
     'allDeclinedStudents',
+]);
+Route::get('/declinedEnrollments', [
+    EnrollmentController::class,
+    'declinedStudents',
 ]);
 Route::post('/addEnrollment', [EnrollmentController::class, 'addEnrollment']);
 Route::post('/approveEnrollment/{id}', [
@@ -140,5 +137,7 @@ Route::get('/classSchedules/{section_id}', [
 Route::post('/editSchedules', [ScheduleController::class, 'editSchedules']);
 Route::get('/getTeacherSchedule/{teacher_id}', [ScheduleController::class,'getTeacherSchedule',]);
 Route::post('/addSchedules', [ScheduleController::class, 'addSchedules']);
+
+Route::post('/addNewAdmin', [AdminController::class, 'addNewAdmin']);
 
 Broadcast::routes();

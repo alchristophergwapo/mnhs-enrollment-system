@@ -14,6 +14,13 @@ use Carbon\Carbon;
 
 class Authentication extends Controller
 {
+
+    public function init()
+    {
+        $user = Auth::user();
+
+        return response(['user' => $user]);
+    }
     public function login(Request $request)
     {
         $credentials = $request->only('username', 'password');
@@ -21,10 +28,7 @@ class Authentication extends Controller
             $signIn = Auth::attempt($credentials);
             if ($signIn) {
                 $user = Auth::user();
-                if ($user->user_type == 'admin') {
-                    $user->load('notifications');
-                    return response()->json(['user' => $user]);
-                } else {
+                if ($user->user_type == 'student') {
                     $userInfo = Student::with('enrollment')
                         ->where('LRN', $user->username)
                         ->first();
@@ -39,6 +43,9 @@ class Authentication extends Controller
                         'user' => $user,
                         'userInfo' => $userInfo,
                     ]);
+                } else {
+                    $user->load('notifications');
+                    return response()->json(['user' => $user]);
                 }
             } else {
                 return response()->json(
