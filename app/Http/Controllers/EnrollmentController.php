@@ -20,8 +20,6 @@ use App\Models\Section;
 use App\Http\Requests\StudentEnrollmentRequest;
 use App\Models\UserDetails;
 use Carbon\Carbon;
-use Log;
-use Mockery\Undefined;
 
 class EnrollmentController extends Controller
 {
@@ -72,22 +70,13 @@ class EnrollmentController extends Controller
                 $enrollmentSubmitted = Student::query()
                     ->where([
                         ['LRN', '=', $request->LRN],
-                        ['firstname', '=', $request->firstname],
-                        ['middlename', '=', $request->middlename],
-                        ['lastname', '=', $request->lastname],
                     ])
                     ->with([
-                        'enrollment' => function ($query, $grade_level) {
+                        'enrollment' => function ($query) {
                             $query->where(
-                                [
-                                    [
-                                        'start_school_year',
-                                        '=',
-                                        Carbon::now()->format('Y')
-                                    ],
-
-                                    ['grade_level', '<=', (int)$grade_level],
-                                ]
+                                'start_school_year',
+                                '=',
+                                Carbon::now()->format('Y')
                             );
                         },
                     ])
@@ -97,44 +86,38 @@ class EnrollmentController extends Controller
                 $passEnrollment = Student::query()
                     ->where([
                         ['LRN', '=', $request->LRN],
-                        ['firstname', '=', $request->firstname],
-                        ['middlename', '=', $request->middlename],
-                        ['lastname', '=', $request->lastname],
                     ])
                     ->with([
-                        'enrollment' => function ($query, $grade_level) {
+                        'enrollment' => function ($query) {
                             $query->where(
-                                [
-                                    'start_school_year',
-                                    '<',
-                                    Carbon::now()->format('Y')
-                                ],
-                                ['grade_level', '=', (int)$grade_level],
+                                'start_school_year',
+                                '<',
+                                Carbon::now()->format('Y')
                             );
                         },
                     ])
                     ->orderBy('id', 'desc')
                     ->first();
 
-                if ($enrollmentSubmitted) {
+                if ($enrollmentSubmitted && $enrollmentSubmitted->enrollment) {
                     return response(
                         [
                             'error' =>
-                            'You have already submitted an enrollment',
+                            'You have already submitted an enrollment for grade ' . $enrollmentSubmitted->enrollment->grade_level . ' this school year (' . $enrollmentSubmitted->enrollment->start_school_year . '-' . $enrollmentSubmitted->enrollment->end_school_year . ')',
                             'currentEnrollment' => $enrollmentSubmitted,
                         ],
-                        406
+                        406     
                     );
-                } elseif ($passEnrollment) {
+                } elseif ($passEnrollment && $passEnrollment->enrollment && $passEnrollment->enrollment->grade_level == $request->grade_level) {
                     return response(
                         [
                             'error' =>
                             'You have already submitted an enrollment/enrolled for grade ' .
-                                $request->grade_level .
+                                $passEnrollment->enrollment->grade_level .
                                 ' last school year ' .
                                 $passEnrollment->enrollment->start_school_year .
                                 '-' .
-                                $passEnrollment->enrollment->end_school_year,
+                                $passEnrollment->enrollment->end_school_year . '. You can only enroll to grade ' . ($passEnrollment->enrollment->grade_level + 1) . '. If this is a mistake, please contact the school enrollment personnel. Thank you!',
                             'passEnrollment' => $passEnrollment,
                         ],
                         406
@@ -301,13 +284,23 @@ class EnrollmentController extends Controller
         return response()->json(['pendingEnrollment' => $sorted]);
     }
 
-    public function allEnrolledStudents()
+    public function allEnrolledStudents($gradeLevel = null)
     {
-        $approvedEnrollment = Enrollment::where('enrollment_status', 'Approved')
-            ->join('students', 'enrollments.student_id', 'students.id')
-            ->join('sections', 'enrollments.student_section', 'sections.id')
-            ->select('enrollments.*', 'students.*', 'sections.name as section_name')
-            ->get();
+        $approvedEnrollment = [];
+        if ($gradeLevel == 'null') {
+            $approvedEnrollment = Enrollment::where('enrollment_status', 'Approved')
+                ->leftJoin('students', 'enrollments.student_id', 'students.id')
+                ->leftJoin('sections', 'enrollments.student_section', 'sections.id')
+                ->select('enrollments.*', 'students.*', 'sections.name as section_name')
+                ->get();
+        } else {
+            $approvedEnrollment = Enrollment::where('enrollment_status', 'Approved')
+                ->where('grade_level', $gradeLevel)
+                ->leftJoin('students', 'enrollments.student_id', 'students.id')
+                ->leftJoin('sections', 'enrollments.student_section', 'sections.id')
+                ->select('enrollments.*', 'students.*', 'sections.name as section_name')
+                ->get();
+        }
         return response()->json(['approvedEnrollment' => $approvedEnrollment]);
     }
 

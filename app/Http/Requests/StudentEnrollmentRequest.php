@@ -69,7 +69,6 @@ class StudentEnrollmentRequest extends FormRequest
                 'min:4'
             ],
             'contact' => [
-                'required',
                 'min:11',
                 'max:11'
             ],

@@ -94,7 +94,7 @@ Route::get('/pendingEnrollments/{adminlevel?}', [
     EnrollmentController::class,
     'allPendingStudents',
 ]);
-Route::get('/approvedEnrollments', [
+Route::get('/approvedEnrollments/{gradeLevel}', [
     EnrollmentController::class,
     'allEnrolledStudents',
 ]);
