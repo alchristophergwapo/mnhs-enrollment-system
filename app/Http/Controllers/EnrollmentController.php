@@ -292,14 +292,14 @@ class EnrollmentController extends Controller
         if ($gradeLevel == 'null') {
             $approvedEnrollment = Enrollment::where('enrollment_status', 'Approved')
                 ->leftJoin('students', 'enrollments.student_id', 'students.id')
-                ->leftJoin('sections', (int)'enrollments.student_section', 'sections.id')
+                ->leftJoin('sections', 'enrollments.student_section', 'sections.id')
                 ->select('enrollments.*', 'students.*', 'sections.name as section_name')
                 ->get();
         } else {
             $approvedEnrollment = Enrollment::where('enrollment_status', 'Approved')
                 ->where('grade_level', (int)$gradeLevel)
                 ->leftJoin('students', 'enrollments.student_id', 'students.id')
-                ->leftJoin('sections', (int)'enrollments.student_section', 'sections.id')
+                ->leftJoin('sections', 'enrollments.student_section', 'sections.id')
                 ->select('enrollments.*', 'students.*', 'sections.name as section_name')
                 ->get();
         }
@@ -371,7 +371,7 @@ class EnrollmentController extends Controller
                     error_log("id:" . $id);
                     $enrollment->update([
                         'enrollment_status' => 'Approved',
-                        'student_section' => (string)$section->id,
+                        'student_section' => $section->id,
                     ]);
                     \DB::commit();
 
@@ -426,7 +426,7 @@ class EnrollmentController extends Controller
                     $enrollment->update([
                         'enrollment_status' => 'Approved',
                         'remark' => null,
-                        'student_section' => (string)$section->id,
+                        'student_section' => $section->id,
                     ]);
                     \DB::commit();
 

@@ -1,2 +1,0 @@
-php socket/bin/start_socket.php &
-exec "$@"

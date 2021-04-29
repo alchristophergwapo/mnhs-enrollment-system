@@ -23,7 +23,7 @@ class CreateEnrollmentsTable extends Migration
             $table->string('card_image');
             $table->string('remark')->nullable();
             // $table->string('student_section');
-            $table->string('student_section')->nullable();
+            $table->integer('student_section')->nullable();
             $table->timestamps();
         });
     }
