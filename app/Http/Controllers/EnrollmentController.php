@@ -295,14 +295,14 @@ class EnrollmentController extends Controller
         if ($gradeLevel == 'null') {
             $approvedEnrollment = Enrollment::where('enrollment_status', 'Approved')
                 ->leftJoin('students', 'enrollments.student_id', 'students.id')
-                ->leftJoin('sections', 'enrollments.student_section', 'sections.id')
+                ->leftJoin('sections', 'enrollments.student_section', (string)'sections.id')
                 ->select('enrollments.*', 'students.*', 'sections.name as section_name')
                 ->get();
         } else {
             $approvedEnrollment = Enrollment::where('enrollment_status', 'Approved')
                 ->where('grade_level', (int)$gradeLevel)
                 ->leftJoin('students', 'enrollments.student_id', 'students.id')
-                ->leftJoin('sections', 'enrollments.student_section', 'sections.id')
+                ->leftJoin('sections', 'enrollments.student_section', (string)'sections.id')
                 ->select('enrollments.*', 'students.*', 'sections.name as section_name')
                 ->get();
         }
