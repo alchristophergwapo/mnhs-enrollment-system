@@ -20,12 +20,13 @@ use App\Models\Section;
 use App\Http\Requests\StudentEnrollmentRequest;
 use App\Models\UserDetails;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Auth;
 
 class EnrollmentController extends Controller
 {
 
     public function updateStudent(StudentEnrollmentRequest $request, $id)
-    {  
+    {
         $updated = $request->validated();
         if ($updated) {
             try {
@@ -106,7 +107,7 @@ class EnrollmentController extends Controller
                             'You have already submitted an enrollment for grade ' . $enrollmentSubmitted->enrollment->grade_level . ' this school year (' . $enrollmentSubmitted->enrollment->start_school_year . '-' . $enrollmentSubmitted->enrollment->end_school_year . ')',
                             'currentEnrollment' => $enrollmentSubmitted,
                         ],
-                        406     
+                        406
                     );
                 } elseif ($passEnrollment && $passEnrollment->enrollment && $passEnrollment->enrollment->grade_level == $request->grade_level) {
                     return response(
@@ -198,7 +199,8 @@ class EnrollmentController extends Controller
                         'card_image' => $imageName,
                     ]);
 
-                    $admin = User::where('username', 'Administrator')->first();
+                    $admin = User::where('user_type', 'admin')->first();
+                    $teacher_admin = User::where('user_type', 'teacher_admin')->get();
 
                     $notif = Student::with('enrollment')
                         ->where('id', '=', (int)$student->id)
@@ -208,12 +210,15 @@ class EnrollmentController extends Controller
                             $admin,
                             new StudentEnrollmentNotification($notif)
                         );
-                    } catch (\Exception $e) {
-                        \Log::error(get_class() . ' pusher event ' . $e);
-                    }
 
-                    try {
                         event(new StudentEnrollEvent($student, $admin));
+                        foreach ($teacher_admin as $tAdd) {
+                            $teacher_admin_gLevel = explode('_', $tAdd->username)[1];
+                            if ($teacher_admin_gLevel == $request->grade_level) {
+                                Notification::send($tAdd, new StudentEnrollmentNotification($notif));
+                                event(new StudentEnrollEvent($student, $tAdd));
+                            }
+                        }
                     } catch (\Exception $e) {
                         \Log::error(get_class() . ' pusher event ' . $e);
                     }
@@ -236,7 +241,7 @@ class EnrollmentController extends Controller
             } catch (\Exception $e) {
                 \DB::rollback();
                 \Log::error(get_class() . 'pusher event');
-                return response()->json(['error' => $e->getMessage()],500);
+                return response()->json(['error' => $e->getMessage()], 500);
             }
         }
     }
@@ -295,7 +300,7 @@ class EnrollmentController extends Controller
                 ->get();
         } else {
             $approvedEnrollment = Enrollment::where('enrollment_status', 'Approved')
-                ->where('grade_level', $gradeLevel)
+                ->where('grade_level', (int)$gradeLevel)
                 ->leftJoin('students', 'enrollments.student_id', 'students.id')
                 ->leftJoin('sections', 'enrollments.student_section', 'sections.id')
                 ->select('enrollments.*', 'students.*', 'sections.name as section_name')
@@ -366,7 +371,7 @@ class EnrollmentController extends Controller
                             $student->lastname . $student->LRN
                         ),
                     ]);
-                    error_log("id:".$id);
+                    error_log("id:" . $id);
                     $enrollment->update([
                         'enrollment_status' => 'Approved',
                         'student_section' => (string)$section->id,
@@ -423,7 +428,7 @@ class EnrollmentController extends Controller
                     error_log("id:" . $id);
                     $enrollment->update([
                         'enrollment_status' => 'Approved',
-                        'remark'=>null,
+                        'remark' => null,
                         'student_section' => (string)$section->id,
                     ]);
                     \DB::commit();
@@ -466,13 +471,13 @@ class EnrollmentController extends Controller
         }
     }
 
-    public function declineEnrollment(Request $request,$id)
+    public function declineEnrollment(Request $request, $id)
     {
         try {
             \DB::beginTransaction();
             Enrollment::where('student_id', '=', (int)$id)->update([
                 'enrollment_status' => 'Declined',
-                'remark'=>$request->remarks
+                'remark' => $request->remarks
             ]);
             // Enrollment::where('student_id', '=',$id)->update(['enrollment_status' => "Declined" ]);
             \DB::commit();
@@ -481,24 +486,6 @@ class EnrollmentController extends Controller
         } catch (\Exception $e) {
             \DB::rollback();
 
-            return response()->json(['error' => $e->getMessage()], 500);
-        }
-    }
-
-    //Check if already enrolled or not
-    public function alreadyEnrolled(Request $request)
-    {
-        try {
-            \DB::beginTransaction();
-            // Enrollment::where('student_id', '=', (int)$id)->update([
-            //     'enrollment_status' => 'Declined',
-            //     'remark' => $request->remarks
-            // ]);
-            // Enrollment::where('student_id', '=',$id)->update(['enrollment_status' => "Declined" ]);
-            \DB::commit();
-            return response()->json(['success' => 'Enrollment declined']);
-        } catch (\Exception $e) {
-            \DB::rollback();
             return response()->json(['error' => $e->getMessage()], 500);
         }
     }
