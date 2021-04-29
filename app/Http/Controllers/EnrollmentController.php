@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Notification;
 
 use App\Notifications\StudentEnrollmentNotification;
@@ -18,9 +17,7 @@ use App\Models\User;
 use App\Models\Section;
 
 use App\Http\Requests\StudentEnrollmentRequest;
-use App\Models\UserDetails;
 use Carbon\Carbon;
-use Illuminate\Support\Facades\Auth;
 
 class EnrollmentController extends Controller
 {
@@ -233,7 +230,7 @@ class EnrollmentController extends Controller
                     $admin->load('notifications');
 
                     return response([
-                        'success' => 'Student added succesfully',
+                        'success' => 'Enrollment submitted.',
                         'student' => $notif,
                         'admin' => $admin,
                     ]);
@@ -295,14 +292,14 @@ class EnrollmentController extends Controller
         if ($gradeLevel == 'null') {
             $approvedEnrollment = Enrollment::where('enrollment_status', 'Approved')
                 ->leftJoin('students', 'enrollments.student_id', 'students.id')
-                ->leftJoin('sections', 'enrollments.student_section', (string)'sections.id')
+                ->leftJoin('sections', (int)'enrollments.student_section', 'sections.id')
                 ->select('enrollments.*', 'students.*', 'sections.name as section_name')
                 ->get();
         } else {
             $approvedEnrollment = Enrollment::where('enrollment_status', 'Approved')
                 ->where('grade_level', (int)$gradeLevel)
                 ->leftJoin('students', 'enrollments.student_id', 'students.id')
-                ->leftJoin('sections', 'enrollments.student_section', (string)'sections.id')
+                ->leftJoin('sections', (int)'enrollments.student_section', 'sections.id')
                 ->select('enrollments.*', 'students.*', 'sections.name as section_name')
                 ->get();
         }
