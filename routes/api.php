@@ -135,9 +135,10 @@ Route::get('/classSchedules/{section_id}', [
     'getSectionSchedule',
 ]);
 Route::post('/editSchedules', [ScheduleController::class, 'editSchedules']);
-Route::get('/getTeacherSchedule/{teacher_id}', [ScheduleController::class,'getTeacherSchedule',]);
+Route::get('/getTeacherSchedule/{teacher_id}', [ScheduleController::class, 'getTeacherSchedule',]);
 Route::post('/addSchedules', [ScheduleController::class, 'addSchedules']);
 
 Route::post('/addNewAdmin', [AdminController::class, 'addNewAdmin']);
+Route::post('/updateTeacherAdmin/{id}', [AdminController::class, 'updateTeacherAdmin']);
 
 Broadcast::routes();
