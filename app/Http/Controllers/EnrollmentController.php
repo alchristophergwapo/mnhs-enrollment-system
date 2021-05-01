@@ -64,7 +64,6 @@ class EnrollmentController extends Controller
         $validated = $request->validated();
         if ($validated) {
             try {
-                $grade_level = $request->grade_level;
                 $enrollmentSubmitted = Student::query()
                     ->where([
                         ['LRN', '=', $request->LRN],
@@ -354,7 +353,7 @@ class EnrollmentController extends Controller
                 $request->student_section
             )->first();
 
-            if ($enrollment->enrollment_status == 'Pending') {
+            if ($enrollment->enrollment_status != 'Approved') {
                 if (
                     $section != null &&
                     $section->total_students < $section->capacity
@@ -362,60 +361,6 @@ class EnrollmentController extends Controller
                     $section->total_students += 1;
                     $section->save();
                     $user = User::updateOrCreate([
-                        'user_type' => 'student',
-                        'username' => $student->LRN,
-                        'password' => \Hash::make(
-                            $student->lastname . $student->LRN
-                        ),
-                    ]);
-                    error_log("id:" . $id);
-                    $enrollment->update([
-                        'enrollment_status' => 'Approved',
-                        'student_section' => $section->id,
-                    ]);
-                    \DB::commit();
-
-                    return response()->json(
-                        [
-                            'message' => 'Enrollment approved',
-                            'student' => $enrollment,
-                        ],
-                        200
-                    );
-                }
-                if (
-                    $section != null &&
-                    $section->total_students >= $section->capacity
-                ) {
-                    return response()->json(
-                        [
-                            'message' =>
-                            $request->section .
-                                $section->name . ' is full. Please select another section or update max capacity',
-                        ],
-                        400
-                    );
-                }
-                if ($section == null) {
-                    return response()->json(
-                        [
-                            'message' =>
-                            $request->section .
-                                ' cannot be found on the database. It may be deleted or have been modified.',
-                        ],
-                        404
-                    );
-                }
-            }
-            // FOR  APPROVING THE STUDENT AFTER IT WAS RECHECK AND FIXED WHY IT IS DECLINE
-            else {
-                if (
-                    $section != null &&
-                    $section->total_students < $section->capacity
-                ) {
-                    $section->total_students += 1;
-                    $section->save();
-                    User::updateOrCreate([
                         'user_type' => 'student',
                         'username' => $student->LRN,
                         'password' => \Hash::make(
@@ -462,6 +407,10 @@ class EnrollmentController extends Controller
                     );
                 }
             }
+            // FOR  APPROVING THE STUDENT AFTER IT WAS RECHECK AND FIXED WHY IT IS DECLINE
+            /**
+             * CODE IS REMOVED BECAUSE IT'S REDUNDANT
+             */
         } catch (\Exception $e) {
             \DB::rollback();
             return response()->json(['error' => $e->getMessage()], 500);
@@ -472,7 +421,7 @@ class EnrollmentController extends Controller
     {
         try {
             \DB::beginTransaction();
-            Enrollment::where('student_id', '=', (int)$id)->update([
+            Enrollment::where('id', '=', (int)$id)->update([
                 'enrollment_status' => 'Declined',
                 'remark' => $request->remarks
             ]);

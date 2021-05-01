@@ -77,18 +77,16 @@ class Authentication extends Controller
                     'required'
                 ],
                 'new_password' =>
-                'required|different:currentpassword|min:8|max:16|regex:/^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{6,}$/',
+                'required|different:currentpassword|min:8|max:16|regex:/^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-_]).{6,}$/',
                 'confirm_password' =>
-                'required|same:new_password|min:8|max:16|regex:/^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{6,}$/',
+                'required|same:new_password|min:8|max:16',
             ],
             [
                 'currentpassword.required' => 'Current password field is required.',
                 'new_password.required' => 'New password field is required.',
                 'confirm_password.required' => 'Confirm password field is required.',
                 'new_password.regex' =>
-                'Your new password should  be atleast 8 characters long ,contains-atleast 1 Uppercase,1 Lowercase,1 Numeric and 1 special character',
-                'confirm_password.regex' =>
-                'Your confirm password should  be atleast 8 characters long ,contains-atleast 1 Uppercase,1 Lowercase,1 Numeric and 1 special character',
+                'Your new password should  be atleast 8 characters long ,contains-atleast 1 Uppercase,1 Lowercase,1 Numeric and 1 special character'
             ]
         );
 
