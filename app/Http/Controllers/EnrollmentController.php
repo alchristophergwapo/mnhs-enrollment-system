@@ -15,7 +15,7 @@ use App\Models\SeniorHigh;
 use App\Models\Transferee;
 use App\Models\User;
 use App\Models\Section;
-
+use Illuminate\Support\Str;
 use App\Http\Requests\StudentEnrollmentRequest;
 use Carbon\Carbon;
 
@@ -257,7 +257,16 @@ class EnrollmentController extends Controller
             )
             ->get();
         foreach ($classmates as  $value) {
-            $value->middlename .= " " . $value->firstname . " " . $value->lastname;
+            if($value->middlename==null){
+                $value->firstname.=" ".$value->lastname;
+                $value->middlename=null;
+            }
+            else{
+                $result =Str::substr($value->middlename,0,1);
+                $value->firstname .= " ".$result."."." ". $value->lastname;
+                $value->middlename=$result."." ;
+            }
+            
         }
         return response()->json(['classmates' => $classmates]);
     }
