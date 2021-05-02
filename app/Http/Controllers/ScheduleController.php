@@ -58,12 +58,21 @@ class ScheduleController extends Controller
                         $validatedSched = $new->validate([
                             'section_id' => 'required',
                             'day' => 'required|string|regex:/^[a-zA-Z]+$/u',
-                            // 'start_time' => 'date_format:h:i',
-                            // 'end_time' => 'date_format:h:i',
                         ]);
 
                         if ($validatedSched) {
-                            Schedule::create($sched);
+                            $sexistingSched = Schedule::where('start_time', $sched['start_time'])
+                                ->where('schedules.teacher_id', $sched['teacher_id'])
+                                ->leftJoin('teachers', 'schedules.teacher_id', 'teachers.id')
+                                ->leftJoin('subjects', 'schedules.subject_id', 'subjects.id')
+                                ->select('schedules.day', 'teachers.teacher_name', 'subjects.subject_name')
+                                ->first();
+                            if ($sexistingSched) {
+                                \DB::rollBack();
+                                return response(['has_sched' => $sexistingSched->teacher_name . ' already have schedule for ' . $sexistingSched->day . ' at ' . $sched['start_time'] . ' to ' . $sched['end_time'] . ' (Subject: ' . $sexistingSched->subject_name . ')'], 400);
+                            } else {
+                                Schedule::create($sched);
+                            }
                         }
                     } else {
                         Schedule::create($sched);
