@@ -45,6 +45,12 @@ class ScheduleController extends Controller
             for ($i = 0; $i < count($schedules); $i++) {
                 $sched = $schedules[$i];
 
+                $sexistingSched = Schedule::where('start_time', $sched['start_time'])
+                    ->where('schedules.teacher_id', $sched['teacher_id'])
+                    ->leftJoin('teachers', 'schedules.teacher_id', 'teachers.id')
+                    ->leftJoin('subjects', 'schedules.subject_id', 'subjects.id')
+                    ->select('schedules.day', 'teachers.teacher_name', 'subjects.subject_name')
+                    ->first();
                 if ($sched != null) {
                     $new = new Request([
                         'section_id' => $sched['section_id'],
@@ -54,6 +60,11 @@ class ScheduleController extends Controller
                         'end_time' => $sched['end_time'],
                         'teacher_id' => $sched['teacher_id'],
                     ]);
+
+                    if ($sexistingSched) {
+                        \DB::rollBack();
+                        return response(['has_sched' => $sexistingSched->teacher_name . ' already have schedule for ' . $sexistingSched->day . ' at ' . $sched['start_time'] . ' to ' . $sched['end_time'] . ' (Subject: ' . $sexistingSched->subject_name . ')', $sexistingSched], 400);
+                    }
                     if ($sched['start_time'] && $sched['end_time']) {
                         $validatedSched = $new->validate([
                             'section_id' => 'required',
@@ -61,18 +72,7 @@ class ScheduleController extends Controller
                         ]);
 
                         if ($validatedSched) {
-                            $sexistingSched = Schedule::where('start_time', $sched['start_time'])
-                                ->where('schedules.teacher_id', $sched['teacher_id'])
-                                ->leftJoin('teachers', 'schedules.teacher_id', 'teachers.id')
-                                ->leftJoin('subjects', 'schedules.subject_id', 'subjects.id')
-                                ->select('schedules.day', 'teachers.teacher_name', 'subjects.subject_name')
-                                ->first();
-                            if ($sexistingSched) {
-                                \DB::rollBack();
-                                return response(['has_sched' => $sexistingSched->teacher_name . ' already have schedule for ' . $sexistingSched->day . ' at ' . $sched['start_time'] . ' to ' . $sched['end_time'] . ' (Subject: ' . $sexistingSched->subject_name . ')'], 400);
-                            } else {
-                                Schedule::create($sched);
-                            }
+                            Schedule::create($sched);
                         }
                     } else {
                         Schedule::create($sched);
