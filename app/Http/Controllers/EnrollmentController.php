@@ -237,7 +237,7 @@ class EnrollmentController extends Controller
             } catch (\Exception $e) {
                 \DB::rollback();
                 \Log::error(get_class() . 'pusher event');
-                return response()->json(['error' => $e->getMessage()], 500);
+                return response()->json(['error' => $e], 500);
             }
         }
     }
@@ -256,16 +256,14 @@ class EnrollmentController extends Controller
             )
             ->get();
         foreach ($classmates as  $value) {
-            if($value->middlename==null){
-                $value->firstname.=" ".$value->lastname;
-                $value->middlename=null;
+            if ($value->middlename == null) {
+                $value->firstname .= " " . $value->lastname;
+                $value->middlename = null;
+            } else {
+                $result = Str::substr($value->middlename, 0, 1);
+                $value->firstname .= " " . $result . "." . " " . $value->lastname;
+                $value->middlename = $result . ".";
             }
-            else{
-                $result =Str::substr($value->middlename,0,1);
-                $value->firstname .= " ".$result."."." ". $value->lastname;
-                $value->middlename=$result."." ;
-            }
-            
         }
         return response()->json(['classmates' => $classmates]);
     }

@@ -37,7 +37,7 @@ class AdminController extends Controller
                 ->select('users.username', 'user_details.user_fullname')
                 ->first();
             if ($admin) {
-                return response(['teacher_admin_exist' => 'An admin for grade ' . explode("_", $request->username)[1] . ' already exist. Do you wish to update the admin?', "teacher_admin" => $admin], 400);
+                return response(['teacher_admin_exist' => 'An admin for grade ' . explode("_", $request->username)[1] . ' already exist.', "teacher_admin" => $admin], 400);
             }
             if ($admin_details) {
                 return response(['teacher_isAssigned' => $admin_details->user_fullname . ' is already assigned to grade ' . explode("_", $admin_details->username)[1]], 400);
