@@ -70,7 +70,7 @@ class SectionController extends Controller
                         return response()->json(
                             [
                                 'failed' => $teachers->get(0)->section->name,
-                                'teacher' => $teachers->get(0)->name,
+                                'teacher' => $teachers->get(0)->teacher_name,
                             ],
                             200
                         );
@@ -213,7 +213,7 @@ class SectionController extends Controller
                                         'failed' => $assignTeacher->get(0)
                                             ->section->name,
                                         'teacher' => $assignTeacher->get(0)
-                                            ->name,
+                                            ->teacher_name,
                                     ],
                                     200
                                 );
