@@ -70,7 +70,7 @@ class SectionController extends Controller
                         return response()->json(
                             [
                                 'failed' => $teachers->get(0)->section->name,
-                                'teacher' => $teachers->get(0)->name,
+                                'teacher' => $teachers->get(0)->teacher_name,
                             ],
                             200
                         );
@@ -141,7 +141,7 @@ class SectionController extends Controller
                             $val->teacher_id
                         )->first();
                         $val->gradelevel_id = $val->teacher_id;
-                        $val->teacher_id = $teacher->name;
+                        $val->teacher_id = $teacher->teacher_name;
                         array_push(
                             $arraySection,
                             $val->makeHidden([
@@ -201,10 +201,11 @@ class SectionController extends Controller
                                     'section' => $section,
                                 ];
                             } else {
+                                error_log("TeacherName:".$request->teacher_id);
                                 $assignTeacher = Teacher::where(
                                     'id',
                                     '=',
-                                    $request->teacher
+                                    $request->teacher_id
                                 )
                                     ->with('section')
                                     ->get();
@@ -213,7 +214,7 @@ class SectionController extends Controller
                                         'failed' => $assignTeacher->get(0)
                                             ->section->name,
                                         'teacher' => $assignTeacher->get(0)
-                                            ->name,
+                                            ->teacher_name,
                                     ],
                                     200
                                 );

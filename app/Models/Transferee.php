@@ -22,6 +22,4 @@ class Transferee extends Model
         'last_school_ID',
         'last_school_address',
     ];
-
-    protected $table = 'transferee';
 }
