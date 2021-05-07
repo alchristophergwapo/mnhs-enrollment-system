@@ -21,7 +21,66 @@ use Carbon\Carbon;
 
 class EnrollmentController extends Controller
 {
+  //UPDATING THE STUDENT DETAILS IN DECLINE STUDENT AREAS
+   public function updatedeclineEnrollment(StudentEnrollmentRequest $request,$id){
+        $updated = $request->validated();
+        if ($updated) {
+            try{
+            \DB::beginTransaction();
+                Student::findOrFail($id)->update([
+                    'PSA' => $request->PSA,
+                    'LRN' => $request->LRN,
+                    'average' => (int)$request->average,
+                    'firstname' => $request->firstname,
+                    'middlename' => $request->middlename,
+                    'lastname' => $request->lastname,
+                    'birthdate' => $request->birthdate,
+                    'age' => (int)$request->age,
+                    'gender' => $request->gender,
+                    'IP' => $request->IP,
+                    'IP_community' => $request->IP_community,
+                    'mother_tongue' => $request->mother_tongue,
+                    'contact' => $request->contact,
+                    'address' => $request->address,
+                    'zipcode' => $request->zipcode,
+                    'father' => $request->father,
+                    'mother' => $request->mother,
+                    'guardian' => $request->guardian,
+                    'parent_number' => $request->parent_number,
+                ]);
 
+                Enrollment::where('student_id', '=', (int)$id)->update([
+                    'grade_level' => $request->grade_level               
+                ]);
+
+                if ($request->track != null) {
+                    SeniorHigh::where('student_id', '=', (int)$id)->update([
+                        'track' => $request->track,
+                        'strand' => $request->strand,
+                        'semester' => $request->semester,
+                    ]);
+                }
+
+                if ($request->last_year_completed != null) {
+                    Transferee::where('student_id', '=', (int)$id)->update([
+                        'last_year_completed' => $request->last_year_completed,
+                        'last_grade_completed' => $request->last_grade_completed,
+                        'last_school_attended' => $request->last_school_attended,
+                        'last_school_ID' => $request->last_school_ID,
+                        'last_school_address' => $request->last_school_address,
+                    ]);
+                  }
+
+                \DB::commit();
+                return response()->json(['updated' => 'Student updated succesfully'], 200);
+
+            } catch (\Exception $e) {
+                \DB::rollback();
+                return response()->json(["error" => $e], 500);
+            }
+        }
+  }
+//UPDATING THE STUDENT DATA WHO ALREADY APPROVE BY THE ADMIN
     public function updateStudent(StudentEnrollmentRequest $request, $id)
     {
         $updated = $request->validated();

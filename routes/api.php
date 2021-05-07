@@ -91,6 +91,9 @@ Route::post('/addStudent', [EnrollmentController::class, 'addStudent']);
 //This is for updating the student details
 Route::post('/updateStudent/{id}', [EnrollmentController::class, 'updateStudent']);
 
+//This is for udpating the data in decline student details
+Route::post('/updatedeclineEnrollment/{id}', [EnrollmentController::class, 'updatedeclineEnrollment']);
+
 Route::get('/pendingEnrollments/{adminlevel?}', [
     EnrollmentController::class,
     'allPendingStudents',
