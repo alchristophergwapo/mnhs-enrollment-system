@@ -46,7 +46,7 @@ class ScheduleController extends Controller
                 $sched = $schedules[$i];
 
                 $existingSched = null;
-                if ($sched['subject_id'] != 'null' && $sched['subject_id'] != 'undefined' && $sched['subject_id'] != null) {
+                if ($sched['subject_id'] != 'null' && $sched['subject_id'] != null) {
                     $existingSched = Schedule::where('day', '=', $sched['day'])
                         ->where('schedules.teacher_id', $sched['teacher_id'])
                         ->where('start_time', $sched['start_time'])
@@ -64,7 +64,7 @@ class ScheduleController extends Controller
                     'teacher_id' => $sched['teacher_id'],
                 ]);
 
-                if ($existingSched != null) {
+                if ($existingSched) {
                     \DB::rollBack();
                     return response(['has_sched' => $existingSched->teacher_name . ' already have schedule for ' . $existingSched->day . ' at ' . $existingSched->start_time . ' to ' . $existingSched->end_time . ' (Subject: ' . $existingSched->subject_name . ')', $existingSched], 400);
                 }
