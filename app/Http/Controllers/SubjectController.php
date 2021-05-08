@@ -21,7 +21,7 @@ class SubjectController extends Controller
         try {
             $gradelevel = GradeLevel::where('grade_level', '=', $grade)->first();
             $subjects = \DB::table('subjects')->where('subjects.grade_level_id', '=', $gradelevel->id)
-                ->join('teachers', 'subjects.teacher_id', 'teachers.id')
+                ->leftJoin('teachers', 'subjects.teacher_id', 'teachers.id')
                 ->select('subjects.*', 'teachers.teacher_name')
                 ->get();
 
