@@ -121,7 +121,7 @@ class Authentication extends Controller
             ]);
             \DB::commit();
 
-            return response(['success' => 'Password is successfully reset.']);
+            return response(['success' => 'Password has been successfully reset.']);
         } catch (\Exception $e) {
             \DB::rollBack();
             return response(['error' => $e->getMessage()]);

@@ -25,8 +25,8 @@ class TeacherRequest extends FormRequest
     {
         //'unique:teachers,name'
         return [
-            'teacher_name' => ['required', 'string', 'max:50'],
-            'email' => ['required', 'email', 'max:50'],
+            'teacher_name' => ['required', 'string', 'min:4', 'max:50', 'regex:/^[a-zA-Z\s.-]+$/'],
+            'email' => ['required', 'email:rfc,dns', 'max:50'],
             'contact' => ['required', 'string', 'max:11', 'digits:11'],
             'student_id' => ['nullable'],
             'section_id' => ['nullable'],
@@ -38,7 +38,7 @@ class TeacherRequest extends FormRequest
         return [
             'teacher_name.required' => 'Fullname is required.',
             'teacher_name.unique' =>
-                'The fullname of the teacher must be unique.',
+            'The fullname of the teacher must be unique.',
         ];
     }
 }

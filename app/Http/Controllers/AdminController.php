@@ -120,7 +120,7 @@ class AdminController extends Controller
                 'password' => \Hash::make('Password')
             ]);
             \DB::commit();
-            return response(['success' => 'Password reset successfull.']);
+            return response(['success' => 'Password has been reset successfully.']);
         } catch (\Throwable $th) {
             throw $th;
         }
