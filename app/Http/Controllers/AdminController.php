@@ -89,7 +89,12 @@ class AdminController extends Controller
                 return response(['teacher_isAssigned' => $admin_details->user_fullname . ' is already assigned to grade ' . explode("_", $admin_details->username)[1]], 400);
             } else {
                 if ($editAccountValidated) {
-                    User::where('id', '=', $id)->update($editAccountValidated);
+                    $editAccountValidated['password'] =
+                        User::where('id', '=', $id)->update([
+                            'username' => $request->username,
+                            'password' => \Hash::make($request->password),
+                            'user_type' => $request->user_type,
+                        ]);
                     UserDetails::where('user_id', $id)->update([
                         'email' => $request->user_email,
                         'user_fullname' => $request->user_fullname
