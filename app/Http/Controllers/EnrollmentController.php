@@ -17,16 +17,18 @@ use App\Models\User;
 use App\Models\Section;
 use Illuminate\Support\Str;
 use App\Http\Requests\StudentEnrollmentRequest;
+use App\Models\UserDetails;
 use Carbon\Carbon;
 
 class EnrollmentController extends Controller
 {
-  //UPDATING THE STUDENT DETAILS IN DECLINE STUDENT AREAS
-   public function updatedeclineEnrollment(StudentEnrollmentRequest $request,$id){
+    //UPDATING THE STUDENT DETAILS IN DECLINE STUDENT AREAS
+    public function updatedeclineEnrollment(StudentEnrollmentRequest $request, $id)
+    {
         $updated = $request->validated();
         if ($updated) {
-            try{
-            \DB::beginTransaction();
+            try {
+                \DB::beginTransaction();
                 Student::findOrFail($id)->update([
                     'PSA' => $request->PSA,
                     'LRN' => $request->LRN,
@@ -50,7 +52,7 @@ class EnrollmentController extends Controller
                 ]);
 
                 Enrollment::where('student_id', '=', (int)$id)->update([
-                    'grade_level' => $request->grade_level               
+                    'grade_level' => $request->grade_level
                 ]);
 
                 if ($request->track != null) {
@@ -69,27 +71,26 @@ class EnrollmentController extends Controller
                         'last_school_ID' => $request->last_school_ID,
                         'last_school_address' => $request->last_school_address,
                     ]);
-                  }
+                }
 
                 \DB::commit();
                 return response()->json(['updated' => 'Student updated succesfully'], 200);
-
             } catch (\Exception $e) {
                 \DB::rollback();
                 return response()->json(["error" => $e], 500);
             }
         }
-  }
-//UPDATING THE STUDENT DATA WHO ALREADY APPROVE BY THE ADMIN
+    }
+    //UPDATING THE STUDENT DATA WHO ALREADY APPROVE BY THE ADMIN
     public function updateStudent(StudentEnrollmentRequest $request, $id)
     {
         $updated = $request->validated();
         if ($updated) {
             try {
                 \DB::beginTransaction();
-            $enrollment = Enrollment::where('student_id', '=', (int)$id)->with('section')->first();
-            if($enrollment->grade_level==$request->grade_level && $enrollment->section->name==$request->section_name){
-                //Sakto ra wlay sayop or sakto ang pag enroll niya within the enrollment
+                $enrollment = Enrollment::where('student_id', '=', (int)$id)->with('section')->first();
+                if ($enrollment->grade_level == $request->grade_level && $enrollment->section->name == $request->section_name) {
+                    //Sakto ra wlay sayop or sakto ang pag enroll niya within the enrollment
                     Student::findOrFail($id)->update([
                         'PSA' => $request->PSA,
                         'LRN' => $request->LRN,
@@ -112,35 +113,33 @@ class EnrollmentController extends Controller
                         'parent_number' => $request->parent_number,
                     ]);
 
-                    if($request->track!=null){
-                        SeniorHigh::where('student_id', '=',(int)$id)->update([
+                    if ($request->track != null) {
+                        SeniorHigh::where('student_id', '=', (int)$id)->update([
                             'track' => $request->track,
                             'strand' => $request->strand,
                             'semester' => $request->semester,
                         ]);
                     }
 
-                    if ($request->last_year_completed!= null) {
-                                Transferee::where('student_id', '=', (int)$id)->update([
-                                    'last_year_completed' => $request->last_year_completed,
-                                    'last_grade_completed' => $request->last_grade_completed,
-                                    'last_school_attended' => $request->last_school_attended,
-                                    'last_school_ID' => $request->last_school_ID,
-                                    'last_school_address' => $request->last_school_address,
-                                 ]);
+                    if ($request->last_year_completed != null) {
+                        Transferee::where('student_id', '=', (int)$id)->update([
+                            'last_year_completed' => $request->last_year_completed,
+                            'last_grade_completed' => $request->last_grade_completed,
+                            'last_school_attended' => $request->last_school_attended,
+                            'last_school_ID' => $request->last_school_ID,
+                            'last_school_address' => $request->last_school_address,
+                        ]);
                     }
                     \DB::commit();
                     return response()->json(['updated' => 'Student updated succesfully'], 200);
-                }
-              else if($enrollment->grade_level==$request->grade_level && $enrollment->section->name!=$request->section_name){
+                } else if ($enrollment->grade_level == $request->grade_level && $enrollment->section->name != $request->section_name) {
                     //Sakto ang gradelevel then sayop ang pagbutang niya og section
-                    $section = Section::where('id', '=',(int)$enrollment->student_section)->first();
+                    $section = Section::where('id', '=', (int)$enrollment->student_section)->first();
                     $newSection = Section::where('name', '=', $request->section_name)->first();
-                    if($newSection->total_students==$newSection->capacity){
+                    if ($newSection->total_students == $newSection->capacity) {
                         \DB::commit();
                         return response()->json(['updated' => 'This section has reach its limits'], 500);
-                    }
-                    else{
+                    } else {
                         Section::where('id', '=', (int)$newSection->id)->update([
                             'total_students' => (int) $newSection->total_students + 1,
                         ]);
@@ -197,78 +196,73 @@ class EnrollmentController extends Controller
                             ]);
                         }
                         \DB::commit();
-                        return response()->json(['updated' => 'Student updated succesfully'], 200);   
+                        return response()->json(['updated' => 'Student updated succesfully'], 200);
                     }
-            
-                }
-                else{
-                //Sayop ang gradelevel pag enroll sa estudyante
+                } else {
+                    //Sayop ang gradelevel pag enroll sa estudyante
                     $section = Section::where('id', '=', (int)$enrollment->student_section)->first();
                     $newSection = Section::where('name', '=', $request->section_name)->first();
                     if ($newSection->total_students == $newSection->capacity) {
                         \DB::commit();
                         return response()->json(['updated' => 'This section has reach its limits'], 500);
-                    }
-                    else{
+                    } else {
 
-                    Section::where('id', '=', (int)$enrollment->student_section)->update([
-                        'total_students' => (int)$section->total_students - 1,
-                    ]);
-
-                    Section::where('id', '=', (int)$newSection->id)->update([
-                        'total_students' => (int) $newSection->total_students + 1,
-                    ]);
-
-                    Enrollment::where('student_id', '=', (int)$id)->update([
-                        'student_section' => (int)$newSection->id,
-                        'grade_level'=>$request->grade_level
-                    ]);
-
-                    Student::findOrFail($id)->update([
-                        'PSA' => $request->PSA,
-                        'LRN' => $request->LRN,
-                        'average' => (int)$request->average,
-                        'firstname' => $request->firstname,
-                        'middlename' => $request->middlename,
-                        'lastname' => $request->lastname,
-                        'birthdate' => $request->birthdate,
-                        'age' => (int)$request->age,
-                        'gender' => $request->gender,
-                        'IP' => $request->IP,
-                        'IP_community' => $request->IP_community,
-                        'mother_tongue' => $request->mother_tongue,
-                        'contact' => $request->contact,
-                        'address' => $request->address,
-                        'zipcode' => $request->zipcode,
-                        'father' => $request->father,
-                        'mother' => $request->mother,
-                        'guardian' => $request->guardian,
-                        'parent_number' => $request->parent_number,
-                    ]);
-
-                    if ($request->track != null) {
-                        SeniorHigh::where('student_id', '=', (int)$id)->update([
-                            'track' => $request->track,
-                            'strand' => $request->strand,
-                            'semester' => $request->semester,
+                        Section::where('id', '=', (int)$enrollment->student_section)->update([
+                            'total_students' => (int)$section->total_students - 1,
                         ]);
-                    }
 
-                    if ($request->last_year_completed != null) {
-                        Transferee::where('student_id', '=', (int)$id)->update([
-                            'last_year_completed' => $request->last_year_completed,
-                            'last_grade_completed' => $request->last_grade_completed,
-                            'last_school_attended' => $request->last_school_attended,
-                            'last_school_ID' => $request->last_school_ID,
-                            'last_school_address' => $request->last_school_address,
+                        Section::where('id', '=', (int)$newSection->id)->update([
+                            'total_students' => (int) $newSection->total_students + 1,
                         ]);
-                     }
+
+                        Enrollment::where('student_id', '=', (int)$id)->update([
+                            'student_section' => (int)$newSection->id,
+                            'grade_level' => $request->grade_level
+                        ]);
+
+                        Student::findOrFail($id)->update([
+                            'PSA' => $request->PSA,
+                            'LRN' => $request->LRN,
+                            'average' => (int)$request->average,
+                            'firstname' => $request->firstname,
+                            'middlename' => $request->middlename,
+                            'lastname' => $request->lastname,
+                            'birthdate' => $request->birthdate,
+                            'age' => (int)$request->age,
+                            'gender' => $request->gender,
+                            'IP' => $request->IP,
+                            'IP_community' => $request->IP_community,
+                            'mother_tongue' => $request->mother_tongue,
+                            'contact' => $request->contact,
+                            'address' => $request->address,
+                            'zipcode' => $request->zipcode,
+                            'father' => $request->father,
+                            'mother' => $request->mother,
+                            'guardian' => $request->guardian,
+                            'parent_number' => $request->parent_number,
+                        ]);
+
+                        if ($request->track != null) {
+                            SeniorHigh::where('student_id', '=', (int)$id)->update([
+                                'track' => $request->track,
+                                'strand' => $request->strand,
+                                'semester' => $request->semester,
+                            ]);
+                        }
+
+                        if ($request->last_year_completed != null) {
+                            Transferee::where('student_id', '=', (int)$id)->update([
+                                'last_year_completed' => $request->last_year_completed,
+                                'last_grade_completed' => $request->last_grade_completed,
+                                'last_school_attended' => $request->last_school_attended,
+                                'last_school_ID' => $request->last_school_ID,
+                                'last_school_address' => $request->last_school_address,
+                            ]);
+                        }
                         \DB::commit();
-                        return response()->json(['updated' => 'Student updated succesfully'], 200); 
-                   }
+                        return response()->json(['updated' => 'Student updated succesfully'], 200);
+                    }
                 }
-              
-
             } catch (\Exception $e) {
                 \DB::rollback();
                 return response()->json(["error" => $e], 500);
@@ -276,7 +270,7 @@ class EnrollmentController extends Controller
         }
     }
 
-    
+
     public function addStudent(StudentEnrollmentRequest $request)
     {
         $validated = $request->validated();
@@ -397,6 +391,16 @@ class EnrollmentController extends Controller
                         'card_image' => $imageName,
                     ]);
 
+                    if ($request->enrollment_status === 'Approved') {
+                        User::updateOrCreate([
+                            'user_type' => 'student',
+                            'username' => $student->LRN,
+                            'password' => \Hash::make(
+                                $student->lastname . $student->LRN
+                            ),
+                        ]);
+                    }
+
                     $admin = User::where('user_type', 'admin')->first();
                     $teacher_admin = User::where('user_type', 'teacher_admin')->get();
 
@@ -472,7 +476,7 @@ class EnrollmentController extends Controller
 
     public function allPendingStudents($adminLevel = null)
     {
-       
+
         // return response($adminLevel);
         if ($adminLevel != 'null') {
             $pendingEnrollment = Enrollment::where('enrollment_status', 'Pending')
@@ -487,12 +491,12 @@ class EnrollmentController extends Controller
             $sorted = $sort->values()->all();
             return response()->json(['pendingEnrollment' => $sorted]);
         }
-    
+
         $pendingEnrollment = Enrollment::where('enrollment_status', '=', 'Pending')
             ->leftJoin('students', 'enrollments.student_id', 'students.id')
             ->leftJoin('transferees', 'transferees.student_id', 'students.id')
             ->leftJoin('senior_high', 'senior_high.student_id', 'students.id')
-            ->select('senior_high.*', 'transferees.*','students.*', 'enrollments.*')
+            ->select('senior_high.*', 'transferees.*', 'students.*', 'enrollments.*')
             ->get();
 
         $sort = $pendingEnrollment->sortBy('average', 1, true);
@@ -502,7 +506,7 @@ class EnrollmentController extends Controller
 
     public function allEnrolledStudents($gradeLevel = null)
     {
-      
+
         $approvedEnrollment = [];
         if ($gradeLevel == 'null') {
             $approvedEnrollment = Enrollment::where('enrollment_status', 'Approved')
@@ -510,13 +514,13 @@ class EnrollmentController extends Controller
                 ->leftJoin('sections', 'enrollments.student_section', 'sections.id')
                 ->leftJoin('senior_high', 'senior_high.student_id', 'students.id')
                 ->leftJoin('transferees', 'transferees.student_id', 'students.id')
-                ->select('sections.name as section_name', 'transferees.*', 'senior_high.*','students.*','enrollments.*')
+                ->select('sections.name as section_name', 'transferees.*', 'senior_high.*', 'students.*', 'enrollments.*')
                 ->get();
         } else {
             $approvedEnrollment = Enrollment::where('enrollment_status', 'Approved')
                 ->where('grade_level', (int)$gradeLevel)
                 ->leftJoin('students', 'enrollments.student_id', 'students.id')
-                 ->leftJoin('senior_high', 'senior_high.student_id', 'students.id')
+                ->leftJoin('senior_high', 'senior_high.student_id', 'students.id')
                 ->leftJoin('transferees', 'transferees.student_id', 'students.id')
                 ->leftJoin('sections', 'enrollments.student_section', 'sections.id')
                 ->select('sections.name as section_name', 'transferees.*', 'senior_high.*', 'students.*', 'enrollments.*')
@@ -592,6 +596,7 @@ class EnrollmentController extends Controller
                             $student->lastname . $student->LRN
                         ),
                     ]);
+
                     error_log("id:" . $id);
                     $enrollment->update([
                         'enrollment_status' => 'Approved',
@@ -645,7 +650,7 @@ class EnrollmentController extends Controller
 
     public function declineEnrollment(Request $request, $id)
     {
-        error_log($id.$request->remarks);
+        error_log($id . $request->remarks);
         try {
             \DB::beginTransaction();
             Enrollment::where('id', '=', (int)$id)->update([
