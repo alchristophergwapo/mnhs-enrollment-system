@@ -4,15 +4,11 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 
-use Illuminate\Support\Facades\Validator;
-
 use App\Http\Requests\SubjectRequest;
 
 use App\Models\Subject;
 use App\Models\GradeLevel;
-use App\Models\Teacher;
-
-use function React\Promise\Stream\first;
+use App\Models\Schedule;
 
 class SubjectController extends Controller
 {
@@ -67,6 +63,7 @@ class SubjectController extends Controller
     {
         $subject = Subject::where('id', '=', $request->id)
             ->first();
+        $schedule = Schedule::where('subject_id', $subject->id)->get();
         try {
             \DB::beginTransaction();
             $teacher = \DB::table('teachers')->where('teachers.id', '=', $request->teacher_id)
@@ -78,6 +75,12 @@ class SubjectController extends Controller
 
                 if ($validated) {
                     $subject->update($validated);
+
+                    foreach ($schedule as $sched) {
+                        $sched->update([
+                            'teacher_id' => $validated['teacher_id']
+                        ]);
+                    }
                 }
                 \DB::commit();
                 return response(['success' => 'Successfully updated.']);

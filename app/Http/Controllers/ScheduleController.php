@@ -30,8 +30,8 @@ class ScheduleController extends Controller
     {
         $teacher_schedule = \DB::table('schedules')
             ->where('schedules.teacher_id', $teacher_id)
-            ->join('subjects', 'schedules.subject_id', 'subjects.id')
-            ->join('sections', 'schedules.section_id', 'sections.id')
+            ->leftJoin('subjects', 'schedules.subject_id', 'subjects.id')
+            ->leftJoin('sections', 'schedules.section_id', 'sections.id')
             ->select('schedules.*', 'sections.name', 'subjects.subject_name')
             ->get();
         return response()->json(['schedules' => $teacher_schedule]);
@@ -99,27 +99,17 @@ class ScheduleController extends Controller
             \DB::beginTransaction();
             $edited = [];
             foreach ($schedules as $sched) {
-                $new = new Request([
-                    'section_id' => $sched['section_id'],
-                    'subject_id' => $sched['subject_id'],
-                    'day' => $sched['day'],
-                    'start_time' => $sched['start_time'],
-                    'end_time' => $sched['end_time'],
-                    'teacher_id' => $sched['teacher_id'],
-                ]);
-                $schedOnDb = Schedule::where('id', '=', $sched['id'])
-                    ->where('day', '=', $sched['day'])
-                    ->update([
-                        'section_id' => $sched['section_id'],
-                        'subject_id' => $sched['subject_id'],
-                        'day' => $sched['day'],
-                        'start_time' => $sched['start_time'],
-                        'end_time' => $sched['end_time'],
-                        'teacher_id' => $sched['teacher_id'],
-                    ]);
-                array_push($edited, $schedOnDb);
-                // return response(['updatedSched' => $validatedSched]);
-
+                if ($sched != null) {
+                    $schedOnDb = Schedule::where('id', '=', $sched['id'])
+                        ->update([
+                            'section_id' => $sched['section_id'],
+                            'subject_id' => $sched['subject_id'],
+                            'start_time' => $sched['start_time'],
+                            'end_time' => $sched['end_time'],
+                            'teacher_id' => $sched['teacher_id'],
+                        ]);
+                    array_push($edited, $schedOnDb);
+                }
             }
             \DB::commit();
 
