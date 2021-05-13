@@ -18,11 +18,20 @@ use App\Models\Enrollment;
 
 class SectionController extends Controller
 {
-    public function allSections()
+    public function allSections($gradelevel)
     {
-        $sections = Section::with('gradelevel')
-            ->with('adviser')
-            ->get();
+        $grade = GradeLevel::where('grade_level', $gradelevel)->first();
+        $sections = [];
+        if ($gradelevel != 'null') {
+            $sections =  Section::with('gradelevel')
+                ->where('gradelevel_id', $grade->id)
+                ->with('adviser')
+                ->get();
+        } else {
+            $sections = Section::with('gradelevel')
+                ->with('adviser')
+                ->get();
+        }
         return response()->json(['sections' => $sections], 200);
     }
 
@@ -201,7 +210,7 @@ class SectionController extends Controller
                                     'section' => $section,
                                 ];
                             } else {
-                                error_log("TeacherName:".$request->teacher_id);
+                                error_log("TeacherName:" . $request->teacher_id);
                                 $assignTeacher = Teacher::where(
                                     'id',
                                     '=',

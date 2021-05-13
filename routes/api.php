@@ -82,7 +82,7 @@ Route::get('delAnySection/{id}', [SectionController::class, 'delAnySection']);
 //Updating Any Kind Of Sections
 Route::post('updateSection/{id}', [SectionController::class, 'updateSection']);
 
-Route::get('/allSections', [SectionController::class, 'allSections']);
+Route::get('/allSections/{gradelevel}', [SectionController::class, 'allSections']);
 
 Route::get('/noAdviserSections', [SectionController::class, 'allSectionsWithNoAdviser']);
 

@@ -44,17 +44,11 @@ class Authentication extends Controller
                             'user' => $user,
                             'userInfo' => $userInfo,
                         ],
-                        200,
-                        ['Content-Type' => 'application/json;charset=UTF-8', 'Charset' => 'utf-8'],
-                        JSON_UNESCAPED_UNICODE
                     );
                 } else {
                     $user->load('notifications');
                     return response()->json(
                         ['user' => $user],
-                        200,
-                        ['Content-Type' => 'application/json;charset=UTF-8', 'Charset' => 'utf-8'],
-                        JSON_UNESCAPED_UNICODE
                     );
                 }
             } else {
