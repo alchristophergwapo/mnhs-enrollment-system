@@ -99,7 +99,7 @@ class ScheduleController extends Controller
             \DB::beginTransaction();
             $edited = [];
             foreach ($schedules as $sched) {
-                if ($sched != null) {
+                if ($sched != null && $sched['id'] != null) {
                     $schedOnDb = Schedule::where('id', '=', $sched['id'])
                         ->update([
                             'section_id' => $sched['section_id'],
