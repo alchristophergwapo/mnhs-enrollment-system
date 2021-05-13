@@ -88,8 +88,12 @@ class EnrollmentController extends Controller
         if ($updated) {
             try {
                 \DB::beginTransaction();
-                $enrollment = Enrollment::where('student_id', '=', (int)$id)->with('section')->first();
-                if ($enrollment->grade_level == $request->grade_level && $enrollment->section->name == $request->section_name) {
+                $enrollment = Enrollment::where('student_id', '=', (int)$id)
+                    ->leffJoin('sections', 'enrollments.student_section', 'sections.id')
+                    ->select('enrollments.*', 'sections.*')
+                    ->first();
+
+                if ($enrollment->grade_level == $request->grade_level && $enrollment->name == $request->section_name) {
                     //Sakto ra wlay sayop or sakto ang pag enroll niya within the enrollment
                     Student::findOrFail($id)->update([
                         'PSA' => $request->PSA,
@@ -132,7 +136,7 @@ class EnrollmentController extends Controller
                     }
                     \DB::commit();
                     return response()->json(['updated' => 'Student updated succesfully'], 200);
-                } else if ($enrollment->grade_level == $request->grade_level && $enrollment->section->name != $request->section_name) {
+                } else if ($enrollment->grade_level == $request->grade_level && $enrollment->name != $request->section_name) {
                     //Sakto ang gradelevel then sayop ang pagbutang niya og section
                     $section = Section::where('id', '=', (int)$enrollment->student_section)->first();
                     $newSection = Section::where('name', '=', $request->section_name)->first();
