@@ -66,27 +66,19 @@ class SubjectController extends Controller
         $schedule = Schedule::where('subject_id', $subject->id)->get();
         try {
             \DB::beginTransaction();
-            $teacher = \DB::table('teachers')->where('teachers.id', '=', $request->teacher_id)
-                ->join('subjects', 'teachers.id', 'subjects.teacher_id')
-                ->select('teachers.*', 'subjects.subject_name')
-                ->first();
-            if (!$teacher) {
-                $validated = $request->validated();
+            $validated = $request->validated();
 
-                if ($validated) {
-                    $subject->update($validated);
+            if ($validated) {
+                $subject->update($validated);
 
-                    foreach ($schedule as $sched) {
-                        $sched->update([
-                            'teacher_id' => $validated['teacher_id']
-                        ]);
-                    }
+                foreach ($schedule as $sched) {
+                    $sched->update([
+                        'teacher_id' => $validated['teacher_id']
+                    ]);
                 }
-                \DB::commit();
-                return response(['success' => 'Successfully updated.']);
-            } else {
-                return response(['failed' => $teacher->teacher_name . ' is already assigned on ' . $teacher->subject_name], 422);
             }
+            \DB::commit();
+            return response(['success' => 'Successfully updated.']);
         } catch (\Exception $e) {
             \DB::rollBack();
             return response(['error' => $e->getMessage()]);

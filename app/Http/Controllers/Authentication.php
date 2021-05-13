@@ -39,13 +39,23 @@ class Authentication extends Controller
 
                     $userInfo['section'] = $section;
 
-                    return response([
-                        'user' => $user,
-                        'userInfo' => $userInfo,
-                    ]);
+                    return response()->json(
+                        [
+                            'user' => $user,
+                            'userInfo' => $userInfo,
+                        ],
+                        200,
+                        ['Content-Type' => 'application/json;charset=UTF-8', 'Charset' => 'utf-8'],
+                        JSON_UNESCAPED_UNICODE
+                    );
                 } else {
                     $user->load('notifications');
-                    return response()->json(['user' => $user]);
+                    return response()->json(
+                        ['user' => $user],
+                        200,
+                        ['Content-Type' => 'application/json;charset=UTF-8', 'Charset' => 'utf-8'],
+                        JSON_UNESCAPED_UNICODE
+                    );
                 }
             } else {
                 return response()->json(
