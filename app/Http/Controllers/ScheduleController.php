@@ -124,4 +124,26 @@ class ScheduleController extends Controller
             return response(['error' => $e->getMessage()], 500);
         }
     }
+
+    public function deleteSchedule(Request $request)
+    {
+        $schedules = $request->all();
+        try {
+            \DB::beginTransaction();
+            foreach ($schedules as $sched) {
+                Schedule::findOrFail($sched)
+                    ->delete();
+            }
+            \DB::commit();
+
+            return response()->json([
+                'success' => 'Successfully deleted schedules.',
+
+            ]);
+        } catch (\Exception $e) {
+            \DB::rollback();
+
+            return response(['error' => $e->getMessage()], 500);
+        }
+    }
 }
