@@ -23,9 +23,8 @@ class TeacherRequest extends FormRequest
      */
     public function rules()
     {
-        //'unique:teachers,name'
         return [
-            'teacher_name' => ['required', 'string', 'min:4', 'max:50', 'regex:/^[a-zA-Z\s.-]+$/', 'unique:teachers.teacher_name'],
+            'teacher_name' => ['required', 'string', 'min:4', 'max:50', 'regex:/^[a-zA-Z\s.-]+$/', 'unique:teachers,teacher_name'],
             'email' => ['required', 'email:rfc,dns', 'max:50'],
             'contact' => ['required', 'string', 'max:11', 'digits:11'],
             'student_id' => ['nullable'],
