@@ -27,24 +27,24 @@ class DatabaseSeeder extends Seeder
             'remember_token' => \Str::random(10),
         ]);
         Teacher::factory()->count(50)->create();
-        $students = Student::factory()->count(50)->create();
-        foreach ($students as $student) {
-            Enrollment::create([
-                'grade_level' => rand(7, 10),
-                'start_school_year' => 2020,
-                'end_school_year' => 2021,
-                'enrollment_status' => 'Pending',
-                'student_id' => $student->id,
-                'card_image' => 'form137.jpg',
-            ]);
+        // $students = Student::factory()->count(50)->create();
+        // foreach ($students as $student) {
+        //     Enrollment::create([
+        //         'grade_level' => rand(7, 10),
+        //         'start_school_year' => 2020,
+        //         'end_school_year' => 2021,
+        //         'enrollment_status' => 'Pending',
+        //         'student_id' => $student->id,
+        //         'card_image' => 'form137.jpg',
+        //     ]);
 
-            // User::create([
-            //     'user_type' => 'student',
-            //     'username' => $student->LRN,
-            //     'password' => \Hash::make($student->lastname.$student->LRN)
-            // ]);
+        //     // User::create([
+        //     //     'user_type' => 'student',
+        //     //     'username' => $student->LRN,
+        //     //     'password' => \Hash::make($student->lastname.$student->LRN)
+        //     // ]);
 
-        };
+        // };
 
         $grade_levels = [
             [
