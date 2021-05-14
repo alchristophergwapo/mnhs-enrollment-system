@@ -26,7 +26,7 @@ class DatabaseSeeder extends Seeder
             'password' => \Hash::make('Password'),
             'remember_token' => \Str::random(10),
         ]);
-        Teacher::factory()->count(50)->create();
+       // Teacher::factory()->count(50)->create();
         // $students = Student::factory()->count(50)->create();
         // foreach ($students as $student) {
         //     Enrollment::create([
@@ -46,28 +46,28 @@ class DatabaseSeeder extends Seeder
 
         // };
 
-        $grade_levels = [
-            [
-                'grade_level' => 7
-            ],
-            [
-                'grade_level' => 8
-            ],
-            [
-                'grade_level' => 9
-            ],
-            [
-                'grade_level' => 10
-            ],
-            [
-                'grade_level' => 11
-            ],
-            [
-                'grade_level' => 12
-            ]
-        ];
-        foreach ($grade_levels as $grade_level) {
-            GradeLevel::create($grade_level);
-        }
+        // $grade_levels = [
+        //     [
+        //         'grade_level' => 7
+        //     ],
+        //     [
+        //         'grade_level' => 8
+        //     ],
+        //     [
+        //         'grade_level' => 9
+        //     ],
+        //     [
+        //         'grade_level' => 10
+        //     ],
+        //     [
+        //         'grade_level' => 11
+        //     ],
+        //     [
+        //         'grade_level' => 12
+        //     ]
+        // ];
+        // foreach ($grade_levels as $grade_level) {
+        //     GradeLevel::create($grade_level);
+        // }
     }
 }
