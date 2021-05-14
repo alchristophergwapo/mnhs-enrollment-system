@@ -77,14 +77,10 @@ class AdminController extends Controller
 
         try {
             \DB::beginTransaction();
-            $admin = User::where('username', $request->username)->first();
             $admin_details = UserDetails::where('user_fullname', $request->user_fullname)
                 ->leftJoin('users', 'users.id', 'user_details.user_id')
                 ->select('users.username', 'user_details.user_fullname')
                 ->first();
-            if ($admin) {
-                return response(['teacher_admin_exist' => 'An admin for grade ' . explode("_", $request->username)[1] . ' already exist.', "teacher_admin" => $admin], 400);
-            }
             if ($admin_details) {
                 return response(['teacher_isAssigned' => $admin_details->user_fullname . ' is already assigned to grade ' . explode("_", $admin_details->username)[1]], 400);
             } else {

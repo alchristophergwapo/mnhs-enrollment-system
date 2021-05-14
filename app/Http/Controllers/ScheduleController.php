@@ -99,7 +99,7 @@ class ScheduleController extends Controller
             \DB::beginTransaction();
             $edited = [];
             foreach ($schedules as $sched) {
-                if ($sched != null) {
+                if ($sched != null && $sched['id'] != null) {
                     $schedOnDb = Schedule::where('id', '=', $sched['id'])
                         ->update([
                             'section_id' => $sched['section_id'],
@@ -116,6 +116,28 @@ class ScheduleController extends Controller
             return response()->json([
                 'edited' => $edited,
                 'success' => 'Successfully updated schedules.',
+
+            ]);
+        } catch (\Exception $e) {
+            \DB::rollback();
+
+            return response(['error' => $e->getMessage()], 500);
+        }
+    }
+
+    public function deleteSchedule(Request $request)
+    {
+        $schedules = $request->all();
+        try {
+            \DB::beginTransaction();
+            foreach ($schedules as $sched) {
+                Schedule::findOrFail($sched)
+                    ->delete();
+            }
+            \DB::commit();
+
+            return response()->json([
+                'success' => 'Successfully deleted schedules.',
 
             ]);
         } catch (\Exception $e) {

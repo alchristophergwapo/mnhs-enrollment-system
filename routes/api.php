@@ -140,6 +140,7 @@ Route::get('/classSchedules/{section_id}', [
 Route::post('/editSchedules', [ScheduleController::class, 'editSchedules']);
 Route::get('/getTeacherSchedule/{teacher_id}', [ScheduleController::class, 'getTeacherSchedule',]);
 Route::post('/addSchedules', [ScheduleController::class, 'addSchedules']);
+Route::post('/deleteScheds', [ScheduleController::class, 'deleteSchedule']);
 
 Route::get('/allTeacherAdmin', [AdminController::class, 'allTeacherAdmin']);
 Route::post('/addNewAdmin', [AdminController::class, 'addNewAdmin']);
