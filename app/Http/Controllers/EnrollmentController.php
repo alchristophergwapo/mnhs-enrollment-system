@@ -542,7 +542,6 @@ class EnrollmentController extends Controller
 
     public function declineEnrollment(Request $request, $id)
     {
-        error_log($id . $request->remarks);
         try {
             \DB::beginTransaction();
             Enrollment::where('id', '=', (int)$id)->update([
