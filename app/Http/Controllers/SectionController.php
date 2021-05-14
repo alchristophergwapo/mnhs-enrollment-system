@@ -20,9 +20,9 @@ class SectionController extends Controller
 {
     public function allSections($gradelevel)
     {
-        $grade = GradeLevel::where('grade_level', $gradelevel)->first();
         $sections = [];
         if ($gradelevel != 'null') {
+            $grade = GradeLevel::where('grade_level', $gradelevel)->first();
             $sections =  Section::with('gradelevel')
                 ->where('gradelevel_id', $grade->id)
                 ->with('adviser')
