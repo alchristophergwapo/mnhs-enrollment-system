@@ -19,6 +19,7 @@ class Enrollment extends Model
         'start_school_year',
         'end_school_year',
         'grade_level',
+        'specialization',
         'student_id',
         'card_image',
         'remark',

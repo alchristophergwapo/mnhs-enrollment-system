@@ -52,7 +52,8 @@ class EnrollmentController extends Controller
                 ]);
 
                 Enrollment::where('student_id', '=', (int)$id)->update([
-                    'grade_level' => $request->grade_level
+                    'grade_level' => $request->grade_level,
+                    'specialization' => $request->specialization
                 ]);
 
                 if ($request->track != null) {
@@ -135,7 +136,8 @@ class EnrollmentController extends Controller
 
                 $enrollment->update([
                     'student_section' => (int)$newSection->id,
-                    'grade_level' => $request->grade_level
+                    'grade_level' => $request->grade_level,
+                    'specialization' => $request->specialization
                 ]);
                 if ($section && $section->name != $request->section_name) {
                     //Sakto ang gradelevel then sayop ang pagbutang niya og section
@@ -279,6 +281,7 @@ class EnrollmentController extends Controller
                         'start_school_year' => Carbon::now()->format('Y'),
                         'end_school_year' => Carbon::now()->format('Y') + 1,
                         'enrollment_status' => $request->enrollment_status,
+                        'specialization' => $request->specialization,
                         'student_id' => $student->id,
                         'card_image' => $imageName,
                     ]);
