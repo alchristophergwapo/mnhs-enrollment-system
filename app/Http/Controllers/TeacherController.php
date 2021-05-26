@@ -9,6 +9,7 @@ use App\Models\Section;
 use App\Models\GradeLevel;
 use Illuminate\Support\Str;
 use App\Http\Requests\TeacherRequest;
+use App\Http\Requests\TeacherUpdateRequest;
 
 class TeacherController extends Controller
 {
@@ -152,9 +153,16 @@ class TeacherController extends Controller
     }
 
     //Function For Updating The Data Of Teachers
-    public function updateTeacher(TeacherRequest $request, $id)
+    public function updateTeacher(Request $request, $id)
     {
-        $update = $request->validated();
+        $teacher = Teacher::where('id', '=', $id)->first();
+        $update = $request->validate([
+            'teacher_name' => ['required', 'string', 'min:2', 'max:100', "regex:/^[a-zA-Z\s.-Ññ']+$/", "unique:teachers,teacher_name,".$teacher->id],
+            'email' => ['required', 'email:rfc,dns', 'max:100'],
+            'contact' => ['required', 'string', 'max:11', 'digits:11'],
+            'student_id' => ['nullable'],
+            'section_id' => ['nullable'],
+        ]);
         if ($update) {
             try {
                 \DB::beginTransaction();
