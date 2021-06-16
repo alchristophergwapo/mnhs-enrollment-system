@@ -20,7 +20,8 @@ class CreateEnrollmentsTable extends Migration
             $table->year('start_school_year');
             $table->year('end_school_year');
             $table->string('enrollment_status');
-            $table->string('card_image');
+            $table->string('enrollment_remarks')->default('NO REMARKS');
+            $table->string('card_image')->nullable();
             $table->string('remark')->nullable();
             $table->string('specialization')->nullable();
             $table->integer('student_section')->nullable();

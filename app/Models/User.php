@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Notifications\MailResetPasswordNotification;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -16,10 +17,11 @@ class User extends Authenticatable
      *
      * @var array
      */
-    
+
     protected $fillable = [
         'user_type',
         'username',
+        'email',
         'password',
         'updated'
     ];
@@ -34,17 +36,23 @@ class User extends Authenticatable
         'remember_token',
     ];
 
-    /**
-     * The attributes that should be cast to native types.
-     *
-     * @var array
-     */
-    protected $casts = [
-        'email_verified_at' => 'datetime',
-    ];
-
-    public function studentInfo() {
-        return $this->hasOne('App\Models\Student','lrn','username');
+    public function studentInfo()
+    {
+        return $this->hasOne('App\Models\Student', 'lrn', 'username');
     }
 
+    /**
+     * Override the mail body for reset password notification mail.
+     */
+    public function sendPasswordResetNotification($token)
+    {
+        try {
+            $this->notify(new MailResetPasswordNotification($token));
+            $this->update([
+                'updated' => 1,
+            ]);
+        } catch (\Throwable $th) {
+            throw $th;
+        }
+    }
 }

@@ -15,7 +15,6 @@ use App\Models\SeniorHigh;
 use App\Models\Transferee;
 use App\Models\User;
 use App\Models\Section;
-use Illuminate\Support\Str;
 use App\Http\Requests\StudentEnrollmentRequest;
 use App\Models\UserDetails;
 use Carbon\Carbon;
@@ -164,27 +163,11 @@ class EnrollmentController extends Controller
         }
     }
 
-
     public function addStudent(StudentEnrollmentRequest $request)
     {
         $validated = $request->validated();
         if ($validated) {
             try {
-                $enrollmentSubmitted = Student::query()
-                    ->where([
-                        ['LRN', '=', $request->LRN],
-                    ])
-                    ->with([
-                        'enrollment' => function ($query) {
-                            $query->where(
-                                'start_school_year',
-                                '=',
-                                Carbon::now()->format('Y')
-                            );
-                        },
-                    ])
-                    ->orderBy('id', 'desc')
-                    ->first();
 
                 $passEnrollment = Student::query()
                     ->where([
@@ -194,7 +177,7 @@ class EnrollmentController extends Controller
                         'enrollment' => function ($query) {
                             $query->where(
                                 'start_school_year',
-                                '<',
+                                '<=',
                                 Carbon::now()->format('Y')
                             );
                         },
@@ -202,25 +185,11 @@ class EnrollmentController extends Controller
                     ->orderBy('id', 'desc')
                     ->first();
 
-                if ($enrollmentSubmitted && $enrollmentSubmitted->enrollment) {
+                if ($passEnrollment && $passEnrollment->enrollment) {
                     return response(
                         [
                             'error' =>
-                            'You have already submitted an enrollment for grade ' . $enrollmentSubmitted->enrollment->grade_level . ' this school year (' . $enrollmentSubmitted->enrollment->start_school_year . '-' . $enrollmentSubmitted->enrollment->end_school_year . ')',
-                            'currentEnrollment' => $enrollmentSubmitted,
-                        ],
-                        406
-                    );
-                } elseif ($passEnrollment && $passEnrollment->enrollment && $passEnrollment->enrollment->grade_level == $request->grade_level) {
-                    return response(
-                        [
-                            'error' =>
-                            'You have already submitted an enrollment/enrolled for grade ' .
-                                $passEnrollment->enrollment->grade_level .
-                                ' last school year ' .
-                                $passEnrollment->enrollment->start_school_year .
-                                '-' .
-                                $passEnrollment->enrollment->end_school_year . '. You can only enroll to grade ' . ($passEnrollment->enrollment->grade_level + 1) . '. If this is a mistake, please contact the school enrollment personnel. Thank you!',
+                            'You have already submitted an application for admission. You can only apply for admission once. If this is a mistake, please contact the school enrollment personnel. Thank you!',
                             'passEnrollment' => $passEnrollment,
                         ],
                         406
@@ -287,12 +256,17 @@ class EnrollmentController extends Controller
                     ]);
 
                     if ($request->enrollment_status === 'Approved') {
-                        User::updateOrCreate([
+                        $user = User::updateOrCreate([
                             'user_type' => 'student',
                             'username' => $student->LRN,
                             'password' => \Hash::make(
                                 $student->lastname . $student->LRN
                             ),
+                        ]);
+
+                        UserDetails::create([
+                            'user_fullname' => $student-> firstname. ' ' . $student->lastname,
+                            'user_id' => $user->id
                         ]);
                     }
 
@@ -343,30 +317,46 @@ class EnrollmentController extends Controller
         }
     }
 
-    public function studentSectionDetails($section)
+    public function enroll(Request $request)
     {
-        $classmates = Enrollment::where('student_section', '=', $section)
-            ->join('students', 'enrollments.student_id', 'students.id')
-            ->select(
-                'enrollments.id as enrollment_id',
-                'enrollments.grade_level',
-                'students.firstname',
-                'students.middlename',
-                'students.lastname',
-                'students.address'
-            )
-            ->get();
-        foreach ($classmates as  $value) {
-            if ($value->middlename == null) {
-                $value->firstname .= " " . $value->lastname;
-                $value->middlename = null;
-            } else {
-                $result = Str::substr($value->middlename, 0, 1);
-                $value->firstname .= " " . $result . "." . " " . $value->lastname;
-                $value->middlename = $result . ".";
+        try {
+            \DB::beginTransaction();
+            $enrollmentCreated = Enrollment::create([
+                'enrollment_status' => 'Approved',
+                'start_school_year' => $request->start_school_year,
+                'end_school_year' => $request->end_school_year,
+                'grade_level' => $request->grade_level,
+                'enrollment_remarks' => 'NO REMARKS',
+                'specialization' => $request->specialization,
+                'student_id' =>$request->student_id
+            ]);
+
+            if ($enrollmentCreated) {
+                // \DB::commit();
+                return response(['success' => 'Enrollment successfully submitted!']);
             }
+        } catch (\Throwable $th) {
+            return response(['error' => $th],500);
         }
-        return response()->json(['classmates' => $classmates]);
+    }
+
+    public function editEnrollmentRemarks(Request $request, $id) {
+        $enrollment = Enrollment::where('id', $id)->first();
+        try {
+            \DB::beginTransaction();
+            if ($enrollment) {
+                $update = $enrollment->update([
+                    'enrollment_remarks' => $request->enrollment_remarks,
+                ]);
+                if ($update) {
+                    \DB::commit();
+                    return response(['success' => 'Student successfully marked as '.$request->enrollment_remarks.'.', $update]);
+                }
+            }
+        } catch (\Exception $e) {
+            \DB::rollback();
+            return response(['error'=>$e],500);
+        }
     }
 
     public function allPendingStudents($adminLevel = null)

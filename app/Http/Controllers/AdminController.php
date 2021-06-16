@@ -19,7 +19,8 @@ class AdminController extends Controller
             ->select(
                 'users.username',
                 'users.id',
-                'user_details.user_fullname'
+                'users.email',
+                'user_details.user_fullname',
             )->get();
 
         return response(['teacher_admins' => $teacher_admin]);
@@ -45,11 +46,11 @@ class AdminController extends Controller
                 if ($userValidated) {
                     $newAdmin = User::create([
                         'username' => $request->username,
+                        'email' => $request->user_email,
                         'password' => \Hash::make($request->password),
                         'user_type' => $request->user_type,
                     ]);
                     $user_details = UserDetails::create([
-                        'email' => $request->user_email,
                         'user_fullname' => $request->user_fullname,
                         'user_id' => $newAdmin->id,
                     ]);
@@ -87,12 +88,12 @@ class AdminController extends Controller
                 if ($editAccountValidated) {
                     $editAccountValidated['password'] =
                         User::where('id', '=', $id)->update([
+                            'email' => $request->user_email,
                             'username' => $request->username,
                             'password' => \Hash::make($request->password),
                             'user_type' => $request->user_type,
                         ]);
                     UserDetails::where('user_id', $id)->update([
-                        'email' => $request->user_email,
                         'user_fullname' => $request->user_fullname
                     ]);
                     \DB::commit();
