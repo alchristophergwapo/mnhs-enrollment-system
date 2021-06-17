@@ -34,15 +34,14 @@ class Authentication extends Controller
                         ->first();
 
                     $section = Section::with('adviser')
-                        ->where('id', $userInfo->enrollment->student_section)
+                        ->where('id', $userInfo->enrollment[count($userInfo->enrollment) - 1 ]->student_section)
                         ->first();
 
                     $userInfo['section'] = $section;
-
                     return response()->json(
                         [
                             'user' => $user,
-                            'userInfo' => $userInfo,
+                            'userInfo' => $userInfo
                         ],
                     );
                 } else {
@@ -74,9 +73,11 @@ class Authentication extends Controller
 
     public function changePassword(Request $request)
     {
+        $user = User::where('username', '=', $request->username)->first();
         $request->validate(
             [
                 'username' => 'required',
+                'email' => 'required|email:rfc,dns|max:100|unique:users,email,'.$user->id,
                 'currentpassword' => [
                     'required'
                 ],
@@ -97,6 +98,7 @@ class Authentication extends Controller
         try {
             $user = User::where('username', '=', $request->username)->first();
             if (\Hash::check($request->currentpassword, $user->password)) {
+                $user->email = $request->email;
                 $user->password = \Hash::make($request->new_password);
                 $user->updated = 1;
                 $user->save();

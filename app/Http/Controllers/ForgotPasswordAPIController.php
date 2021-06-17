@@ -23,25 +23,6 @@ class ForgotPasswordAPIController extends Controller
     use SendsPasswordResetEmails;
 
     /**
-     * Send password reset link
-     * @param \Illuminate\Http\Request $request
-     */
-
-    // public function sendResetLinkEmail(Request $request)
-    // {
-    //     $credentials = $request->validate([
-    //         'email' => 'required|email'
-    //     ]);
-
-    //     $emailRes = Password::sendResetLink($credentials);
-    //     if ($emailRes) {
-            
-    //     }
-    //     return response($emailRes);
-    //     // return $emailRes == Password::RESET_LINK_SENT ? $this->sendResetLinkResponse($request, $emailRes) : $this->sendResetLinkFailedResponse($request, $emailRes);
-    // }
-
-    /**
      * Get the response for a successful password reset link
      * 
      * @param \Illuminate\Http\Request $request
@@ -51,7 +32,7 @@ class ForgotPasswordAPIController extends Controller
     protected function sendResetLinkResponse(Request $request, $response)
     {
         return response()->json([
-            'message' => 'Password reset email sent. Please check your email to continue.',
+            'message' => 'Password reset email sent. Please check your email to continue. If you have not received an email on your inbox, please check your spam.',
             'data' => $response
         ]);
     }

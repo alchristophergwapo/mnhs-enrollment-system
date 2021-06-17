@@ -89,8 +89,8 @@ class EnrollmentController extends Controller
             try {
                 \DB::beginTransaction();
                 $enrollment = Enrollment::where('student_id', '=', (int)$id)
-                    ->first();
-                $section = Section::where('id', (int)($enrollment->student_section))->first();
+                    ->get();
+                $section = Section::where('id', (int)($enrollment[count($enrollment) - 1]->student_section))->first();
 
                 $newSection = Section::where('name', '=', $request->section_name)->first();
 
@@ -133,7 +133,7 @@ class EnrollmentController extends Controller
                     ]);
                 }
 
-                $enrollment->update([
+                $enrollment[count($enrollment) - 1]->update([
                     'student_section' => (int)$newSection->id,
                     'grade_level' => $request->grade_level,
                     'specialization' => $request->specialization
@@ -304,7 +304,7 @@ class EnrollmentController extends Controller
                     $admin->load('notifications');
 
                     return response([
-                        'success' => 'Enrollment submitted.',
+                        'success' => 'Application for admission submitted.',
                         'student' => $notif,
                         'admin' => $admin,
                     ]);
@@ -332,8 +332,8 @@ class EnrollmentController extends Controller
             ]);
 
             if ($enrollmentCreated) {
-                // \DB::commit();
-                return response(['success' => 'Enrollment successfully submitted!']);
+                \DB::commit();
+                return response(['success' => 'Application for admission successfully submitted!']);
             }
         } catch (\Throwable $th) {
             return response(['error' => $th],500);
@@ -492,7 +492,7 @@ class EnrollmentController extends Controller
 
                     return response()->json(
                         [
-                            'message' => 'Enrollment approved',
+                            'message' => 'Application for admission approved',
                             'student' => $enrollment,
                         ],
                         200
@@ -546,7 +546,7 @@ class EnrollmentController extends Controller
             // Enrollment::where('student_id', '=',$id)->update(['enrollment_status' => "Declined" ]);
             \DB::commit();
 
-            return response()->json(['success' => 'Enrollment declined']);
+            return response()->json(['success' => 'Application for admission declined']);
         } catch (\Exception $e) {
             \DB::rollback();
 

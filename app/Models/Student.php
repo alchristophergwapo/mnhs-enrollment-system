@@ -51,7 +51,7 @@ class Student extends Model
     // }
     public function enrollment()
     {
-        return $this->hasOne('App\Models\Enrollment', 'student_id', 'id');
+        return $this->hasMany('App\Models\Enrollment', 'student_id', 'id');
     }
 
     // public static function boot() {

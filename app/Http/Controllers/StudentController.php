@@ -16,19 +16,20 @@ class StudentController extends Controller
         $studentInfo = Student::with('enrollment')
             ->where('LRN', $lrn)
             ->first();
-            $section = Section::with('adviser')
-            ->where('id', $studentInfo->enrollment->student_section)
+        $section = Section::with('adviser')
+            ->where('id', $studentInfo->enrollment[count($studentInfo->enrollment) - 1]->student_section)
             ->first();
 
         $studentInfo['section'] = $section;
         return response()->json(
             [
                 'myInfo' => $studentInfo,
+                $studentInfo->enrollment[count($studentInfo->enrollment) - 1]
             ],
         );
     }
 
-    
+
     public function getMyClassmates($section)
     {
         $classmates = Enrollment::where('student_section', '=', $section)
@@ -55,7 +56,7 @@ class StudentController extends Controller
         return response()->json(['classmates' => $classmates]);
     }
 
-    
+
     public function getMySchedule($sectionId)
     {
         $schedules = \DB::table('schedules')
