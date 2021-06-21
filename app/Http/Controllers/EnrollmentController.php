@@ -265,7 +265,7 @@ class EnrollmentController extends Controller
                         ]);
 
                         UserDetails::create([
-                            'user_fullname' => $student-> firstname. ' ' . $student->lastname,
+                            'user_fullname' => $student->firstname . ' ' . $student->lastname,
                             'user_id' => $user->id
                         ]);
                     }
@@ -328,19 +328,33 @@ class EnrollmentController extends Controller
                 'grade_level' => $request->grade_level,
                 'enrollment_remarks' => 'NO REMARKS',
                 'specialization' => $request->specialization,
-                'student_id' =>$request->student_id
+                'student_id' => $request->student_id
             ]);
+            if ($request->grade_level === 11) {
+                $request->validate([
+                    'semester' => ['required'],
+                    'track' => ['required'],
+                    'strand' => ['required'],
+                ]);
+                SeniorHigh::create([
+                    'student_id' => $request->student_id,
+                    'semester' => $request->semester,
+                    'track' => $request->track,
+                    'strand' => $request->strand,
+                ]);
+            }
 
             if ($enrollmentCreated) {
                 \DB::commit();
                 return response(['success' => 'Application for admission successfully submitted!']);
             }
         } catch (\Throwable $th) {
-            return response(['error' => $th],500);
+            return response(['error' => $th], 500);
         }
     }
 
-    public function editEnrollmentRemarks(Request $request, $id) {
+    public function editEnrollmentRemarks(Request $request, $id)
+    {
         $enrollment = Enrollment::where('id', $id)->first();
         try {
             \DB::beginTransaction();
@@ -350,12 +364,12 @@ class EnrollmentController extends Controller
                 ]);
                 if ($update) {
                     \DB::commit();
-                    return response(['success' => 'Student successfully marked as '.$request->enrollment_remarks.'.', $update]);
+                    return response(['success' => 'Student successfully marked as ' . $request->enrollment_remarks . '.', $update]);
                 }
             }
         } catch (\Exception $e) {
             \DB::rollback();
-            return response(['error'=>$e],500);
+            return response(['error' => $e], 500);
         }
     }
 

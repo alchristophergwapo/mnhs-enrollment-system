@@ -34,7 +34,7 @@ class Authentication extends Controller
                         ->first();
 
                     $section = Section::with('adviser')
-                        ->where('id', $userInfo->enrollment[count($userInfo->enrollment) - 1 ]->student_section)
+                        ->where('id', $userInfo->enrollment[count($userInfo->enrollment) - 1]->student_section)
                         ->first();
 
                     $userInfo['section'] = $section;
@@ -77,7 +77,7 @@ class Authentication extends Controller
         $request->validate(
             [
                 'username' => 'required',
-                'email' => 'required|email:rfc,dns|max:100|unique:users,email,'.$user->id,
+                'email' => ['regex:/^\w+([\.-]?\w+)*@\w+([a-z\.-]?\w+)*(\.\w[a-z]{1,3})+$/', 'nullable', 'email:rfc,dns', 'max:100', 'unique:users,email,' . $user->id],
                 'currentpassword' => [
                     'required'
                 ],
