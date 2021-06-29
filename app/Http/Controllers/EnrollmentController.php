@@ -17,6 +17,7 @@ use App\Models\User;
 use App\Models\Section;
 use App\Http\Requests\StudentEnrollmentRequest;
 use App\Models\UserDetails;
+use App\Notifications\StudentAdmissionNotification;
 use Carbon\Carbon;
 
 class EnrollmentController extends Controller
@@ -253,6 +254,7 @@ class EnrollmentController extends Controller
                         'specialization' => $request->specialization,
                         'student_id' => $student->id,
                         'card_image' => $imageName,
+                        'student_email' => $request->email,
                     ]);
 
                     if ($request->enrollment_status === 'Approved') {
@@ -488,20 +490,24 @@ class EnrollmentController extends Controller
                 ) {
                     $section->total_students += 1;
                     $section->save();
-                    $user = User::updateOrCreate([
+                    $newUser = User::updateOrCreate([
                         'user_type' => 'student',
                         'username' => $student->LRN,
                         'password' => \Hash::make(
                             $student->lastname . $student->LRN
                         ),
+                        'email' => $enrollment->student_email
                     ]);
-
-                    error_log("id:" . $id);
                     $enrollment->update([
                         'enrollment_status' => 'Approved',
                         'remark' => null,
                         'student_section' => $section->id,
                     ]);
+
+                    $additionalDetails = "Your account has been created. To check your schedules and section, you can login into your account using this link http://mnhsenrollment-frontend.herokuapp.com/sign-in . Copy or click the link to login into your account.";
+
+                    Notification::send($newUser, new StudentAdmissionNotification($enrollment, $additionalDetails));
+
                     \DB::commit();
 
                     return response()->json(
@@ -536,10 +542,6 @@ class EnrollmentController extends Controller
                     );
                 }
             }
-            // FOR  APPROVING THE STUDENT AFTER IT WAS RECHECK AND FIXED WHY IT IS DECLINE
-            /**
-             * CODE IS REMOVED BECAUSE IT'S REDUNDANT
-             */
         } catch (\Exception $e) {
             \DB::rollback();
             return response()->json(['error' => $e->getMessage()], 500);
@@ -549,14 +551,30 @@ class EnrollmentController extends Controller
 
     public function declineEnrollment(Request $request, $id)
     {
-        error_log($id . $request->remarks);
         try {
             \DB::beginTransaction();
-            Enrollment::where('id', '=', (int)$id)->update([
+            $enrollment = Enrollment::where('id', '=', (int)$id)->with('student')
+                ->first();
+
+            $enrollment->update([
                 'enrollment_status' => 'Declined',
                 'remark' => $request->remarks
 
             ]);
+
+            $notifiable = new User([
+                'user_type' => 'student',
+                'username' => $enrollment->student->LRN,
+                'password' => \Hash::make(
+                    $enrollment->student->lastname . $enrollment->student->LRN
+                ),
+                'email' => $enrollment->student_email
+            ]);
+
+            $additionalDetails = "Here is the details why your enrollment is declined. \n" . $request->remarks;
+
+            Notification::send($notifiable, new StudentAdmissionNotification($enrollment, $additionalDetails));
+
             // Enrollment::where('student_id', '=',$id)->update(['enrollment_status' => "Declined" ]);
             \DB::commit();
 
