@@ -264,6 +264,7 @@ class EnrollmentController extends Controller
                             'password' => \Hash::make(
                                 $student->lastname . $student->LRN
                             ),
+                            'email' => $request->email,
                         ]);
 
                         UserDetails::create([
@@ -293,7 +294,8 @@ class EnrollmentController extends Controller
                             }
                         }
                     } catch (\Exception $e) {
-                        \Log::error(get_class() . ' pusher event ' . $e);
+                        \DB::rollback();
+                        return response()->json(['error' => $e], 500);
                     }
 
                     \DB::commit();

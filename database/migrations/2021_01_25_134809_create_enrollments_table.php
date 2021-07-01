@@ -25,6 +25,7 @@ class CreateEnrollmentsTable extends Migration
             $table->string('remark')->nullable();
             $table->string('specialization')->nullable();
             $table->integer('student_section')->nullable();
+            $table->string('student_email')->nullable();
             $table->timestamps();
         });
     }
